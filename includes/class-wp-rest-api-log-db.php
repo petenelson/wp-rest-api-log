@@ -6,11 +6,12 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 	class WP_REST_API_Log_DB {
 
-		static $dbversion    = '4';
+		static $dbversion    = '5';
 
 
 		public function plugins_loaded() {
 			add_action( 'admin_init', 'WP_REST_API_Log_DB::create_or_update_tables' );
+			add_action( WP_REST_API_Log_Common::$plugin_name . '-insert', array( $this, 'insert' ) );
 		}
 
 
@@ -30,9 +31,10 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				  namespace varchar(50) DEFAULT '' NOT NULL,
 				  endpoint varchar(50) DEFAULT '' NOT NULL,
 				  querystring text NULL,
-				  headers text NULL,
-				  request text NULL,
-				  response text NULL,
+				  request_headers text NULL,
+				  request_body text NULL,
+				  response_headers text NULL,
+				  response_body text NULL,
 				  PRIMARY KEY id (id),
 				  KEY ix_time (time),
 				  KEY ix_endpoint (endpoint)
@@ -56,7 +58,35 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 		public function insert( $args ) {
 
+			$args = wp_parse_args( $args, array(
+				'ip_address'        => $_SERVER['REMOTE_ADDR'],
+				'namespace'         => '',
+				'endpoint'          => '',
+				'querystring'       => '',
+				'request_headers'   => '',
+				'request_body'      => '',
+				'response_headers'  => '',
+				'response_body'     => '',
+				)
+			);
 
+			global $wpdb;
+
+			$id = $wpdb->insert( self::table_name(),
+				array(
+					'time'              => current_time( 'mysql' ),
+					'ip_address'        => $args['ip_address'],
+					'namespace'         => $args['namespace'],
+					'endpoint'          => $args['endpoint'],
+					'querystring'       => $args['querystring'],
+					'request_headers'   => $args['request_headers'],
+					'request_body'      => $args['request_body'],
+					'response_headers'  => $args['response_headers'],
+					'response_body'     => $args['response_body'],
+					)
+			);
+
+			return $id;
 
 		}
 

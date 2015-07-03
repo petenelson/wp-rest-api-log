@@ -18,6 +18,7 @@ Contact [Pete Nelson](https://twitter.com/gungeekatx)
 - purge old records
 - hook into REST API actions to insert record
 - API endpoint to expose log entries
+- uninstall
 - WP Admin UI to display log entries (pretty JSON http://stackoverflow.com/a/7220510/226411)
 - cron to purge old records
 
