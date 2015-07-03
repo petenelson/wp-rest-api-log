@@ -1,6 +1,6 @@
-# WP Plugin Boilerplate
+# WP REST API Log
 
-WordPress plugin to log WP REST API requests and responses
+WordPress plugin to log [WP REST API](http://wp-api.org/) requests and responses (for v2 of the API)
 
 ## Description
 
