@@ -13,12 +13,11 @@ Contact [Pete Nelson](https://twitter.com/gungeekatx)
 
 ## Roadmap
 
-- insert record
-- search records (by date, url, headers?)
+- search records (by date, url, headers?, default to last 50 records, by date descending)
 - purge old records
-- hook into REST API actions to insert record
-- API endpoint to expose log entries
+- API endpoint to expose log entries (use filter so we don't log our own API endpoint calls)
 - uninstall
+- add ability to log requests for invalid routes
 - WP Admin UI to display log entries (pretty JSON http://stackoverflow.com/a/7220510/226411)
 - cron to purge old records
 
