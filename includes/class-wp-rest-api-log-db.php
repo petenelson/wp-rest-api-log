@@ -129,9 +129,45 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$where = '';
 
 			if ( ! empty ( $args['id'] ) ) {
-				$where .= $wpdb->prepare( ' and id = %d ', $args['id'] );
+				$where .= $wpdb->prepare( ' and id = %d', $args['id'] );
 			}
 
+			if ( ! empty ( $args['from'] ) ) {
+				$where .= $wpdb->prepare( " and time >= '%s'", $args['from'] );
+			}
+
+			if ( ! empty ( $args['to'] ) ) {
+				$where .= $wpdb->prepare( " and time <= '%s'", $args['to'] );
+			}
+
+			if ( ! empty ( $args['before_id'] ) ) {
+				$where .= $wpdb->prepare( ' and id < %d ', $args['before_id'] );
+			}
+
+			if ( ! empty ( $args['after_id'] ) ) {
+				$where .= $wpdb->prepare( ' and id > %d ', $args['after_id'] );
+			}
+
+			if ( ! empty ( $args['route'] ) ) {
+
+
+				switch ( $args['route_match_type'] ) {
+
+					case 'starts-with':
+						$where .= $wpdb->prepare( " and route like %s", $args['route'] . '%' );
+						break;
+
+					case 'exact':
+						$where .= $wpdb->prepare( " and route like '%s'", $args['route'] );
+						break;
+
+					default:
+						$where .= $wpdb->prepare( " and route like '%%%s%%'", $args['route'] );
+						break;
+
+				}
+
+			}
 
 			$data = new stdClass();
 

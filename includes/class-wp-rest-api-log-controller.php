@@ -30,7 +30,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 						'default'              => 'basic',
 					),
 					'route'                 => array(
-						'sanitize_callback'    => 'sanitize_key',
 						'default'              => '',
 					),
 					'route-match-type'      => array(
@@ -74,7 +73,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				'from'                => $request['from'],
 				'to'                  => $request['to'],
 				'route'               => $request['route'],
-				'route-match-type'    => $request['route-match-type'],
+				'route_match_type'    => $request['route-match-type'],
 				);
 
 			$db = new WP_REST_API_Log_DB();
