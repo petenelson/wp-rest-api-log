@@ -37,7 +37,7 @@ foreach ( $includes as $include ) {
 // instantiate classes and hook into WordPress
 foreach ( $classes as $class ) {
 	$plugin = new $class();
-	add_action( 'plugins_loaded', array( $plugin, 'plugins_loaded' ) );
+	add_action( 'plugins_loaded', array( $plugin, 'plugins_loaded' ), 1 );
 }
 
 

@@ -9,13 +9,17 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 		public function plugins_loaded() {
 
+			// record the start time so we can log total millisecons
+			global $wp_rest_api_log_start;
+			$wp_rest_api_log_start = WP_REST_API_Log_Common::current_milliseconds();
+
 			// filter that is called by the REST API right before it sends a response
 			add_filter( 'rest_pre_serve_request', array( $this, 'rest_pre_serve_request' ), 9999, 4 );
 
 			add_filter( 'wp-rest-api-log-bypass-insert', function( $bypass_insert, $result, $request, $rest_server ) {
 				// an example of disabling logging for specific requests
 
-				// other conditions can be checked here
+				// don't log our own API requests
 				if ( stripos( $request->get_route(), '/wp-rest-api-log') !== false ) {
 					$bypass_insert = true;
 				}
