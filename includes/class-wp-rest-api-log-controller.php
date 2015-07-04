@@ -16,10 +16,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		public function register_rest_routes() {
 
 			register_rest_route( self::$namespace, '/entries', array(
-				'methods'         => array( WP_REST_Server::METHOD_GET, WP_REST_Server::METHOD_POST ),
-				'callback'        => array( $this, 'get_items' ),
-				'args'            => array(
-					'from'        => array(
+				'methods'             => array( WP_REST_Server::METHOD_GET, WP_REST_Server::METHOD_POST ),
+				'callback'            => array( $this, 'get_items' ),
+				'permission_callback' => array( $this, 'get_items_permissions_check' ),
+				'args'                => array(
+					'from'            => array(
 						'default'           => '',
 					),
 					'to'                    => array(
@@ -60,9 +61,10 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 
 			register_rest_route( self::$namespace, '/entries/(?P<id>[\d]+)', array(
-				'methods'         => array( WP_REST_Server::METHOD_GET, WP_REST_Server::METHOD_POST ),
-				'callback'        => array( $this, 'get_item' ),
-				'args'            => array(
+				'methods'             => array( WP_REST_Server::METHOD_GET, WP_REST_Server::METHOD_POST ),
+				'callback'            => array( $this, 'get_item' ),
+				'permission_callback' => array( $this, 'get_items_permissions_check' ),
+				'args'                => array(
 					'fields'                => array(
 						'default'              => 'basic',
 					),
@@ -105,6 +107,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 			$db = new WP_REST_API_Log_DB();
 			return rest_ensure_response( $db->search( $args ) );
 
+		}
+
+
+		public function get_items_permissions_check() {
+			return apply_filters( WP_REST_API_Log_Common::$plugin_name . '-can-view-entries', false );
 		}
 
 	}
