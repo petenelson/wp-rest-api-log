@@ -14,6 +14,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 
 		}
 
+		static public function current_milliseconds() {
+			list( $usec, $sec ) = explode( " ", microtime() );
+			return ( ( (float)$usec + (float)$sec ) ) * 1000;
+		}
+
 
 	} // end class
 
