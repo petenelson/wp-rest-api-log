@@ -13,10 +13,10 @@ Contact [Pete Nelson](https://twitter.com/gungeekatx)
 
 ## Roadmap
 
-- search records (by date, url, headers?, default to last 50 records, by date descending)
 - purge old records
 - uninstall
 - add ability to log requests for invalid routes
+- log status codes
 - WP Admin UI to display log entries (pretty JSON http://stackoverflow.com/a/7220510/226411)
 - cron to purge old records
 
