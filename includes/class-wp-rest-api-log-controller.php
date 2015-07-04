@@ -15,9 +15,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 		public function register_rest_routes() {
 
-			register_rest_route( self::$namespace, '/search', array(
+			register_rest_route( self::$namespace, '/entries', array(
 				'methods'         => array( WP_REST_Server::METHOD_GET, WP_REST_Server::METHOD_POST ),
-				'callback'        => array( $this, 'search' ),
+				'callback'        => array( $this, 'get_items' ),
 				'args'            => array(
 					'from'        => array(
 						'default'           => '',
@@ -26,7 +26,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 						'default'              => current_time( 'mysql' ),
 					),
 					'fields'                => array(
-						'sanitize_callback'    => 'sanitize_key',
 						'default'              => 'basic',
 					),
 					'route'                 => array(
@@ -59,10 +58,25 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				),
 			) );
 
+
+			register_rest_route( self::$namespace, '/entries/(?P<id>[\d]+)', array(
+				'methods'         => array( WP_REST_Server::METHOD_GET, WP_REST_Server::METHOD_POST ),
+				'callback'        => array( $this, 'get_item' ),
+				'args'            => array(
+					'fields'                => array(
+						'default'              => 'basic',
+					),
+					'id'                    => array(
+						'sanitize_callback'    => 'absint',
+						'default'              => 0,
+					),
+				),
+			) );
+
 		}
 
 
-		public function search( WP_REST_Request $request ) {
+		public function get_items( WP_REST_Request $request ) {
 			$args = array(
 				'id'                  => $request['id'],
 				'fields'              => $request['fields'],
@@ -81,6 +95,17 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 		}
 
+
+		public function get_item( WP_REST_Request $request ) {
+			$args = array(
+				'id'                  => $request['id'],
+				'fields'              => $request['fields'],
+				);
+
+			$db = new WP_REST_API_Log_DB();
+			return rest_ensure_response( $db->search( $args ) );
+
+		}
 
 	}
 

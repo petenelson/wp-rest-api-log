@@ -154,11 +154,11 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				$where .= $wpdb->prepare( ' and id = %d', $args['id'] );
 			}
 
-			if ( ! empty ( $args['from'] ) ) {
+			if ( ! empty ( $args['from'] ) && empty ( $args['id'] ) ) {
 				$where .= $wpdb->prepare( " and time >= '%s'", $args['from'] );
 			}
 
-			if ( ! empty ( $args['to'] ) ) {
+			if ( ! empty ( $args['to'] ) && empty ( $args['id'] ) ) {
 				$where .= $wpdb->prepare( " and time <= '%s'", $args['to'] );
 			}
 
