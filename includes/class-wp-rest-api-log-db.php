@@ -60,6 +60,12 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 		public function insert( $args ) {
 
+			// verify permissions
+			$can_insert = apply_filters( WP_REST_API_Log_Common::$plugin_name . '-can-insert-entries', true );
+			if ( ! $can_insert ) {
+				return;
+			}
+
 			global $wpdb;
 
 			$args = wp_parse_args( $args, array(
@@ -127,6 +133,13 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 
 		public function search( $args ) {
+
+			// verify permissions
+			$can_view = apply_filters( WP_REST_API_Log_Common::$plugin_name . '-can-view-entries', false );
+			if ( ! $can_view ) {
+				return;
+			}
+
 
 			global $wpdb;
 
@@ -222,6 +235,32 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$data->paged_records = $wpdb->get_results( $data->query );
 
 			$data = $this->cleanup_data( $data );
+
+			return $data;
+
+		}
+
+
+		public function purge( $args ) {
+
+			$can_purge = apply_filters( WP_REST_API_Log_Common::$plugin_name . '-can-purge-entries', false );
+			if ( ! $can_purge ) {
+				return;
+			}
+
+			global $wpdb;
+
+			$args = wp_parse_args( $args, array(
+				'older_than_seconds' => DAY_IN_SECONDS * 30,
+			));
+
+			$table_name = self::table_name();
+			$date = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) - absint( $args['older_than_seconds'] ) );
+
+			$data = new stdClass();
+			$data->older_than_date = $date;
+			$data->query = $wpdb->prepare( "delete from $table_name where time < %s", $date );
+			$data->records_affected = $wpdb->query( $data->query );
 
 			return $data;
 

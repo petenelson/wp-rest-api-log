@@ -13,7 +13,6 @@ Contact [Pete Nelson](https://twitter.com/gungeekatx)
 
 ## Roadmap
 
-- add route to get single record
 - db call to purge old records
 - uninstall
 - WP Admin UI to display log entries (pretty JSON http://stackoverflow.com/a/7220510/226411)

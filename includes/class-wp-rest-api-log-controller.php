@@ -75,6 +75,20 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				),
 			) );
 
+
+			register_rest_route( self::$namespace, '/entries/purge', array(
+				'methods'             => array( WP_REST_Server::METHOD_GET, WP_REST_Server::METHOD_POST ),
+				'callback'            => array( $this, 'purge_items' ),
+				'permission_callback' => array( $this, 'purge_items_permissions_check' ),
+				'args'                => array(
+					'older-than-seconds'       => array(
+						'sanitize_callback'    => 'absint',
+						'default'              => DAY_IN_SECONDS * 30,
+					),
+				),
+			) );
+
+
 		}
 
 
@@ -110,8 +124,23 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		}
 
 
+		public function purge_items( WP_REST_Request $request ) {
+			$args = array(
+				'older_than_seconds'  => $request['older-than-seconds'],
+				);
+
+			$db = new WP_REST_API_Log_DB();
+			return rest_ensure_response( $db->purge( $args ) );
+		}
+
+
 		public function get_items_permissions_check() {
 			return apply_filters( WP_REST_API_Log_Common::$plugin_name . '-can-view-entries', false );
+		}
+
+
+		public function purge_items_permissions_check() {
+			return apply_filters( WP_REST_API_Log_Common::$plugin_name . '-can-purge-entries', false );
 		}
 
 	}
