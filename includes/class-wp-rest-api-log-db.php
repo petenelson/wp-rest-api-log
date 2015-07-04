@@ -96,6 +96,74 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		}
 
 
+		public function search( $args ) {
+
+			global $wpdb;
+
+			$args = wp_parse_args( $args,
+				array(
+					'after_id'           => 0,
+					'before_id'          => 0,
+					'from'               => '',
+					'to'                 => current_time( 'mysql' ),
+					'route'              => '',
+					'route_match_type'   => 'wildcard',
+					'page'               => 1,
+					'records_per_page'   => 50,
+					'id'                 => 0,
+				)
+			);
+
+
+			$table_name = self::table_name();
+			$from = "from $table_name where 1 ";
+			$where = '';
+
+			if ( ! empty ( $args['id'] ) ) {
+				$where .= $wpdb->prepare( ' and id = %d ', $args['id'] );
+			}
+
+
+			$data = new stdClass();
+
+			// get a total count
+			$data->total_records = absint( $wpdb->get_var( 'select count(*) ' . $from . $where ) );
+
+			// get the records
+			$order_by = ' order by time desc';
+			$limit = '';
+			if ( empty( $args['id'] ) ) {
+				$args['records_per_page'] = absint( $args['records_per_page'] );
+				$args['page'] = absint( $args['page'] );
+				$limit = $wpdb->prepare( ' limit %d', $args['records_per_page'] );
+				if ( $args['page'] > 1 ) {
+					$limit .= $wpdb->prepare( ' offset %d', $args['page'] * $args['records_per_page'] );
+				}
+			}
+
+			$data->args = $args;
+			$data->query = 'select * ' . $from . $where . $order_by . $limit;
+			$data->paged_records = $wpdb->get_results( $data->query );
+
+			$data = $this->cleanup_data( $data );
+
+			return $data;
+
+		}
+
+
+		private function cleanup_data( $data ) {
+
+			if ( ! is_array( $data->paged_records ) ) {
+				return $data;
+			}
+
+
+
+			return $data;
+
+		}
+
 
 
 	} // end class
