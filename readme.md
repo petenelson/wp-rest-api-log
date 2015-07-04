@@ -13,8 +13,6 @@ Contact [Pete Nelson](https://twitter.com/gungeekatx)
 
 ## Roadmap
 
-- db call to purge old records
-- uninstall
 - WP Admin UI to display log entries (pretty JSON http://stackoverflow.com/a/7220510/226411)
 - add ability to log requests for invalid routes and status codes
 - cron to purge old records
