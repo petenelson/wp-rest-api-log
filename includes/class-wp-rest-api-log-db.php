@@ -6,7 +6,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 	class WP_REST_API_Log_DB {
 
-		static $dbversion    = '12';
+		static $dbversion    = '15';
 
 
 		public function plugins_loaded() {
@@ -25,7 +25,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				$table_name = self::table_name();
 
 				$sql = "CREATE TABLE $table_name (
-				  id mediumint(9) NOT NULL AUTO_INCREMENT,
+				  id bigint NOT NULL AUTO_INCREMENT,
 				  time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 				  ip_address varchar(30) NULL,
 				  method varchar(20) DEFAULT '' NOT NULL,
@@ -36,6 +36,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				  request_body text NULL,
 				  response_headers text NULL,
 				  response_body text NULL,
+				  milliseconds smallint NOT NULL,
 				  PRIMARY KEY id (id),
 				  KEY ix_time (time),
 				  KEY ix_route (route)
@@ -73,6 +74,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				'request_body'          => '',
 				'response_headers'      => array(),
 				'response_body'         => '',
+				'milliseconds'          => 0,
 				)
 			);
 
@@ -81,6 +83,12 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				if ( ! is_array( $args[ $field ] ) ) {
 					$args[ $field ] = array( $args[ $field ] );
 				}
+			}
+
+			if ( empty( $args['milliseconds'] ) ) {
+				global $wp_rest_api_log_start;
+				$now = WP_REST_API_Log_Common::current_milliseconds();
+				$args['milliseconds'] = absint( $now -  $wp_rest_api_log_start );
 			}
 
 
@@ -96,6 +104,20 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					'request_body'          => json_encode( $args['request_body'] ),
 					'response_headers'      => json_encode( $args['response_headers'] ),
 					'response_body'         => json_encode( $args['response_body'] ),
+					'milliseconds'          => $args['milliseconds'],
+					),
+				array(
+					'%s',
+					'%s',
+					'%s',
+					'%s',
+					'%s',
+					'%s',
+					'%s',
+					'%s',
+					'%s',
+					'%s',
+					'%d',
 					)
 			);
 
@@ -188,7 +210,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			switch ( $args['fields'] ) {
 				case 'basic';
-					$fields = 'id, time, ip_address, method, route, request_headers, request_query_params, request_body_params, response_headers, char_length(response_body) as response_body_length ';
+					$fields = 'id, time, ip_address, method, route, milliseconds, request_query_params, request_body_params, char_length(response_body) as response_body_length ';
 					break;
 				default:
 					$fields = '*';
@@ -230,6 +252,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					$data->paged_records[ $i ]->response_body = '';
 					$data->paged_records[ $i ]->response_body_length = absint( $data->paged_records[ $i ]->response_body_length );
 				}
+
+				$data->paged_records[ $i ]->milliseconds = absint( $data->paged_records[ $i ]->milliseconds );
 			}
 
 
