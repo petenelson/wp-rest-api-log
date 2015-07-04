@@ -25,6 +25,10 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 					'to'                    => array(
 						'default'              => current_time( 'mysql' ),
 					),
+					'fields'                => array(
+						'sanitize_callback'    => 'sanitize_key',
+						'default'              => 'basic',
+					),
 					'route'                 => array(
 						'sanitize_callback'    => 'sanitize_key',
 						'default'              => '',
@@ -51,7 +55,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 					),
 					'records-per-page'      => array(
 						'sanitize_callback'    => 'absint',
-						'default'              => 4,
+						'default'              => 20,
 					),
 				),
 			) );
@@ -62,6 +66,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		public function search( WP_REST_Request $request ) {
 			$args = array(
 				'id'                  => $request['id'],
+				'fields'              => $request['fields'],
 				'page'                => $request['page'],
 				'records_per_page'    => $request['records-per-page'],
 				'after_id'            => $request['after-id'],

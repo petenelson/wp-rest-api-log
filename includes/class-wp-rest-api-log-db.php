@@ -67,14 +67,22 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				'route'                 => '',
 				'method'                => $_SERVER['REQUEST_METHOD'],
 				'querystring'           => $_SERVER['QUERY_STRING'],
-				'request_headers'       => json_encode( array() ),
-				'request_query_params'  => json_encode( array() ),
-				'request_body_params'   => json_encode( array() ),
+				'request_headers'       => array(),
+				'request_query_params'  => array(),
+				'request_body_params'   => array(),
 				'request_body'          => '',
-				'response_headers'      => json_encode( array() ),
+				'response_headers'      => array(),
 				'response_body'         => '',
 				)
 			);
+
+			// verify arrays
+			foreach ( array( 'request_headers', 'request_query_params', 'request_body_params', 'response_headers' )  as $field ) {
+				if ( ! is_array( $args[ $field ] ) ) {
+					$args[ $field ] = array( $args[ $field ] );
+				}
+			}
+
 
 			$id = $wpdb->insert( self::table_name(),
 				array(
@@ -82,12 +90,12 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					'ip_address'            => $args['ip_address'],
 					'route'                 => $args['route'],
 					'method'                => $args['method'],
-					'request_headers'       => $args['request_headers'],
-					'request_query_params'  => $args['request_query_params'],
-					'request_body_params'   => $args['request_body_params'],
-					'request_body'          => $args['request_body'],
-					'response_headers'      => $args['response_headers'],
-					'response_body'         => $args['response_body'],
+					'request_headers'       => json_encode( $args['request_headers'] ),
+					'request_query_params'  => json_encode( $args['request_query_params'] ),
+					'request_body_params'   => json_encode( $args['request_body_params'] ),
+					'request_body'          => json_encode( $args['request_body'] ),
+					'response_headers'      => json_encode( $args['response_headers'] ),
+					'response_body'         => json_encode( $args['response_body'] ),
 					)
 			);
 
@@ -111,6 +119,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					'page'               => 1,
 					'records_per_page'   => 50,
 					'id'                 => 0,
+					'fields'             => 'basic',
 				)
 			);
 
@@ -141,8 +150,17 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				}
 			}
 
+			switch ( $args['fields'] ) {
+				case 'basic';
+					$fields = 'id, time, ip_address, method, route, request_headers, request_query_params, request_body_params, response_headers, char_length(response_body) as response_body_length ';
+					break;
+				default:
+					$fields = '*';
+					break;
+			}
+
 			$data->args = $args;
-			$data->query = 'select * ' . $from . $where . $order_by . $limit;
+			$data->query = 'select ' . $fields . ' ' . $from . $where . $order_by . $limit;
 			$data->paged_records = $wpdb->get_results( $data->query );
 
 			$data = $this->cleanup_data( $data );
@@ -154,10 +172,29 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 		private function cleanup_data( $data ) {
 
+
 			if ( ! is_array( $data->paged_records ) ) {
 				return $data;
 			}
 
+			for ( $i=0; $i < count( $data->paged_records ); $i++) {
+				if ( ! empty( $data->paged_records[ $i ]->request_headers ) ) {
+					$data->paged_records[ $i ]->request_headers = json_decode( $data->paged_records[ $i ]->request_headers );
+				}
+				if ( ! empty( $data->paged_records[ $i ]->request_body_params ) ) {
+					$data->paged_records[ $i ]->request_body_params = json_decode( $data->paged_records[ $i ]->request_body_params );
+				}
+				if ( ! empty( $data->paged_records[ $i ]->response_headers ) ) {
+					$data->paged_records[ $i ]->response_headers = json_decode( $data->paged_records[ $i ]->response_headers );
+				}
+				if ( ! empty( $data->paged_records[ $i ]->response_body ) ) {
+					$data->paged_records[ $i ]->response_body_length = absint( strlen( $data->paged_records[ $i ]->response_body ) );
+					$data->paged_records[ $i ]->response_body = json_decode( $data->paged_records[ $i ]->response_body );
+				} else {
+					$data->paged_records[ $i ]->response_body = '';
+					$data->paged_records[ $i ]->response_body_length = absint( $data->paged_records[ $i ]->response_body_length );
+				}
+			}
 
 
 			return $data;
