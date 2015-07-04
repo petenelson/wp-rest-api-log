@@ -10,7 +10,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		public function plugins_loaded() {
 
 			// filter that is called by the REST API right before it sends a response
-			add_filter( 'rest_pre_serve_request', array( $this, 'log_rest_api_dispatch' ), 9999, 4 );
+			add_filter( 'rest_pre_serve_request', array( $this, 'rest_pre_serve_request' ), 9999, 4 );
 
 			add_filter( 'wp-rest-api-log-bypass-insert', function( $bypass_insert, $result, $request, $rest_server ) {
 				// an example of disabling logging for specific requests
@@ -27,7 +27,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		}
 
 
-		public function log_rest_api_dispatch( $served, $result, $request, $rest_server ) {
+		public function rest_pre_serve_request( $served, $result, $request, $rest_server ) {
 
 			// allow specific requests to not be logged
 			$bypass_insert = apply_filters( WP_REST_API_Log_Common::$plugin_name . '-bypass-insert', false, $result, $request, $rest_server );
