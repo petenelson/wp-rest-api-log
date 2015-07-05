@@ -135,12 +135,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 
 		public function get_items_permissions_check() {
-			return apply_filters( WP_REST_API_Log_Common::$plugin_name . '-can-view-entries', false );
+			return apply_filters( WP_REST_API_Log_Common::$plugin_name . '-can-view-entries', current_user_can( 'manage_options' ) );
 		}
 
 
 		public function purge_items_permissions_check() {
-			return apply_filters( WP_REST_API_Log_Common::$plugin_name . '-can-purge-entries', false );
+			return apply_filters( WP_REST_API_Log_Common::$plugin_name . '-can-purge-entries', current_user_can( 'manage_options' ) );
 		}
 
 	}
