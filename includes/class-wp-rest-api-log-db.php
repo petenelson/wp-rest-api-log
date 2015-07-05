@@ -60,12 +60,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 		public function insert( $args ) {
 
-			// verify permissions
-			$can_insert = apply_filters( WP_REST_API_Log_Common::$plugin_name . '-can-insert-entries', true );
-			if ( ! $can_insert ) {
-				return;
-			}
-
 			global $wpdb;
 
 			$args = wp_parse_args( $args, array(
@@ -133,13 +127,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 
 		public function search( $args ) {
-
-			// verify permissions
-			$can_view = apply_filters( WP_REST_API_Log_Common::$plugin_name . '-can-view-entries', false );
-			if ( ! $can_view ) {
-				return;
-			}
-
 
 			global $wpdb;
 
@@ -242,11 +229,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 
 		public function purge( $args ) {
-
-			$can_purge = apply_filters( WP_REST_API_Log_Common::$plugin_name . '-can-purge-entries', false );
-			if ( ! $can_purge ) {
-				return;
-			}
 
 			global $wpdb;
 
