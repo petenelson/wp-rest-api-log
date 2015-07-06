@@ -19,35 +19,35 @@ $e = $wp_rest_api_log_display_entry;
 		<div class="postbox request-headers">
 			<h3 class=""><span>Request Headers</span></h3>
 
-			<div class="inside collapsed"><pre></pre></div>
+			<div class="inside collapsed"><pre><code></code></pre></div>
 
 		</div>
 
 		<div class="postbox querystring-parameters">
 			<h3 class=""><span>Query Parameters</span></h3>
 
-			<div class="inside"><pre></pre></div>
+			<div class="inside"><pre><code></code></pre></div>
 
 		</div>
 
 		<div class="postbox body-parameters">
 			<h3 class=""><span>Body Parameters</span></h3>
 
-			<div class="inside"><pre></pre></div>
+			<div class="inside"><pre><code></code></pre></div>
 
 		</div>
 
 		<div class="postbox response-headers">
 			<h3 class=""><span>Response Headers</span></h3>
 
-			<div class="inside collapsed"><pre></pre></div>
+			<div class="inside collapsed"><pre><code></code></pre></div>
 
 		</div>
 
 		<div class="postbox response-body">
 			<h3 class=""><span>Response</span></h3>
 
-			<div class="inside"><pre></pre></div>
+			<div class="inside"><pre><code></code></pre></div>
 
 		</div>
 
