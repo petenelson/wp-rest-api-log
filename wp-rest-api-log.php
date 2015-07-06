@@ -13,6 +13,9 @@ $includes = array(
 	'includes/class-' . $plugin_class_file . '-db.php',
 	'includes/class-' . $plugin_class_file . '-i18n.php',
 	'includes/class-' . $plugin_class_file . '-controller.php',
+	'includes/class-' . $plugin_class_file . '-api-results.php',
+	'includes/class-' . $plugin_class_file . '-entry.php',
+	'includes/class-' . $plugin_class_file . '-meta.php',
 	'includes/class-' . $plugin_class_file . '.php',
 	'admin/class-' . $plugin_class_file . '-admin.php',
 );
