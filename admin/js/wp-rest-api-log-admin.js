@@ -28,7 +28,7 @@
 					// clear search params
 					$( '.wp-rest-api-log-wrap .search-form .clear-on-reset').val( '' );
 
-					$( '.wp-rest-api-log-wrap .table-wrap' ).html( $.wp_rest_api_log.reset_html );
+					$( '.wp-rest-api-log-wrap .table-wrap' ).html( $.wp_rest_api_log.reset_html ).addClass( 'visible' );
 
 				} );
 
@@ -36,6 +36,7 @@
 				$( '.wp-rest-api-log-wrap .search-form form' ).submit( function( e ) {
 
 					$( this ).find('.ajax-wait').addClass( 'visible-inline' );
+					$( '.wp-rest-api-log-wrap .no-matches' ).removeClass( 'visible' );
 
 					e.preventDefault();
 
@@ -72,10 +73,11 @@
 
 			display_entries: function( response ) {
 
-				console.debug(response.query);
-
 				if ( response && response.entries_html ) {
-					$( '.wp-rest-api-log-wrap .table-wrap').html( response.entries_html );
+					$( '.wp-rest-api-log-wrap .table-wrap').html( response.entries_html ).addClass( 'visible' );
+				} else {
+					$( '.wp-rest-api-log-wrap .table-wrap').html( '' );
+					$( '.wp-rest-api-log-wrap .no-matches').addClass( 'visible' );
 				}
 
 			},
@@ -108,11 +110,15 @@
 				var elemDetails = $.wp_rest_api_log.get_entry_details_element( details.id );
 
 				// populate data
-				elemDetails.find( '.request-headers .inside pre').html( $.wp_rest_api_log.json_stringify( details.request.headers ) );
-				elemDetails.find( '.response-headers .inside pre').html( $.wp_rest_api_log.json_stringify( details.response.headers ) );
-				elemDetails.find( '.querystring-parameters .inside pre').html( $.wp_rest_api_log.json_stringify( details.request.query_params ) );
-				elemDetails.find( '.body-parameters .inside pre').html( $.wp_rest_api_log.json_stringify( details.request.body_params ) );
-				elemDetails.find( '.response-body .inside pre').html( $.wp_rest_api_log.json_stringify( details.response_body ) );
+				elemDetails.find( '.request-headers .inside pre code').text( $.wp_rest_api_log.json_stringify( details.request.headers ) );
+				elemDetails.find( '.response-headers .inside pre code').text( $.wp_rest_api_log.json_stringify( details.response.headers ) );
+				elemDetails.find( '.querystring-parameters .inside pre code').text( $.wp_rest_api_log.json_stringify( details.request.query_params ) );
+				elemDetails.find( '.body-parameters .inside pre code').text( $.wp_rest_api_log.json_stringify( details.request.body_params ) );
+				elemDetails.find( '.response-body .inside pre code').text( $.wp_rest_api_log.json_stringify( details.response_body ) );
+
+				elemDetails.find( '.inside pre code').each(function(i, block) {
+					hljs.highlightBlock(block);
+				});
 
 				// toggle display
 				$.wp_rest_api_log.toggle_entry_details_element( elemDetails );
@@ -122,27 +128,7 @@
 			},
 
 			json_stringify: function( obj ) {
-
-				var json = JSON.stringify(obj, null, 2); // spacing level = 2;
-
-				// https://jsfiddle.net/KJQ9K/554/
-				json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-				return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-					var cls = 'number';
-					if (/^"/.test(match)) {
-						if (/:$/.test(match)) {
-							cls = 'key';
-						} else {
-							cls = 'string';
-						}
-					} else if (/true|false/.test(match)) {
-						cls = 'boolean';
-					} else if (/null/.test(match)) {
-						cls = 'null';
-					}
-					return '<span class="' + cls + '">' + match + '</span>';
-				});
-
+				return JSON.stringify( obj, null, 2 ); // spacing level = 2;
 			},
 
 			toggle_entry_details_element: function( elemDetails ) {
@@ -178,12 +164,9 @@
 	});
 
 
-	// DOM handlers
+	// hook up our JS
 	$( document ).ready(function() {
-
 		$.wp_rest_api_log.document_ready();
-
-
 	});
 
 

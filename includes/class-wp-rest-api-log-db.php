@@ -287,7 +287,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			// TODO add query for params here
 
-			if ( is_array( $args['params'] ) && ! empty( $args['params'] ) ) {
+			if ( is_array( $args['params'] ) && ! empty( $args['params'] ) && !empty( $args['params'][0]['name'] ) ) {
 				$data->logmeta_id_query = $this->build_logmeta_id_query( $args['params'] );
 				$where .= ' and id in ( ' . $data->logmeta_id_query . ')';
 			}
@@ -363,7 +363,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		}
 
 
-		public function purge( $args ) {
+		public function delete( $args ) {
 
 			global $wpdb;
 
@@ -503,9 +503,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$ors = array();
 			for ( $i=0; $i < count( $params ); $i++) {
 
-				$ors[] = $wpdb->prepare( "(( meta_key = %s and meta_value = %s ) or ( meta_key = %s and meta_value = %s ))",
-					$params[ $i ]['name'],
-					$params[ $i ]['value'],
+				$ors[] = $wpdb->prepare( "( meta_key = %s and meta_value = %s )",
 					$params[ $i ]['name'],
 					$params[ $i ]['value']
 				);
