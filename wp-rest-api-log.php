@@ -6,6 +6,8 @@ Author: Pete Nelson
 Version: 1.0.0
 */
 
+if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+
 $plugin_class_file = 'wp-rest-api-log';
 
 $includes = array(
@@ -13,6 +15,10 @@ $includes = array(
 	'includes/class-' . $plugin_class_file . '-db.php',
 	'includes/class-' . $plugin_class_file . '-i18n.php',
 	'includes/class-' . $plugin_class_file . '-controller.php',
+	'includes/class-' . $plugin_class_file . '-base-response.php',
+	'includes/class-' . $plugin_class_file . '-entries-response.php',
+	'includes/class-' . $plugin_class_file . '-delete-response.php',
+	'includes/class-' . $plugin_class_file . '-routes-response.php',
 	'includes/class-' . $plugin_class_file . '.php',
 	'admin/class-' . $plugin_class_file . '-admin.php',
 );
@@ -35,8 +41,10 @@ foreach ( $includes as $include ) {
 }
 
 // record the start time so we can log total millisecons
-global $wp_rest_api_log_start;
-$wp_rest_api_log_start = WP_REST_API_Log_Common::current_milliseconds();
+if ( class_exists( 'WP_REST_API_Log_Common' ) ) {
+	global $wp_rest_api_log_start;
+	$wp_rest_api_log_start = WP_REST_API_Log_Common::current_milliseconds();
+}
 
 
 // instantiate classes and hook into WordPress

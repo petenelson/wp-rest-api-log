@@ -379,6 +379,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$date = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) - absint( $args['older_than_seconds'] ) );
 
 			$data = new stdClass();
+			$data->args = $args;
 			$data->older_than_date = $date;
 			$data->query = $wpdb->prepare( "delete from $table_name where time < %s", $date );
 			$data->records_affected = $wpdb->query( $data->query );
