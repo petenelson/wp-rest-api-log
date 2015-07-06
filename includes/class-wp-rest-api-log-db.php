@@ -6,7 +6,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 	class WP_REST_API_Log_DB {
 
-		const DB_VERSION          = '27';
+		const DB_VERSION          = '29';
 		const META_REQUEST        = 'request';
 		const META_RESPONSE       = 'response';
 		const META_PARAM_HEADER   = 'header';
@@ -38,6 +38,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				  ip_address varchar(30) NULL,
 				  method varchar(20) DEFAULT '' NOT NULL,
 				  route varchar(100) DEFAULT '' NOT NULL,
+				  status smallint NULL,
 				  querystring text NULL,
 				  request_body text NULL,
 				  response_body longtext NULL,
@@ -91,6 +92,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				'ip_address'            => $_SERVER['REMOTE_ADDR'],
 				'route'                 => '',
 				'method'                => $_SERVER['REQUEST_METHOD'],
+				'status'                => 200,
 				'querystring'           => $_SERVER['QUERY_STRING'],
 				'request'               => array(
 					'body'                 => '',
@@ -119,6 +121,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					'request_body'          => json_encode( $args['request']['body'] ),
 					'response_body'         => json_encode( $args['response']['body'] ),
 					'milliseconds'          => $args['milliseconds'],
+					'status'                => $args['status'],
 					),
 				array(
 					'%s',
@@ -127,6 +130,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					'%s',
 					'%s',
 					'%s',
+					'%d',
 					'%d',
 					)
 			);
@@ -336,7 +340,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			switch ( $args['fields'] ) {
 				case 'basic';
-					$fields = 'id, time, ip_address, method, route, milliseconds, char_length(response_body) as response_body_length';
+					$fields = 'id, time, ip_address, method, route, status, milliseconds, char_length(response_body) as response_body_length';
 					break;
 				default:
 					$fields = '*';
@@ -375,6 +379,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$date = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) - absint( $args['older_than_seconds'] ) );
 
 			$data = new stdClass();
+			$data->args = $args;
 			$data->older_than_date = $date;
 			$data->query = $wpdb->prepare( "delete from $table_name where time < %s", $date );
 			$data->records_affected = $wpdb->query( $data->query );
@@ -538,6 +543,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 				$data->paged_records[ $i ]->id            = absint( $data->paged_records[ $i ]->id );
 				$data->paged_records[ $i ]->milliseconds  = absint( $data->paged_records[ $i ]->milliseconds );
+
+				$data->paged_records[ $i ]->permalink     = add_query_arg( array( 'page' => WP_REST_API_Log_Common::$plugin_name, 'id' => $data->paged_records[ $i ]->id ), admin_url( 'tools.php' ) );
+
 			}
 
 
