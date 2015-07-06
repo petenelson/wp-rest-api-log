@@ -1,1 +1,34 @@
-/* plugin-name-admin.css */
+.wp-rest-api-log-wrap .log-entries .entry-row {
+	cursor: pointer;
+}
+
+.wp-rest-api-log-wrap .log-entries .collapsed {
+	display: none;
+}
+
+.wp-rest-api-log-wrap .log-entries .visible {
+	display: block;
+}
+
+.wp-rest-api-log-wrap .log-entries .entry-details-visible {
+	display: table-row;
+}
+
+.wp-rest-api-log-wrap .log-entries .entry-details .postbox h3 {
+  font-size: 14px;
+  padding: 8px 12px;
+  margin: 0;
+  line-height: 1.4;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.wp-rest-api-log-wrap .log-entries .ajax-wait {
+	float: right;
+}
+
+.wp-rest-api-log-wrap .log-entries .entry-details .string { color: green; }
+.wp-rest-api-log-wrap .log-entries .entry-details .number { color: darkorange; }
+.wp-rest-api-log-wrap .log-entries .entry-details .boolean { color: blue; }
+.wp-rest-api-log-wrap .log-entries .entry-details .null { color: magenta; }
+.wp-rest-api-log-wrap .log-entries .entry-details .key { color: red; }
