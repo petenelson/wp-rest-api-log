@@ -24,7 +24,7 @@ $e = $wp_rest_api_log_display_entry;
 		</div>
 
 		<div class="postbox querystring-parameters">
-			<h3 class=""><span>Querystring Parameters</span></h3>
+			<h3 class=""><span>Query Parameters</span></h3>
 
 			<div class="inside"><pre></pre></div>
 
@@ -34,6 +34,13 @@ $e = $wp_rest_api_log_display_entry;
 			<h3 class=""><span>Body Parameters</span></h3>
 
 			<div class="inside"><pre></pre></div>
+
+		</div>
+
+		<div class="postbox response-headers">
+			<h3 class=""><span>Response Headers</span></h3>
+
+			<div class="inside collapsed"><pre></pre></div>
 
 		</div>
 

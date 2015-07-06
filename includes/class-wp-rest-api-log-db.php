@@ -149,8 +149,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 		private function insert_meta_values( $log_id, $args ) {
 
+			// process request
 			if ( ! empty( $args['request'] ) ) {
-				// process request
 				$request        = $args['request'];
 				$request_type   = self::META_REQUEST;
 
@@ -168,8 +168,22 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			}
 
+
+			// process response
 			if ( ! empty( $args['response'] ) ) {
-				// process response
+				$response        = $args['response'];
+				$response_type   = self::META_RESPONSE;
+
+
+				$inserts = array(
+					'headers'       => self::META_PARAM_HEADER,
+					);
+
+				foreach ( $inserts as $key => $param_type ) {
+					if ( is_array( $response[ $key ] ) ) {
+						$this->insert_meta_array( $log_id, $response_type, $param_type, $response[ $key ] );
+					}
+				}
 
 			}
 

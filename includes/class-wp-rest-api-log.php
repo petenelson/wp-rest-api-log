@@ -39,7 +39,6 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 				return $served;
 			}
 
-
 			$args = array(
 				'ip_address'            => $_SERVER['REMOTE_ADDR'],
 				'route'                 => $request->get_route(),
@@ -52,7 +51,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 					),
 				'response'              => array(
 					'body'                 => $result,
-					'headers'              => function_exists( 'headers_list' ) ? headers_list() : $result->get_headers(),
+					'headers'              => $this->get_response_headers( $result ),
 					),
 				);
 
@@ -61,6 +60,24 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 			return $served;
 
+		}
+
+
+		private function get_response_headers( $result ) {
+			// headers_list returns an array of headers like this: Content-Type: application/json;
+			// we want a key/value array
+			if ( function_exists( 'headers_list' ) ) {
+				$headers = array();
+				foreach ( headers_list() as $header ) {
+					$header = explode( ':', $header );
+					if ( count( $header ) > 1 ) {
+						$headers[ $header[0] ] = trim( $header[1] );
+					}
+				}
+				return $headers;
+			} else {
+				return $result->get_headers();
+			}
 		}
 
 
