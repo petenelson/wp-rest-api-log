@@ -9,6 +9,7 @@ global $wp_rest_api_log_display_entry;
 	<tr>
 		<th>Date</th>
 		<th>Route</th>
+		<th>Method</th>
 		<th>Elapsed Time</th>
 		<th>Response Length</th>
 	</tr>

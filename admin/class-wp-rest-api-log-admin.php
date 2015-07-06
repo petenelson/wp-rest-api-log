@@ -31,6 +31,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			$entries = $db->search();
 
 			wp_enqueue_script( $this->plugin_name(), plugin_dir_url( __FILE__ ) . 'js/wp-rest-api-log-admin.js', 'jquery', WP_REST_API_Log_Common::$version );
+			wp_enqueue_style( $this->plugin_name(), plugin_dir_url( __FILE__ ) . 'css/wp-rest-api-log-admin.css', '', WP_REST_API_Log_Common::$version );
+
 
 			$data = array(
 				'nonce' => wp_create_nonce( 'wp_rest' ),
