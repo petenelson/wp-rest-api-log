@@ -30,7 +30,7 @@
 				</div>
 
 				<div class="search-param">
-					Route: <input type="text" name="route" value="" class="routeclear-on-reset clear-on-reset" />
+					Route: <input type="text" name="route" value="" class="route clear-on-reset clear-on-reset" />
 				</div>
 
 				<div class="search-param">

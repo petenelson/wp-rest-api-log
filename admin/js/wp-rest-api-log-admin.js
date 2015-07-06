@@ -108,9 +108,10 @@
 				var elemDetails = $.wp_rest_api_log.get_entry_details_element( details.id );
 
 				// populate data
-				elemDetails.find( '.request-headers .inside pre').html( $.wp_rest_api_log.json_stringify( details.request_headers ) );
-				elemDetails.find( '.querystring-parameters .inside pre').html( $.wp_rest_api_log.json_stringify( details.request_query_params ) );
-				elemDetails.find( '.body-parameters .inside pre').html( $.wp_rest_api_log.json_stringify( details.request_body_params ) );
+				elemDetails.find( '.request-headers .inside pre').html( $.wp_rest_api_log.json_stringify( details.request.headers ) );
+				elemDetails.find( '.response-headers .inside pre').html( $.wp_rest_api_log.json_stringify( details.response.headers ) );
+				elemDetails.find( '.querystring-parameters .inside pre').html( $.wp_rest_api_log.json_stringify( details.request.query_params ) );
+				elemDetails.find( '.body-parameters .inside pre').html( $.wp_rest_api_log.json_stringify( details.request.body_params ) );
 				elemDetails.find( '.response-body .inside pre').html( $.wp_rest_api_log.json_stringify( details.response_body ) );
 
 				// toggle display
