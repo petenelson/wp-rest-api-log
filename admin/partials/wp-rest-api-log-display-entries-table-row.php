@@ -5,7 +5,7 @@ $e = $wp_rest_api_log_display_entry;
 <tr class="entry-row entry-row-<?php echo esc_attr( $e->id ); ?>" data-id="<?php echo esc_attr( $e->id ); ?>">
 	<td class="time">
 		<?php echo esc_html( mysql2date( get_option( 'date_format'), $e->time ) ); ?> <?php echo esc_html( mysql2date( 'h:i:s a', $e->time ) ); ?>
-		<img class="ajax-wait collapsed" src="<?php echo plugin_dir_url( dirname( __FILE__ ) ) . 'images/ajax-wait.svg'; ?>" />
+		<?php include plugin_dir_path( __FILE__ ) . 'wp-rest-api-log-display-entries-ajax-wait.php'; ?>
 	</td>
 	<td class-"method"><?php echo esc_html( $e->method ); ?></td>
 	<td class-"route"><?php echo esc_html( $e->route ); ?></td>

@@ -138,10 +138,13 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					'to'                 => current_time( 'mysql' ),
 					'route'              => '',
 					'route_match_type'   => 'wildcard',
+					'method'             => '',
 					'page'               => 1,
 					'records_per_page'   => 50,
 					'id'                 => 0,
 					'fields'             => 'basic',
+					'query_param'        => '',
+					'body_param'         => '',
 				)
 			);
 
@@ -160,6 +163,10 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			if ( ! empty ( $args['to'] ) && empty ( $args['id'] ) ) {
 				$where .= $wpdb->prepare( " and time <= '%s'", $args['to'] );
+			}
+
+			if ( ! empty ( $args['method'] ) ) {
+				$where .= $wpdb->prepare( " and method = '%s'", $args['method'] );
 			}
 
 			if ( ! empty ( $args['before_id'] ) ) {
@@ -223,6 +230,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			$data = $this->cleanup_data( $data );
 
+			// TODO implement filters for body and query params
+
 			return $data;
 
 		}
@@ -245,6 +254,15 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$data->records_affected = $wpdb->query( $data->query );
 
 			return $data;
+
+		}
+
+
+		public function distinct_routes() {
+			global $wpdb;
+			$table_name = self::table_name();
+
+			return $wpdb->get_col( "select distinct route from $table_name order by route");
 
 		}
 
