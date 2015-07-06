@@ -235,6 +235,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		public function search( $args = array() ) {
 
 			global $wpdb;
+			$data = new stdClass();
+
 
 			$args = wp_parse_args( $args,
 				array(
@@ -249,6 +251,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					'records_per_page'   => 50,
 					'id'                 => 0,
 					'fields'             => 'basic',
+					'params'             => array(),
 				)
 			);
 
@@ -284,6 +287,12 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			// TODO add query for params here
 
+			if ( is_array( $args['params'] ) && ! empty( $args['params'] ) ) {
+				$data->logmeta_id_query = $this->build_logmeta_id_query( $args['params'] );
+				$where .= ' and id in ( ' . $data->logmeta_id_query . ')';
+			}
+
+
 
 			// TODO refactor this to accept an array
 			if ( ! empty ( $args['route'] ) ) {
@@ -308,7 +317,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			}
 
 
-			$data = new stdClass();
 
 			// get a total count
 			$data->query_count = "select count(distinct {$table_name}.id) " . $from . $join . $where;
@@ -328,7 +336,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			switch ( $args['fields'] ) {
 				case 'basic';
-					$fields = 'id, time, ip_address, method, route, milliseconds, char_length(response_body) as response_body_length ';
+					$fields = 'id, time, ip_address, method, route, milliseconds, char_length(response_body) as response_body_length';
 					break;
 				default:
 					$fields = '*';
@@ -482,6 +490,32 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				}
 			}
 			return $matches;
+		}
+
+
+		private function build_logmeta_id_query( $params ) {
+
+			global $wpdb;
+			$table_name_logmeta = $this->table_name_logmeta();
+
+			$sql = "select log_id from {$table_name_logmeta} where meta_request_response = 'request' and meta_type in ( 'query', 'body' ) and ( ";
+
+			$ors = array();
+			for ( $i=0; $i < count( $params ); $i++) {
+
+				$ors[] = $wpdb->prepare( "(( meta_key = %s and meta_value = %s ) or ( meta_key = %s and meta_value = %s ))",
+					$params[ $i ]['name'],
+					$params[ $i ]['value'],
+					$params[ $i ]['name'],
+					$params[ $i ]['value']
+				);
+
+			}
+
+			$sql .= implode( ' or ' , $ors ) . ' )';
+
+			return $sql;
+
 		}
 
 
