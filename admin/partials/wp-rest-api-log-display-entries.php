@@ -53,6 +53,11 @@
 		<?php require_once plugin_dir_path( __FILE__ ) . 'wp-rest-api-log-display-entries-table.php'; ?>
 	</div>
 
+
+	<p class="no-matches collapsed">
+		No matching log entries
+	</p>
+
 </div>
 
 
