@@ -17,8 +17,9 @@
 					$.wp_rest_api_log.toggle_inside_element( $( this ) );
 				});
 
-				$( '.wp-rest-api-log-wrap .search-form .datetimepicker' ).datepicker( {
-					dateFormat:'yy-mm-dd'
+				$( '.wp-rest-api-log-wrap .search-form .datetimepicker' ).datetimepicker( {
+					dateFormat:'yy-mm-dd',
+					timeFormat: 'HH:mm:ss'
 				} );
 
 				$( '.wp-rest-api-log-wrap .search-form .button-reset').click( function( e ) {
