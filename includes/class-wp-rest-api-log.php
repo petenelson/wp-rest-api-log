@@ -15,7 +15,6 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			add_filter( 'wp-rest-api-log-bypass-insert', function( $bypass_insert, $result, $request, $rest_server ) {
 				// an example of disabling logging for specific requests
 
-				// don't log our own API requests
 				if ( stripos( $request->get_route(), '/wp-rest-api-log') !== false ) {
 					$bypass_insert = true;
 				}
@@ -39,6 +38,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 				'ip_address'            => $_SERVER['REMOTE_ADDR'],
 				'route'                 => $request->get_route(),
 				'method'                => $request->get_method(),
+				'status'                => $result->get_status(),
 				'request'               => array(
 					'body'                 => $request->get_body(),
 					'headers'              => $request->get_headers(),

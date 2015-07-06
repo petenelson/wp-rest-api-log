@@ -1,13 +1,14 @@
 <?php
 global $wp_rest_api_log_display_entries;
 global $wp_rest_api_log_display_entry;
-?><table class="log-entries wp-list-table widefat fixed striped items">
+?><table class="log-entries wp-list-table widefat fixed items">
 
 <thead>
 	<tr>
 		<th>Date</th>
 		<th>Method</th>
 		<th>Route</th>
+		<th>Status</th>
 		<th>Elapsed Time</th>
 		<th>Response Length</th>
 	</tr>
