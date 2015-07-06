@@ -538,6 +538,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 				$data->paged_records[ $i ]->id            = absint( $data->paged_records[ $i ]->id );
 				$data->paged_records[ $i ]->milliseconds  = absint( $data->paged_records[ $i ]->milliseconds );
+
+				$data->paged_records[ $i ]->permalink     = add_query_arg( array( 'page' => WP_REST_API_Log_Common::$plugin_name, 'id' => $data->paged_records[ $i ]->id ), admin_url( 'tools.php' ) );
+
 			}
 
 

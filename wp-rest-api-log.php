@@ -34,6 +34,11 @@ foreach ( $includes as $include ) {
 	require_once plugin_dir_path( __FILE__ ) . $include;
 }
 
+// record the start time so we can log total millisecons
+global $wp_rest_api_log_start;
+$wp_rest_api_log_start = WP_REST_API_Log_Common::current_milliseconds();
+
+
 // instantiate classes and hook into WordPress
 foreach ( $classes as $class ) {
 	$plugin = new $class();

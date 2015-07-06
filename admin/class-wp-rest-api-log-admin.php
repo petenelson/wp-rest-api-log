@@ -28,15 +28,16 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			global $wp_rest_api_log_display_entries;
 
 			$db = new WP_REST_API_Log_DB();
-			$entries = $db->search();
-
 
 			$this->enqueue_scripts();
 
 			$data = array(
-				'nonce' => wp_create_nonce( 'wp_rest' ),
-				'route' => site_url( rest_get_url_prefix() . '/wp-rest-api-log/entries' ),
+				'nonce'   => wp_create_nonce( 'wp_rest' ),
+				'route'   => site_url( rest_get_url_prefix() . '/wp-rest-api-log/entries' ),
+				'id'      => filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT ),
 				);
+
+			$entries = $db->search( array( 'id' => $data['id'] ) );
 
 			wp_localize_script( $this->plugin_name(), 'wp_rest_api_log_admin', $data );
 
