@@ -2,12 +2,16 @@
 	cursor: pointer;
 }
 
-.wp-rest-api-log-wrap .log-entries .collapsed {
+.wp-rest-api-log-wrap .collapsed {
 	display: none;
 }
 
-.wp-rest-api-log-wrap .log-entries .visible {
+.wp-rest-api-log-wrap .visible {
 	display: block;
+}
+
+.wp-rest-api-log-wrap .visible-inline {
+  display: inline;
 }
 
 .wp-rest-api-log-wrap .log-entries .entry-details-visible {
@@ -26,6 +30,21 @@
 .wp-rest-api-log-wrap .log-entries .ajax-wait {
 	float: right;
 }
+
+.wp-rest-api-log-wrap .search-params {
+  overflow: hidden;
+}
+
+.wp-rest-api-log-wrap .search-params .search-param {
+  display: inline-block;
+  /* TODO make this responsive */
+}
+
+.wp-rest-api-log-wrap .search-params .search-param-buttons {
+  display: inline-block;
+}
+
+
 
 .wp-rest-api-log-wrap .log-entries .entry-details .string { color: green; }
 .wp-rest-api-log-wrap .log-entries .entry-details .number { color: darkorange; }
