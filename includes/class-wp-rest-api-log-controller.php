@@ -121,14 +121,17 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				);
 
 			$db = new WP_REST_API_Log_DB();
-			$response = $db->search( $args );
+			$db_response = $db->search( $args );
 
-			if ( 'wp_admin_html' === $request['response_type'] && ! empty( $response->paged_records ) ) {
+			$api_response = new WP_REST_API_Log_Entries_Response( $db_response );
+
+			if ( 'wp_admin_html' === $request['response_type'] && ! empty( $api_response->paged_records ) ) {
 				$admin = new WP_REST_API_Log_Admin();
-				$response->entries_html = $admin->entries_to_html( $response->paged_records );
+				$api_response->entries_html = $admin->entries_to_html( $api_response->paged_records );
+				$api_response->paged_records = array(); // no need to send this data back to the client
 			}
 
-			return rest_ensure_response( $response );
+			return rest_ensure_response( $api_response );
 
 		}
 
@@ -140,7 +143,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				);
 
 			$db = new WP_REST_API_Log_DB();
-			return rest_ensure_response( $db->search( $args ) );
+			return rest_ensure_response( new WP_REST_API_Log_Entries_Response( $db->search( $args ) ) );
 
 		}
 
@@ -148,7 +151,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		public function get_routes( WP_REST_Request $request ) {
 
 			$db = new WP_REST_API_Log_DB();
-			return rest_ensure_response( $db->distinct_routes() );
+			return rest_ensure_response( new WP_REST_API_Log_Routes_Response( $db->distinct_routes() ) );
 
 		}
 
@@ -159,7 +162,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				);
 
 			$db = new WP_REST_API_Log_DB();
-			return rest_ensure_response( $db->delete( $args ) );
+			return rest_ensure_response( new WP_REST_API_Log_Delete_Response( $db->delete( $args ) ) );
 		}
 
 
