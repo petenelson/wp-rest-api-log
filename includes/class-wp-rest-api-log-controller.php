@@ -22,43 +22,45 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				'args'                => array(
 					'from'            => array(
 						'default'           => '',
-					),
+						),
 					'to'                    => array(
 						'default'              => current_time( 'mysql' ),
-					),
+						),
 					'fields'                => array(
 						'default'              => 'basic',
-					),
+						),
 					'route'                 => array(
 						'default'              => '',
-					),
+						),
 					'route-match-type'      => array(
 						'sanitize_callback'    => 'sanitize_key',
 						'default'              => 'wildcard',
-					),
+						),
 					'id'                    => array(
 						'sanitize_callback'    => 'absint',
 						'default'              => 0,
-					),
+						),
 					'after-id'              => array(
 						'sanitize_callback'    => 'absint',
 						'default'              => 0,
-					),
+						),
 					'before-id'             => array(
 						'sanitize_callback'    => 'absint',
 						'default'              => 0,
-					),
+						),
 					'page'                  => array(
 						'sanitize_callback'    => 'absint',
 						'default'              => 1,
-					),
+						),
 					'records-per-page'      => array(
 						'sanitize_callback'    => 'absint',
 						'default'              => 20,
-					),
+						),
 					'response_type'         => array(
 						'default'           => 'json',
-					)
+						),
+					'params'                => array(
+						),
 				),
 			) );
 
@@ -115,6 +117,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				'method'              => $request['method'],
 				'route'               => $request['route'],
 				'route_match_type'    => $request['route-match-type'],
+				'params'              => $request['params'],
 				);
 
 			$db = new WP_REST_API_Log_DB();

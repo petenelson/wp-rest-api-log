@@ -45,7 +45,7 @@
 						to:$( this ).find('.to').val(),
 						method:$( this ).find('.method').val(),
 						route:$( this ).find('.route').val(),
-						param:$( this ).find('.param').val()
+						params:new Array( { name:$( this ).find('.param_name').val(), value:$( this ).find('.param_value').val() } )
 					};
 
 					$.wp_rest_api_log.search( $.wp_rest_api_log.search_args, $.wp_rest_api_log.display_entries );
@@ -173,6 +173,7 @@
 
 	// send nonce to the WP API
 	$( document ).ajaxSend( function( event, xhr ) {
+		// you can also send _wp_rest_nonce in the GET or POST params
 		xhr.setRequestHeader( 'X-WP-Nonce', wp_rest_api_log_admin.nonce );
 	});
 
