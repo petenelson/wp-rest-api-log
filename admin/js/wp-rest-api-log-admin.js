@@ -1,32 +1,40 @@
 (function( $ ) {
 	'use strict';
 
-	/**
-	 * All of the code for your admin-specific JavaScript source
-	 * should reside in this file.
-	 *
-	 * Note that this assume you're going to use jQuery, so it prepares
-	 * the $ function reference to be used within the scope of this
-	 * function.
-	 *
-	 * From here, you're able to define handlers for when the DOM is
-	 * ready:
-	 *
-	 * $(function() {
-	 *
-	 * });
-	 *
-	 * Or when the window is loaded:
-	 *
-	 * $( window ).load(function() {
-	 *
-	 * });
-	 *
-	 * ...and so on.
-	 *
-	 * Remember that ideally, we should not attach any more than a single DOM-ready or window-load handler
-	 * for any particular page. Though other scripts in WordPress core, other plugins, and other themes may
-	 * be doing this, we should try to minimize doing that in our own work.
-	 */
+	$.extend( {
+		wp_rest_api_log: {
+			search: function() {
+				// search function
+				var args = [];
+
+				$.post( wp_rest_api_log_admin.route, args, function( response ) {
+
+
+
+
+				} ).fail( function() {
+
+				});
+
+
+
+			},
+			display_entries: function() {
+				// display search results
+
+			}
+		}
+	} );
+
+
+	$( document ).ajaxSend( function( event, xhr ) {
+		xhr.setRequestHeader( 'X-WP-Nonce', wp_rest_api_log_admin.nonce );
+	});
+
+
+	$( document ).ready(function() {
+		$.wp_rest_api_log.search();
+	});
+
 
 })( jQuery );
