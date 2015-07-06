@@ -13,6 +13,8 @@ Contact [Pete Nelson](https://twitter.com/gungeekatx)
 
 ## Roadmap
 
+- refactor into logmeta
+
 - implement parameter searching
 - add timepicker to admin UI
 - changed response data to have a Request and Response object, move these to classes instead of stdClass
