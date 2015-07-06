@@ -3,6 +3,7 @@
 
 	$.extend( {
 		wp_rest_api_log: {
+
 			search: function() {
 				// search function
 				var args = [];
@@ -19,11 +20,17 @@
 
 
 			},
+
 			display_entries: function() {
-				// display search results
+				if ( ! wp_rest_api_log_admin.entries_html_rows ) {
+					return;
+				}
+
+				$( '.wp-rest-api-log-wrap .tbody').html( wp_rest_api_log_admin.entries_html_rows );
 
 			}
-		}
+
+		} // end wp_rest_api_log object
 	} );
 
 

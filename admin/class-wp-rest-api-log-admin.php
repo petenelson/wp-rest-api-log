@@ -25,10 +25,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 		public function display_entries() {
 
-			wp_enqueue_script( $this->plugin_name(), plugin_dir_url( __FILE__ ) . 'js/wp-rest-api-log-admin.js', 'jquery', WP_REST_API_Log_Common::$version );
+			global $wp_rest_api_log_display_entries;
 
-			// TODO query entries
-			// TODO store in global
+			$db = new WP_REST_API_Log_DB();
+			$entries = $db->search();
+
+			wp_enqueue_script( $this->plugin_name(), plugin_dir_url( __FILE__ ) . 'js/wp-rest-api-log-admin.js', 'jquery', WP_REST_API_Log_Common::$version );
 
 			$data = array(
 				'nonce' => wp_create_nonce( 'wp_rest' ),
@@ -37,10 +39,27 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 			wp_localize_script( $this->plugin_name(), 'wp_rest_api_log_admin', $data );
 
+			if ( ! empty( $entries ) && ! empty( $entries->paged_records) ) {
+				$wp_rest_api_log_display_entries = $entries->paged_records;
+			}
+
 			require_once dirname( __FILE__ ) . '/partials/wp-rest-api-log-display-entries.php';
 
-
 		}
+
+
+		public function entries_to_html_rows( $entries ) {
+			global $wp_rest_api_log_display_entries;
+			$wp_rest_api_log_display_entries = $entries;
+
+			ob_start();
+			require_once plugin_dir_path( __FILE__ ) . 'partials/wp-rest-api-log-display-entries-table.php';
+			$html = ob_get_contents();
+			ob_end_clean();
+
+			return $html;
+		}
+
 
 
 		private function plugin_name() {

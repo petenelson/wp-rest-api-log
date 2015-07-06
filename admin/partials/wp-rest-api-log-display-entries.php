@@ -1,5 +1,4 @@
 <?php ?>
-<!-- plugin-name-admin-display.php -->
 
 <div class="wrap wp-rest-api-log-wrap">
 
@@ -9,18 +8,9 @@
 
 	</div>
 
-	<table class="log-entries wp-list-table widefat fixed striped items">
-
-	<thead>
-		<tr>
-			<th>Date</th>
-			<th>Route</th>
-		</tr>
-	</thead>
-
-
-	</table>
-
+	<?php
+		require_once plugin_dir_path( __FILE__ ) . 'wp-rest-api-log-display-entries-table.php';
+	?>
 
 </div>
 
