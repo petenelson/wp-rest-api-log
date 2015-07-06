@@ -60,7 +60,7 @@
 
 				$.wp_rest_api_log.reset_html = $( '.wp-rest-api-log-wrap .table-wrap' ).html();
 
-				if ( wp_rest_api_log_admin.id !== 0 ) {
+				if ( wp_rest_api_log_admin.id !== '0' && wp_rest_api_log_admin.id !== 0 ) {
 					$( '.wp-rest-api-log-wrap .log-entries .entry-row' ).trigger( 'click' );
 				}
 

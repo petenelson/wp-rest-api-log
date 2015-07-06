@@ -34,7 +34,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			$data = array(
 				'nonce'   => wp_create_nonce( 'wp_rest' ),
 				'route'   => site_url( rest_get_url_prefix() . '/wp-rest-api-log/entries' ),
-				'id'      => filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT ),
+				'id'      => absint( filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT ) ),
 				);
 
 			$entries = $db->search( array( 'id' => $data['id'] ) );
