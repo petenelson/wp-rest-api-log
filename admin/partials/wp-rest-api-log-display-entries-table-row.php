@@ -19,10 +19,11 @@ $e = $wp_rest_api_log_display_entry;
 	<td class-"status"><?php echo esc_html( $e->status ); ?></td>
 	<td class-"elasped-time"><?php echo esc_html( number_format( $e->milliseconds ) ); ?></td>
 	<td class-"response-body-length"><?php echo esc_html( number_format( $e->response_body_length ) ); ?></td>
+	<td class-"ip-address"><?php echo esc_html( $e->ip_address ); ?></td>
 </tr>
 <tr class="entry-details entry-details-<?php echo esc_attr( $e->id ); ?> collapsed">
 
-	<td colspan="6">
+	<td colspan="7">
 
 		<div class="postbox request-headers">
 			<h3 class=""><span>Request Headers</span></h3>
