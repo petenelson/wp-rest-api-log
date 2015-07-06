@@ -363,7 +363,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		}
 
 
-		public function purge( $args ) {
+		public function delete( $args ) {
 
 			global $wpdb;
 
