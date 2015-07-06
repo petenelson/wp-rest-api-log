@@ -28,7 +28,7 @@
 					// clear search params
 					$( '.wp-rest-api-log-wrap .search-form .clear-on-reset').val( '' );
 
-					$( '.wp-rest-api-log-wrap .table-wrap' ).html( $.wp_rest_api_log.reset_html );
+					$( '.wp-rest-api-log-wrap .table-wrap' ).html( $.wp_rest_api_log.reset_html ).addClass( 'visible' );
 
 				} );
 
@@ -36,6 +36,7 @@
 				$( '.wp-rest-api-log-wrap .search-form form' ).submit( function( e ) {
 
 					$( this ).find('.ajax-wait').addClass( 'visible-inline' );
+					$( '.wp-rest-api-log-wrap .no-matches' ).removeClass( 'visible' );
 
 					e.preventDefault();
 
@@ -72,10 +73,11 @@
 
 			display_entries: function( response ) {
 
-				console.debug(response.query);
-
 				if ( response && response.entries_html ) {
-					$( '.wp-rest-api-log-wrap .table-wrap').html( response.entries_html );
+					$( '.wp-rest-api-log-wrap .table-wrap').html( response.entries_html ).addClass( 'visible' );
+				} else {
+					$( '.wp-rest-api-log-wrap .table-wrap').html( '' );
+					$( '.wp-rest-api-log-wrap .no-matches').addClass( 'visible' );
 				}
 
 			},
