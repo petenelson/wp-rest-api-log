@@ -126,7 +126,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		}
 
 
-		public function search( $args ) {
+		public function search( $args = array() ) {
 
 			global $wpdb;
 
