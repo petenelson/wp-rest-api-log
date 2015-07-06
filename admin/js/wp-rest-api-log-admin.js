@@ -60,6 +60,8 @@
 
 				$.wp_rest_api_log.reset_html = $( '.wp-rest-api-log-wrap .table-wrap' ).html();
 
+				$.wp_rest_api_log.add_stripes();
+
 				if ( wp_rest_api_log_admin.id !== '0' && wp_rest_api_log_admin.id !== 0 ) {
 					$( '.wp-rest-api-log-wrap .log-entries .entry-row' ).trigger( 'click' );
 				}
@@ -84,6 +86,7 @@
 
 				if ( response && response.entries_html ) {
 					$( '.wp-rest-api-log-wrap .table-wrap').html( response.entries_html ).addClass( 'visible' );
+					$.wp_rest_api_log.add_stripes();
 				} else {
 					$( '.wp-rest-api-log-wrap .table-wrap').html( '' );
 					$( '.wp-rest-api-log-wrap .no-matches').addClass( 'visible' );
@@ -91,19 +94,26 @@
 
 			},
 
-			show_empty_results: function() {
-				// TOD
+			add_stripes: function() {
+				$( '.wp-rest-api-log-wrap .log-entries .entry-row' ).each( function ( i, element ) {
+					if ( i % 2 === 0 ) {
+						$( element ).addClass( 'alternate' );
+					}
+				} );
 			},
 
 			display_details: function( id ) {
 
 				var elemDetails = $.wp_rest_api_log.get_entry_details_element( id );
 
+				$( '.wp-rest-api-log-wrap .log-entries .entry-row').removeClass( 'entry-row-selected' );
+
 				if ( elemDetails.hasClass( 'entry-details-populated') ) {
 					$.wp_rest_api_log.toggle_entry_details_element( elemDetails );
 					return;
 				}
 
+				$( '.wp-rest-api-log-wrap .log-entries .entry-row-' + id ).addClass( 'entry-row-selected' );
 				$( '.wp-rest-api-log-wrap .log-entries .entry-row-' + id + ' .ajax-wait' ).addClass( 'visible' );
 
 				$.wp_rest_api_log.search( { id:id, fields:'all' }, $.wp_rest_api_log.populate_entry_details );
@@ -125,8 +135,8 @@
 				elemDetails.find( '.body-parameters .inside pre code').text( $.wp_rest_api_log.json_stringify( details.request.body_params ) );
 				elemDetails.find( '.response-body .inside pre code').text( $.wp_rest_api_log.json_stringify( details.response_body ) );
 
-				elemDetails.find( '.inside pre code').each(function(i, block) {
-					hljs.highlightBlock(block);
+				elemDetails.find( '.inside pre code').each( function( i, block ) {
+					hljs.highlightBlock( block );
 				});
 
 				// toggle display
@@ -151,9 +161,9 @@
 			toggle_inside_element: function( element ) {
 				element = element.parent().find( '.inside' );
 				if ( element.hasClass('visible') ) {
-					element.removeClass( 'visible' );
+					element.removeClass( 'visible' ).addClass( 'collapsed' );
 				} else {
-					element.addClass( 'visible' );
+					element.addClass( 'visible' ).removeClass( 'collapsed' );
 				}
 			},
 

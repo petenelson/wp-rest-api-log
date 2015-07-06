@@ -44,10 +44,3 @@
   display: inline-block;
 }
 
-
-
-.wp-rest-api-log-wrap .log-entries .entry-details .string { color: green; }
-.wp-rest-api-log-wrap .log-entries .entry-details .number { color: darkorange; }
-.wp-rest-api-log-wrap .log-entries .entry-details .boolean { color: blue; }
-.wp-rest-api-log-wrap .log-entries .entry-details .null { color: magenta; }
-.wp-rest-api-log-wrap .log-entries .entry-details .key { color: red; }
