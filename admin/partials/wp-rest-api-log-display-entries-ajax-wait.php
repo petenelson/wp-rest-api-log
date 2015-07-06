@@ -1,0 +1,1 @@
+<img class="ajax-wait collapsed" src="<?php echo plugin_dir_url( dirname( __FILE__ ) ) . 'images/ajax-wait.svg'; ?>" />

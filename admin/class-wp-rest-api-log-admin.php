@@ -30,9 +30,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			$db = new WP_REST_API_Log_DB();
 			$entries = $db->search();
 
-			wp_enqueue_script( $this->plugin_name(), plugin_dir_url( __FILE__ ) . 'js/wp-rest-api-log-admin.js', 'jquery', WP_REST_API_Log_Common::$version );
-			wp_enqueue_style( $this->plugin_name(), plugin_dir_url( __FILE__ ) . 'css/wp-rest-api-log-admin.css', '', WP_REST_API_Log_Common::$version );
 
+			$this->enqueue_scripts();
 
 			$data = array(
 				'nonce' => wp_create_nonce( 'wp_rest' ),
@@ -50,7 +49,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		}
 
 
-		public function entries_to_html_rows( $entries ) {
+		public function entries_to_html( $entries ) {
+
 			global $wp_rest_api_log_display_entries;
 			$wp_rest_api_log_display_entries = $entries;
 
@@ -62,6 +62,18 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			return $html;
 		}
 
+
+		private function enqueue_scripts() {
+
+			wp_enqueue_script( 'jquery' );
+			wp_enqueue_script( 'jquery-ui-datepicker' );
+
+			wp_enqueue_style( 'jquery-ui-datepicker', 'https://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css' );
+
+			wp_enqueue_script( $this->plugin_name(), plugin_dir_url( __FILE__ ) . 'js/wp-rest-api-log-admin.js', 'jquery', WP_REST_API_Log_Common::$version );
+			wp_enqueue_style( $this->plugin_name(), plugin_dir_url( __FILE__ ) . 'css/wp-rest-api-log-admin.css', '', WP_REST_API_Log_Common::$version );
+
+		}
 
 
 		private function plugin_name() {
