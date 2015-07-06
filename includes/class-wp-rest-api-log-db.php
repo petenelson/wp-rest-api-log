@@ -39,7 +39,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				  method varchar(20) DEFAULT '' NOT NULL,
 				  route varchar(100) DEFAULT '' NOT NULL,
 				  status smallint NULL,
-				  querystring text NULL,
 				  request_body text NULL,
 				  response_body longtext NULL,
 				  milliseconds smallint NOT NULL,
@@ -89,11 +88,10 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			$args = wp_parse_args( $args, array(
 				'time'                  => current_time( 'mysql' ),
-				'ip_address'            => $_SERVER['REMOTE_ADDR'],
+				'ip_address'            => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_SANITIZE_STRING ),
 				'route'                 => '',
-				'method'                => $_SERVER['REQUEST_METHOD'],
+				'method'                => filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING ),
 				'status'                => 200,
-				'querystring'           => $_SERVER['QUERY_STRING'],
 				'request'               => array(
 					'body'                 => '',
 					),
