@@ -9,8 +9,12 @@
 
 			document_ready: function() {
 
-				$( '.wp-rest-api-log-wrap' ).on( 'click', '.log-entries .entry-row', function() {
-					$.wp_rest_api_log.display_details( $( this ).data( 'id' ) );
+				$( '.wp-rest-api-log-wrap' ).on( 'click', '.log-entries .entry-row', function( e ) {
+
+					if ( ! $( e.target ).hasClass( 'permalink' ) ) {
+						$.wp_rest_api_log.display_details( $( this ).data( 'id' ) );
+					}
+
 				});
 
 				$( '.wp-rest-api-log-wrap' ).on( 'click', '.log-entries .postbox h3', function() {
@@ -55,6 +59,10 @@
 				});
 
 				$.wp_rest_api_log.reset_html = $( '.wp-rest-api-log-wrap .table-wrap' ).html();
+
+				if ( wp_rest_api_log_admin.id !== 0 ) {
+					$( '.wp-rest-api-log-wrap .log-entries .entry-row' ).trigger( 'click' );
+				}
 
 			},
 

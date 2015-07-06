@@ -5,6 +5,13 @@ $e = $wp_rest_api_log_display_entry;
 <tr class="entry-row entry-row-<?php echo esc_attr( $e->id ); ?>" data-id="<?php echo esc_attr( $e->id ); ?>">
 	<td class="time">
 		<?php echo esc_html( mysql2date( get_option( 'date_format'), $e->time ) ); ?> <?php echo esc_html( mysql2date( 'H:i:s', $e->time ) ); ?>
+
+		<div class="row-actions">
+			<span class="view permalink">
+				<a href="<?php echo esc_url( $e->permalink ); ?>" class="permalink"><?php _e( 'Permalink ') ?></a>
+			</span>
+		</div>
+
 		<?php include plugin_dir_path( __FILE__ ) . 'wp-rest-api-log-display-entries-ajax-wait.php'; ?>
 	</td>
 	<td class-"method"><?php echo esc_html( $e->method ); ?></td>
