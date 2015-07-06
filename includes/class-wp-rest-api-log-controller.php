@@ -36,12 +36,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 						'sanitize_callback'    => 'sanitize_key',
 						'default'              => 'wildcard',
 					),
-					'param_name'               => array(
-						'default'              => '',
-					),
-					'param_value'              => array(
-						'default'              => '',
-					),
 					'id'                    => array(
 						'sanitize_callback'    => 'absint',
 						'default'              => 0,
@@ -121,8 +115,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				'method'              => $request['method'],
 				'route'               => $request['route'],
 				'route_match_type'    => $request['route-match-type'],
-				'body_param'          => $request['param'],
-				'query_param'         => $request['param'],
 				);
 
 			$db = new WP_REST_API_Log_DB();

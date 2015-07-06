@@ -44,13 +44,18 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 				'ip_address'            => $_SERVER['REMOTE_ADDR'],
 				'route'                 => $request->get_route(),
 				'method'                => $request->get_method(),
-				'request_headers'       => $request->get_headers(),
-				'request_query_params'  => $request->get_query_params(),
-				'request_body_params'   => $request->get_body_params(),
-				'request_body'          => $request->get_body(),
-				'response_headers'      => function_exists( 'headers_list' ) ? headers_list() : $result->get_headers(),
-				'response_body'         => $result,
-			);
+				'request'               => array(
+					'body'                 => $request->get_body(),
+					'headers'              => $request->get_headers(),
+					'query_params'         => $request->get_query_params(),
+					'body_params'          => $request->get_body_params(),
+					),
+				'response'              => array(
+					'body'                 => $result,
+					'headers'              => function_exists( 'headers_list' ) ? headers_list() : $result->get_headers(),
+					),
+				);
+
 
 			do_action( WP_REST_API_Log_Common::$plugin_name . '-insert', $args );
 
