@@ -27,7 +27,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 			global $wp_rest_api_log_display_entries;
 
-			$db = new WP_REST_API_Log_DB();
+			$db = new WP_REST_API_Log_DB_Entries();
 
 			$this->enqueue_scripts();
 

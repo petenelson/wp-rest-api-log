@@ -15,9 +15,8 @@ Contact [Pete Nelson](https://twitter.com/gungeekatx)
 
 ## Roadmap
 
-- testing
-- codeclimate updates
-- WordPress repo assets and readme
+- Implememt paging in the admin UI
+- Better search capabilities
 
 Pull requests are encouraged and welcome!
 

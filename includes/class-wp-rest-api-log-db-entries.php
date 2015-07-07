@@ -2,27 +2,27 @@
 
 if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
 
-if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
+if ( ! class_exists( 'WP_REST_API_Log_DB_Entries' ) ) {
 
-	class WP_REST_API_Log_DB {
+	class WP_REST_API_Log_DB_Entries {
 
-		const DB_VERSION          = '29';
-		const META_REQUEST        = 'request';
-		const META_RESPONSE       = 'response';
-		const META_PARAM_HEADER   = 'header';
-		const META_PARAM_QUERY    = 'query';
-		const META_PARAM_BODY     = 'body';
+		const DB_VERSION          = '32';
 
 
 		public function plugins_loaded() {
-			add_action( 'admin_init', 'WP_REST_API_Log_DB::create_or_update_tables' );
+			add_action( 'admin_init', 'WP_REST_API_Log_DB_Entries::create_or_update_tables' );
 			add_action( WP_REST_API_Log_Common::$plugin_name . '-insert', array( $this, 'insert' ) );
+		}
+
+
+		static private function plugin_name() {
+			return WP_REST_API_Log_Common::$plugin_name . '-entries';
 		}
 
 
 		static public function create_or_update_tables() {
 
-			if ( self::DB_VERSION !== get_option( WP_REST_API_Log_Common::$plugin_name . '-dbversion' ) ) {
+			if ( self::DB_VERSION !== get_option( self::plugin_name() . '-dbversion' ) ) {
 
 				require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
@@ -30,7 +30,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 				$charset_collate = $wpdb->get_charset_collate();
 				$table_name = self::table_name();
-				$table_name_logmeta = self::table_name_logmeta();
 
 				$sql = "CREATE TABLE $table_name (
 				  id bigint NOT NULL AUTO_INCREMENT,
@@ -45,21 +44,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				  PRIMARY KEY id (id),
 				  KEY time (time),
 				  KEY route (route)
-				) $charset_collate;";
-
-				dbDelta( $sql );
-
-
-				$sql = "CREATE TABLE $table_name_logmeta (
-				  id bigint NOT NULL AUTO_INCREMENT,
-				  log_id bigint NOT NULL,
-				  meta_request_response varchar(10) NOT NULL,
-				  meta_type varchar(10) NOT NULL,
-				  meta_key varchar(255) NULL,
-				  meta_value longtext NULL,
-				  PRIMARY KEY id (id),
-				  KEY log_id (log_id),
-				  KEY req_type_key (meta_request_response,meta_type,meta_key)
 				) $charset_collate;";
 
 				dbDelta( $sql );
@@ -109,6 +93,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				$args['milliseconds'] = absint( $now -  $wp_rest_api_log_start );
 			}
 
+			// allow filtering
+			$args = apply_filters( self::plugin_name() . '-pre-insert', $args );
 
 			$inserted = $wpdb->insert( self::table_name(),
 				array(
@@ -138,10 +124,11 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			if ( 1 === $inserted ) {
 				$log_id = $wpdb->insert_id;
 
+				do_action( self::plugin_name() . '-inserted', $log_id );
+
 				$this->insert_meta_values( $log_id, $args );
 
 			}
-
 
 
 			return $log_id;
@@ -151,85 +138,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 		private function insert_meta_values( $log_id, $args ) {
 
-			// process request
-			if ( ! empty( $args['request'] ) ) {
-				$request        = $args['request'];
-				$request_type   = self::META_REQUEST;
-
-				$inserts = array(
-					'headers'       => self::META_PARAM_HEADER,
-					'query_params'  => self::META_PARAM_QUERY,
-					'body_params'   => self::META_PARAM_QUERY,
-					);
-
-				foreach ( $inserts as $key => $param_type ) {
-					if ( is_array( $request[ $key ] ) ) {
-						$this->insert_meta_array( $log_id, $request_type, $param_type, $request[ $key ] );
-					}
-				}
-
-			}
-
-
-			// process response
-			if ( ! empty( $args['response'] ) ) {
-				$response        = $args['response'];
-				$response_type   = self::META_RESPONSE;
-
-
-				$inserts = array(
-					'headers'       => self::META_PARAM_HEADER,
-					);
-
-				foreach ( $inserts as $key => $param_type ) {
-					if ( is_array( $response[ $key ] ) ) {
-						$this->insert_meta_array( $log_id, $response_type, $param_type, $response[ $key ] );
-					}
-				}
-
-			}
-
-		}
-
-
-		private function insert_meta_array( $log_id, $request_type, $param_type, $array ) {
-			foreach ( $array as $key => $value ) {
-				$this->insert_meta( $log_id, $request_type, $param_type, $key, $value );
-			}
-		}
-
-
-		private function insert_meta( $log_id, $request_type, $param_type, $key, $value ) {
-
-			global $wpdb;
-
-			// turn one-element arrays into a more simple value
-			if ( is_array( $value ) && 1 === count( $value ) ) {
-				$value = $value[0];
-			}
-
-			$inserted = $wpdb->insert( $this->table_name_logmeta(),
-				array(
-					'log_id'                 => $log_id,
-					'meta_request_response'  => $request_type,
-					'meta_type'              => $param_type,
-					'meta_key'               => $key,
-					'meta_value'             => maybe_serialize( $value ),
-					),
-				array(
-					'%d',
-					'%s',
-					'%s',
-					'%s',
-					'%s',
-					)
-			);
-
-			if ( ! empty( $inserted ) ) {
-				return $wpdb->inserted_id;
-			} else {
-				return false;
-			}
+			$db_meta = new WP_REST_API_Log_DB_Meta();
+			$db_meta->insert_meta_values( $log_id, $args );
 
 		}
 
@@ -237,6 +147,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		public function search( $args = array() ) {
 
 			global $wpdb;
+			$db_meta = new WP_REST_API_Log_DB_Meta();
+
 			$data = new stdClass();
 
 
@@ -290,7 +202,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			// TODO add query for params here
 
 			if ( is_array( $args['params'] ) && ! empty( $args['params'] ) && !empty( $args['params'][0]['name'] ) ) {
-				$data->logmeta_id_query = $this->build_logmeta_id_query( $args['params'] );
+				$data->logmeta_id_query = $db_meta->build_logmeta_id_query( $args['params'] );
 				$where .= ' and id in ( ' . $data->logmeta_id_query . ')';
 			}
 
@@ -355,7 +267,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			// get the logmeta
 
 			if ( ! empty( $data->paged_records ) && 'basic' !== $args['fields'] ) {
-				$data->paged_records = $this->add_meta_to_records( $data->paged_records );
+				$data->paged_records = $db_meta->add_meta_to_records( $data->paged_records );
 			}
 
 
@@ -392,133 +304,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$table_name = self::table_name();
 			return $wpdb->get_col( "select distinct route from $table_name order by route" );
 		}
-
-
-		private function get_all_meta( array $ids ) {
-			global $wpdb;
-			$table_name_logmeta = $this->table_name_logmeta();
-
-			$meta = $wpdb->get_results( "select * from {$table_name_logmeta} where log_id in ( " . implode( ',', $ids ) . ' );' );
-
-			if ( is_array( $meta ) ) {
-				for ( $i=0; $i < count( $meta ); $i++) {
-					$meta[ $i ]->id      = absint( $meta[ $i ]->id );
-					$meta[ $i ]->log_id  = absint( $meta[ $i ]->log_id );
-				}
-			}
-
-			return $meta;
-		}
-
-
-		private function add_meta_to_records( $records ) {
-
-			$ids    = array_map( 'absint', wp_list_pluck( $records, 'id' ) );
-			$metas  = $this->get_all_meta( $ids );
-
-			if ( empty( $metas ) ) {
-				return $records;
-			}
-
-			for ( $i_record=0; $i_record < count( $records ); $i_record++ ) {
-
-				$record = $records[ $i_record ];
-
-				$meta = $this->find_meta_for_log( $record->id, $metas );
-
-				$record->request = new stdClass();
-				$record->request->headers        = array();
-				$record->request->query_params   = array();
-				$record->request->body_params    = array();
-
-
-				$record->response = new stdClass();
-				$record->response->headers       = array();
-
-
-				if ( ! empty( $meta ) ) {
-
-					// map meta values to the objects above
-					foreach ( $meta as $meta_record ) {
-
-						$data = array( 'name' => $meta_record->meta_key, 'value' => maybe_unserialize( $meta_record->meta_value ) );
-
-						switch ( $meta_record->meta_request_response ) {
-
-							case 'request':
-								switch ( $meta_record->meta_type ) {
-									case 'header':
-										$record->request->headers[] = $data;
-										break;
-									case 'query':
-										$record->request->query_params[] = $data;
-										break;
-									case 'body':
-										$record->request->body_params[] = $data;
-										break;
-								}
-
-								break;
-
-							case 'response':
-
-								switch ( $meta_record->meta_type ) {
-									case 'header':
-										$record->response->headers[] = $data;
-										break;
-								}
-
-								break;
-						}
-
-
-					}
-
-				}
-
-				$records[ $i_record ] = $record;
-
-			}
-
-			return $records;
-
-		}
-
-
-		private function find_meta_for_log( $log_id, array $metas ) {
-			$matches = array();
-			foreach ( $metas as $meta ) {
-				if ( $log_id === $meta->log_id ) {
-					$matches[] = $meta;
-				}
-			}
-			return $matches;
-		}
-
-
-		private function build_logmeta_id_query( $params ) {
-
-			global $wpdb;
-			$table_name_logmeta = $this->table_name_logmeta();
-
-			$sql = "select log_id from {$table_name_logmeta} where meta_request_response = 'request' and meta_type in ( 'query', 'body' ) and ( ";
-
-			$ors = array();
-			for ( $i=0; $i < count( $params ); $i++) {
-
-				$ors[] = $wpdb->prepare( "( meta_key = %s and meta_value = %s )",
-					$params[ $i ]['name'],
-					$params[ $i ]['value']
-				);
-
-			}
-
-			$sql .= implode( ' or ' , $ors ) . ' )';
-
-			return $sql;
-
-		}
-
 
 
 		private function cleanup_data( $data ) {

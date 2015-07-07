@@ -34,6 +34,7 @@
 					$( '.wp-rest-api-log-wrap .search-form .clear-on-reset').val( '' );
 
 					$( '.wp-rest-api-log-wrap .table-wrap' ).html( $.wp_rest_api_log.reset_html ).addClass( 'visible' );
+					$.wp_rest_api_log.add_stripes();
 
 				} );
 
