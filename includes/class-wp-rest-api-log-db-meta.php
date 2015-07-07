@@ -64,9 +64,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Meta' ) ) {
 
 		public function insert_meta_values( $log_id, $args ) {
 
-			// allow filtering
-			$args = apply_filters( self::plugin_name() . '-pre-insert', $args );
-
 			// process request
 			if ( ! empty( $args['request'] ) ) {
 				$request        = $args['request'];
