@@ -180,9 +180,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Meta' ) ) {
 			$ids    = array_map( 'absint', wp_list_pluck( $records, 'id' ) );
 			$metas  = $this->get_all_meta( $ids );
 
-			if ( empty( $metas ) ) {
-				return $records;
-			}
 
 			for ( $i_record=0; $i_record < count( $records ); $i_record++ ) {
 
@@ -249,11 +246,13 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Meta' ) ) {
 		}
 
 
-		private function find_meta_for_log( $log_id, array $metas ) {
+		private function find_meta_for_log( $log_id, $metas ) {
 			$matches = array();
-			foreach ( $metas as $meta ) {
-				if ( $log_id === $meta->log_id ) {
-					$matches[] = $meta;
+			if ( ! empty( $metas ) ) {
+				foreach ( $metas as $meta ) {
+					if ( $log_id === $meta->log_id ) {
+						$matches[] = $meta;
+					}
 				}
 			}
 			return $matches;
