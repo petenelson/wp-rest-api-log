@@ -120,7 +120,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				'params'              => $request['params'],
 				);
 
-			$db = new WP_REST_API_Log_DB();
+			$db = new WP_REST_API_Log_DB_Entries();
 			$db_response = $db->search( $args );
 
 			$api_response = new WP_REST_API_Log_Entries_Response( $db_response );
@@ -142,7 +142,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				'fields'              => $request['fields'],
 				);
 
-			$db = new WP_REST_API_Log_DB();
+			$db = new WP_REST_API_Log_DB_Entries();
 			return rest_ensure_response( new WP_REST_API_Log_Entries_Response( $db->search( $args ) ) );
 
 		}
@@ -150,7 +150,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 		public function get_routes( WP_REST_Request $request ) {
 
-			$db = new WP_REST_API_Log_DB();
+			$db = new WP_REST_API_Log_DB_Entries();
 			return rest_ensure_response( new WP_REST_API_Log_Routes_Response( $db->distinct_routes() ) );
 
 		}
@@ -161,7 +161,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				'older_than_seconds'  => $request['older-than-seconds'],
 				);
 
-			$db = new WP_REST_API_Log_DB();
+			$db = new WP_REST_API_Log_DB_Entries();
 			return rest_ensure_response( new WP_REST_API_Log_Delete_Response( $db->delete( $args ) ) );
 		}
 
