@@ -6,7 +6,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Entries' ) ) {
 
 	class WP_REST_API_Log_DB_Entries extends WP_REST_API_Log_DB_Base {
 
-		const DB_VERSION          = '33';
+		const DB_VERSION          = '35';
 
 
 		public function plugins_loaded() {
@@ -22,7 +22,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Entries' ) ) {
 
 		static public function create_or_update_tables() {
 
-			if ( self::DB_VERSION !== get_option( self::plugin_name() . '-dbversion' ) ) {
+			$key = self::plugin_name() . '-dbversion';
+			if ( self::DB_VERSION !== get_option( $key ) ) {
 
 				$table_name = self::table_name();
 
@@ -42,7 +43,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Entries' ) ) {
 				)";
 
 				parent::dbdelta( $sql );
-				update_option( WP_REST_API_Log_Common::$plugin_name . '-dbversion', self::DB_VERSION );
+				update_option( $key, self::DB_VERSION );
 
 			}
 

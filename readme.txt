@@ -22,6 +22,12 @@ Includes:
 
 Find us on [GitHub](https://github.com/petenelson/wp-rest-api-log)!
 
+Roadmap
+
+* Implememt paging in the admin UI
+* Better search capabilities
+
+
 == Installation ==
 
 1. Upload the wp-rest-api-log directory to the `/wp-content/plugins/` directory
