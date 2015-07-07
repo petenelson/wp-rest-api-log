@@ -3,7 +3,9 @@
 Plugin Name: WP REST API Log
 Description: Logs requests and responses for the WP REST API
 Author: Pete Nelson
-Version: 1.0.0
+Version: 1.0.0-beta1
+Plugin URI: https://github.com/petenelson/wp-rest-api-log
+License: GPL2+
 */
 
 if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
