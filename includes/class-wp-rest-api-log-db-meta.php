@@ -6,7 +6,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Meta' ) ) {
 
 	class WP_REST_API_Log_DB_Meta extends WP_REST_API_Log_DB_Base {
 
-		const DB_VERSION          = '33';
+		const DB_VERSION          = '35';
 		const META_REQUEST        = 'request';
 		const META_RESPONSE       = 'response';
 		const META_PARAM_HEADER   = 'header';
@@ -26,7 +26,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Meta' ) ) {
 
 		static public function create_or_update_tables() {
 
-			if ( self::DB_VERSION !== get_option( self::plugin_name() . '-dbversion' ) ) {
+			$key = self::plugin_name() . '-dbversion';
+			if ( self::DB_VERSION !== get_option( $key ) ) {
 
 				$sql = "CREATE TABLE $table_name (
 				  id bigint NOT NULL AUTO_INCREMENT,
@@ -41,7 +42,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Meta' ) ) {
 				)";
 
 				parent::dbDelta( $sql );
-				update_option( self::plugin_name() . '-dbversion', self::DB_VERSION );
+				update_option( $key, self::DB_VERSION );
 
 			}
 

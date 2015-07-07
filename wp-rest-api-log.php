@@ -63,7 +63,8 @@ foreach ( $classes as $class ) {
 
 // activation hook
 register_activation_hook( __FILE__, function() {
-	require_once 'includes/class-wp-rest-api-log-db.php';
+	require_once 'includes/class-wp-rest-api-log-db-entries.php';
+	require_once 'includes/class-wp-rest-api-log-db-meta.php';
 	require_once 'includes/class-wp-rest-api-log-activator.php';
 	WP_REST_API_Log_Activator::activate();
 } );
