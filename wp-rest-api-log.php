@@ -14,11 +14,12 @@ $plugin_class_file = 'wp-rest-api-log';
 
 $includes = array(
 	'includes/class-' . $plugin_class_file . '-common.php',
+	'includes/class-' . $plugin_class_file . '-db-base.php',
 	'includes/class-' . $plugin_class_file . '-db-entries.php',
 	'includes/class-' . $plugin_class_file . '-db-meta.php',
 	'includes/class-' . $plugin_class_file . '-i18n.php',
 	'includes/class-' . $plugin_class_file . '-controller.php',
-	'includes/class-' . $plugin_class_file . '-base-response.php',
+	'includes/class-' . $plugin_class_file . '-response-base.php',
 	'includes/class-' . $plugin_class_file . '-entries-response.php',
 	'includes/class-' . $plugin_class_file . '-delete-response.php',
 	'includes/class-' . $plugin_class_file . '-routes-response.php',

@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
 
 if ( ! class_exists( 'WP_REST_API_Log_Routes_Response' ) ) {
 
-	class WP_REST_API_Log_Routes_Response extends WP_REST_API_Log_API_Base_Response {
+	class WP_REST_API_Log_Routes_Response extends WP_REST_API_Log_API_Response_Base {
 
 		var $routes = array();
 

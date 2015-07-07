@@ -4,9 +4,9 @@ if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
 
 if ( ! class_exists( 'WP_REST_API_Log_DB_Entries' ) ) {
 
-	class WP_REST_API_Log_DB_Entries {
+	class WP_REST_API_Log_DB_Entries extends WP_REST_API_Log_DB_Base {
 
-		const DB_VERSION          = '32';
+		const DB_VERSION          = '33';
 
 
 		public function plugins_loaded() {
@@ -24,11 +24,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Entries' ) ) {
 
 			if ( self::DB_VERSION !== get_option( self::plugin_name() . '-dbversion' ) ) {
 
-				require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-
-				global $wpdb;
-
-				$charset_collate = $wpdb->get_charset_collate();
 				$table_name = self::table_name();
 
 				$sql = "CREATE TABLE $table_name (
@@ -44,10 +39,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Entries' ) ) {
 				  PRIMARY KEY id (id),
 				  KEY time (time),
 				  KEY route (route)
-				) $charset_collate;";
+				)";
 
-				dbDelta( $sql );
-
+				parent::dbdelta( $sql );
 				update_option( WP_REST_API_Log_Common::$plugin_name . '-dbversion', self::DB_VERSION );
 
 			}
