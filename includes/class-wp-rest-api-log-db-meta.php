@@ -29,6 +29,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Meta' ) ) {
 			$key = self::plugin_name() . '-dbversion';
 			if ( self::DB_VERSION !== get_option( $key ) ) {
 
+				$table_name = self::table_name();
 				$sql = "CREATE TABLE $table_name (
 				  id bigint NOT NULL AUTO_INCREMENT,
 				  log_id bigint NOT NULL,
