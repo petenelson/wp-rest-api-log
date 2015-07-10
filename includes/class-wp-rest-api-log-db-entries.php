@@ -308,24 +308,23 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Entries' ) ) {
 				return $data;
 			}
 
+			foreach ( $data->paged_records as &$record ) {
 
-			for ( $i=0; $i < count( $data->paged_records ); $i++) {
-
-				if ( ! empty( $data->paged_records[ $i ]->response_body ) ) {
-					$data->paged_records[ $i ]->response_body_length = absint( strlen( $data->paged_records[ $i ]->response_body ) );
-					$data->paged_records[ $i ]->response_body = json_decode( $data->paged_records[ $i ]->response_body );
+				if ( ! empty( $record->response_body ) ) {
+					$record->response_body_length = absint( strlen( $record->response_body ) );
+					$record->response_body = json_decode( $record->response_body );
 				} else {
-					$data->paged_records[ $i ]->response_body = '';
-					$data->paged_records[ $i ]->response_body_length = absint( $data->paged_records[ $i ]->response_body_length );
+					$record->response_body = '';
+					$record->response_body_length = absint( $record->response_body_length );
 				}
 
-				$data->paged_records[ $i ]->id            = absint( $data->paged_records[ $i ]->id );
-				$data->paged_records[ $i ]->milliseconds  = absint( $data->paged_records[ $i ]->milliseconds );
+				$record->id            = absint( $record->id );
+				$record->milliseconds  = absint( $record->milliseconds );
 
-				$data->paged_records[ $i ]->permalink     = add_query_arg( array( 'page' => WP_REST_API_Log_Common::$plugin_name, 'id' => $data->paged_records[ $i ]->id ), admin_url( 'tools.php' ) );
+				$record->permalink     = add_query_arg( array( 'page' => WP_REST_API_Log_Common::$plugin_name, 'id' => $data->paged_records[ $i ]->id ), admin_url( 'tools.php' ) );
+
 
 			}
-
 
 			return $data;
 
