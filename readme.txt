@@ -43,7 +43,7 @@ Roadmap
 
 == Upgrade Notice ==
 
-= v1.0.0-beta1 July 6, 2015 =
+= v1.0.0-beta1 July 9, 2015 =
 * Initial release
 
 
