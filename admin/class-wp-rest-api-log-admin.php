@@ -25,6 +25,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 		public function display_entries() {
 
+			if ( ! WP_REST_API_Log_Common::api_is_enabled() ) {
+				require_once dirname( __FILE__ ) . '/partials/wp-rest-api-log-api-is-disabled.php';
+				return;
+			}
+
+
 			global $wp_rest_api_log_display_entries;
 
 			$db = new WP_REST_API_Log_DB_Entries();
