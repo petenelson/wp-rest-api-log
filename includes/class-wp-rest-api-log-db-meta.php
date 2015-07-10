@@ -166,13 +166,15 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Meta' ) ) {
 		}
 
 
-		private function cleanup_data( $data ) {
-			if ( is_array( $data ) ) {
-				for ( $i=0; $i < count( $data ); $i++) {
-					$data[ $i ]->id      = absint( $data[ $i ]->id );
-					$data[ $i ]->log_id  = absint( $data[ $i ]->log_id );
+		private function cleanup_data( $metas ) {
+
+			if ( is_array( $metas ) ) {
+				foreach ( $metas as &$meta ) {
+					$meta->id      = absint( $meta->id );
+					$meta->log_id  = absint( $meta->log_id );
 				}
 			}
+
 			return $data;
 		}
 
