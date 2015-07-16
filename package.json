@@ -1,0 +1,11 @@
+{
+  "name": "wp-rest-api-log",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/petenelson/wp-rest-api-log.git"
+  },
+  "license": "GPL2+",
+  "homepage": "https://github.com/petenelson/wp-rest-api-log",
+  "dependencies": {},
+  "devDependencies": {}
+}
