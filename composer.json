@@ -8,5 +8,6 @@
             "email": "pete@petenelson.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "require-dev": {}
 }
