@@ -7,9 +7,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 	class WP_REST_API_Log_Common {
 
 		static $plugin_name    = 'wp-rest-api-log';
-		static $version        = '2015-07-03-01';
+		static $version        = '2015-07-17-01';
 
 		const TEXT_DOMAIN      = 'wp-rest-api-log';
+		const POST_TYPE        = 'wp-rest-api-log';
+		const TAXONOMY_METHOD  = 'wp-rest-api-log-method';
 
 
 		public function plugins_loaded() {

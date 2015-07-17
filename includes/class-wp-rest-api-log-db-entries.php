@@ -6,11 +6,10 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Entries' ) ) {
 
 	class WP_REST_API_Log_DB_Entries extends WP_REST_API_Log_DB_Base {
 
-		const DB_VERSION          = '35';
-
 
 		public function plugins_loaded() {
-			add_action( 'admin_init', 'WP_REST_API_Log_DB_Entries::create_or_update_tables' );
+			add_action( 'init', array( $this, 'register_custom_post_types' ) );
+			add_action( 'init', array( $this, 'register_custom_taxonomies' ) );
 			add_action( WP_REST_API_Log_Common::$plugin_name . '-insert', array( $this, 'insert' ) );
 		}
 
@@ -20,7 +19,73 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Entries' ) ) {
 		}
 
 
-		static public function create_or_update_tables() {
+		public function register_custom_post_types() {
+
+			$name_s = 'REST API LOG Entry';
+			$name_p = 'REST API LOG Entries';
+
+			$labels = array(
+				'name'                => __( $name_p, WP_REST_API_Log_Common::TEXT_DOMAIN ),
+				'singular_name'       => __( $name_s, WP_REST_API_Log_Common::TEXT_DOMAIN ),
+			);
+
+			$args = array(
+				'labels'              => $labels,
+				'hierarchical'        => false,
+				'public'              => true,
+				'show_ui'             => true,
+				'show_in_menu'        => true, // true during development
+				'show_in_admin_bar'   => false,
+				'show_in_nav_menus'   => false,
+				'publicly_queryable'  => true,
+				'exclude_from_search' => true,
+				'has_archive'         => true,
+				'query_var'           => true,
+				'can_export'          => true,
+				'rewrite'             => true,
+				'capability_type'     => 'post',
+				'supports'            => array(
+					'title', 'author',
+					'excerpt','custom-fields',
+					)
+			);
+
+			$args = apply_filters( WP_REST_API_Log_Common::$plugin_name . '-register-post-type', $args );
+
+			register_post_type( WP_REST_API_Log_Common::POST_TYPE, $args );
+
+		}
+
+
+		public function register_custom_taxonomies() {
+
+			$name_s = 'Method';
+			$name_p = 'Methods';
+
+			$labels = array(
+				'name'                => __( $name_p, WP_REST_API_Log_Common::TEXT_DOMAIN ),
+				'singular_name'       => __( $name_s, WP_REST_API_Log_Common::TEXT_DOMAIN ),
+			);
+
+			$args = array(
+				'labels'            => $labels,
+				'public'            => true,
+				'show_in_nav_menus' => true,
+				'show_admin_column' => false,
+				'hierarchical'      => false,
+				'show_tagcloud'     => true,
+				'show_ui'           => true,
+				'query_var'         => true,
+				'rewrite'           => true,
+				'query_var'         => true,
+				'capabilities'      => array(),
+			);
+
+			register_taxonomy( WP_REST_API_Log_Common::TAXONOMY_METHOD, array( WP_REST_API_Log_Common::POST_TYPE ), $args );
+		}
+
+
+		static public function deprecated_create_or_update_tables() {
 
 			$key = self::plugin_name() . '-dbversion';
 			if ( self::DB_VERSION !== get_option( $key ) ) {
@@ -90,6 +155,29 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Entries' ) ) {
 
 			// allow filtering
 			$args = apply_filters( self::plugin_name() . '-pre-insert', $args );
+
+
+			$new_post = array(
+				'post_type'       => WP_REST_API_Log_Common::POST_TYPE,
+				'post_title'      => $args['route'],
+				'post_content'    => json_encode( $args['response']['body'] ),
+				'post_status'     => 'publish',
+				);
+
+			$post_id = wp_insert_post( $new_post, $wp_error );
+
+			// TODO sanitize methods
+			wp_set_post_terms( $post_id, $args['method'], WP_REST_API_Log_Common::TAXONOMY_METHOD );
+
+
+			return $post_id;
+
+			// TODO insert new post and post meta here
+
+
+
+
+
 
 			$inserted = $wpdb->insert( self::table_name(),
 				array(
@@ -163,6 +251,12 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Entries' ) ) {
 					'params'             => array(),
 				)
 			);
+
+			return null;
+
+			// TODO implement new searching here
+
+
 
 
 			$table_name   = self::table_name();
@@ -274,6 +368,12 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Entries' ) ) {
 
 		public function delete( $args ) {
 
+			return;
+
+			// TODO implement post trashing
+
+
+
 			global $wpdb;
 
 			$args = wp_parse_args( $args, array(
@@ -295,6 +395,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Entries' ) ) {
 
 
 		public function distinct_routes() {
+
+			// TODO refactor this
+
 			global $wpdb;
 			$table_name = self::table_name();
 			return $wpdb->get_col( "select distinct route from $table_name order by route" );
@@ -302,6 +405,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Entries' ) ) {
 
 
 		private function cleanup_data( $data ) {
+
+			// TODO refactor this
 
 
 			if ( ! is_array( $data->paged_records ) ) {
