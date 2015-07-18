@@ -12,6 +12,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 		const TEXT_DOMAIN      = 'wp-rest-api-log';
 		const POST_TYPE        = 'wp-rest-api-log';
 		const TAXONOMY_METHOD  = 'wp-rest-api-log-method';
+		const TAXONOMY_STATUS  = 'wp-rest-api-log-status';
+
+		const POST_META_IP_ADDRESS     = '_ip-address';
+		const POST_META_MILLISECONDS   = '_milliseconds';
+		const POST_META_REQUEST_BODY   = '_request_body';
 
 
 		public function plugins_loaded() {
@@ -28,6 +33,17 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 		static public function api_is_enabled() {
 			return class_exists( 'WP_REST_Server' ) && apply_filters( 'rest_enabled', true );
 		}
+
+
+		static public function valid_methods() {
+			return apply_filters( self::$plugin_name . '-valid-methods', array( 'GET', 'POST', 'PUT', 'PATCH', 'DELETE' ) );
+		}
+
+
+		static public function is_valid_method( $method ) {
+			return apply_filters( self::$plugin_name . '-is-method-valid', in_array( $method, self::valid_methods() ) );
+		}
+
 
 
 	} // end class

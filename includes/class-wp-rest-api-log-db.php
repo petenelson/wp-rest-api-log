@@ -6,11 +6,10 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 	class WP_REST_API_Log_DB {
 
-
 		public function plugins_loaded() {
 			add_action( 'init', array( $this, 'register_custom_post_types' ) );
 			add_action( 'init', array( $this, 'register_custom_taxonomies' ) );
-			add_action( WP_REST_API_Log_Common::$plugin_name . '-insert', array( $this, 'insert' ) );
+			add_action( WP_REST_API_Log_Common::$plugin_name . '-insert', array( $this, 'insert' ), 10, 4 );
 		}
 
 
@@ -31,6 +30,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			$args = array(
 				'labels'              => $labels,
+				'show_in_rest'        => true,
+				'rest_base'           => WP_REST_API_Log_Common::POST_TYPE, // allows the CPT to show up in the native API
 				'hierarchical'        => false,
 				'public'              => true,
 				'show_ui'             => true,
@@ -59,6 +60,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 		public function register_custom_taxonomies() {
 
+			// HTTP Method
 			$name_s = 'Method';
 			$name_p = 'Methods';
 
@@ -82,53 +84,23 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			);
 
 			register_taxonomy( WP_REST_API_Log_Common::TAXONOMY_METHOD, array( WP_REST_API_Log_Common::POST_TYPE ), $args );
-		}
 
 
-		static public function deprecated_create_or_update_tables() {
+			// HTTP Status
+			$name_s = 'Status';
+			$name_p = 'Statuses';
 
-			$key = self::plugin_name() . '-dbversion';
-			if ( self::DB_VERSION !== get_option( $key ) ) {
+			$args['labels']['name']           = __( $name_p, WP_REST_API_Log_Common::TEXT_DOMAIN );
+			$args['labels']['singular_name']  = __( $name_s, WP_REST_API_Log_Common::TEXT_DOMAIN );
 
-				$table_name = self::table_name();
+			register_taxonomy( WP_REST_API_Log_Common::TAXONOMY_STATUS, array( WP_REST_API_Log_Common::POST_TYPE ), $args );
 
-				$sql = "CREATE TABLE $table_name (
-				  id bigint NOT NULL AUTO_INCREMENT,
-				  time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-				  ip_address varchar(30) NULL,
-				  method varchar(20) DEFAULT '' NOT NULL,
-				  route varchar(100) DEFAULT '' NOT NULL,
-				  status smallint NULL,
-				  request_body text NULL,
-				  response_body longtext NULL,
-				  milliseconds smallint NOT NULL,
-				  PRIMARY KEY id (id),
-				  KEY time (time),
-				  KEY route (route)
-				)";
+			// namespace?
 
-				parent::dbdelta( $sql );
-				update_option( $key, self::DB_VERSION );
-
-			}
-
-		}
-
-
-		static public function table_name() {
-			global $wpdb;
-			return $wpdb->prefix . 'wp_rest_api_log';
-		}
-
-
-		static public function table_name_logmeta() {
-			return self::table_name() . 'meta';
 		}
 
 
 		public function insert( $args ) {
-
-			global $wpdb;
 
 			$args = wp_parse_args( $args, array(
 				'time'                  => current_time( 'mysql' ),
@@ -166,55 +138,55 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			$post_id = wp_insert_post( $new_post, $wp_error );
 
-			// TODO sanitize methods
-			wp_set_post_terms( $post_id, $args['method'], WP_REST_API_Log_Common::TAXONOMY_METHOD );
+			if ( ! empty( $post_id ) ) {
+				$this->insert_post_terms( $post_id, $args );
+				$this->insert_post_meta( $post_id, $args );
 
+				//$this->insert_request_meta();
+				//$this->insert_response_meta();
 
-			return $post_id;
-
-			// TODO insert new post and post meta here
-
-
-
-
-
-
-			$inserted = $wpdb->insert( self::table_name(),
-				array(
-					'time'                  => $args['time'],
-					'ip_address'            => $args['ip_address'],
-					'route'                 => $args['route'],
-					'method'                => $args['method'],
-					'request_body'          => json_encode( $args['request']['body'] ),
-					'response_body'         => json_encode( $args['response']['body'] ),
-					'milliseconds'          => $args['milliseconds'],
-					'status'                => $args['status'],
-					),
-				array(
-					'%s',
-					'%s',
-					'%s',
-					'%s',
-					'%s',
-					'%s',
-					'%d',
-					'%d',
-					)
-			);
-
-			// insert logmeta
-			$log_id = 0;
-			if ( 1 === $inserted ) {
-				$log_id = $wpdb->insert_id;
-
-				do_action( self::plugin_name() . '-inserted', $log_id );
-
-				$this->insert_meta_values( $log_id, $args );
+				global $wp_rest_api_log_new_entry_id;
+				$wp_rest_api_log_new_entry_id = $post_id;
 
 			}
 
+			return $post_id;
+		}
 
-			return $log_id;
+
+		private function insert_post_terms( $post_id, $args ) {
+
+			// sanitize and store method
+			if ( ! WP_REST_API_Log_Common::is_valid_method( $args['method'] ) ) {
+				$args['method'] = 'GET';
+			}
+			wp_set_post_terms( $post_id, $args['method'], WP_REST_API_Log_Common::TAXONOMY_METHOD );
+
+			// store status code
+			$args['status'] = absint( $args['status'] );
+			wp_set_post_terms( $post_id, $args['status'], WP_REST_API_Log_Common::TAXONOMY_STATUS );
+
+			//wp_send_json( $args );
+
+		}
+
+
+		private function insert_post_meta( $post_id, $args ) {
+
+			$meta = array(
+				WP_REST_API_Log_Common::POST_META_IP_ADDRESS    => $args['ip_address'],
+				WP_REST_API_Log_Common::POST_META_MILLISECONDS  => $args['milliseconds'],
+				WP_REST_API_Log_Common::POST_META_REQUEST_BODY  => $args['request']['body'],
+				);
+
+			foreach ( $meta as $key => $value ) {
+				if ( is_array( $value ) && 1 === count( $value ) ) {
+					$value = $value[0];
+				}
+				if ( ! empty( $value ) ) {
+					add_post_meta( $post_id, $key, $value );
+				}
+			}
 
 		}
 
