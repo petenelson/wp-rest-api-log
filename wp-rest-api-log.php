@@ -14,9 +14,7 @@ $plugin_class_file = 'wp-rest-api-log';
 
 $includes = array(
 	'includes/class-' . $plugin_class_file . '-common.php',
-	'includes/class-' . $plugin_class_file . '-db-base.php',
-	'includes/class-' . $plugin_class_file . '-db-entries.php',
-	'includes/class-' . $plugin_class_file . '-db-meta.php',
+	'includes/class-' . $plugin_class_file . '-db.php',
 	'includes/class-' . $plugin_class_file . '-i18n.php',
 	'includes/class-' . $plugin_class_file . '-controller.php',
 	'includes/class-' . $plugin_class_file . '-response-base.php',
@@ -31,8 +29,7 @@ $class_base = 'WP_REST_API_Log';
 
 $classes = array(
 	$class_base . '_Common',
-	$class_base . '_DB_Entries',
-	$class_base . '_DB_Meta',
+	$class_base . '_DB',
 	$class_base . '_i18n',
 	$class_base . '_Controller',
 	$class_base . '',
@@ -63,8 +60,6 @@ foreach ( $classes as $class ) {
 
 // activation hook
 register_activation_hook( __FILE__, function() {
-	require_once 'includes/class-wp-rest-api-log-db-entries.php';
-	require_once 'includes/class-wp-rest-api-log-db-meta.php';
 	require_once 'includes/class-wp-rest-api-log-activator.php';
 	WP_REST_API_Log_Activator::activate();
 } );

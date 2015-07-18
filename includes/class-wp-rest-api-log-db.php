@@ -2,9 +2,9 @@
 
 if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
 
-if ( ! class_exists( 'WP_REST_API_Log_DB_Entries' ) ) {
+if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
-	class WP_REST_API_Log_DB_Entries extends WP_REST_API_Log_DB_Base {
+	class WP_REST_API_Log_DB {
 
 
 		public function plugins_loaded() {
@@ -219,21 +219,10 @@ if ( ! class_exists( 'WP_REST_API_Log_DB_Entries' ) ) {
 		}
 
 
-		private function insert_meta_values( $log_id, $args ) {
-
-			$db_meta = new WP_REST_API_Log_DB_Meta();
-			$db_meta->insert_meta_values( $log_id, $args );
-
-		}
-
-
 		public function search( $args = array() ) {
 
-			global $wpdb;
-			$db_meta = new WP_REST_API_Log_DB_Meta();
 
 			$data = new stdClass();
-
 
 			$args = wp_parse_args( $args,
 				array(
