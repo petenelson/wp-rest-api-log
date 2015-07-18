@@ -142,7 +142,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				$this->insert_post_terms( $post_id, $args );
 				$this->insert_post_meta( $post_id, $args );
 
-				//$this->insert_request_meta();
+				$this->insert_request_meta( $post_id, $args );
 				//$this->insert_response_meta();
 
 				global $wp_rest_api_log_new_entry_id;
@@ -166,8 +166,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$args['status'] = absint( $args['status'] );
 			wp_set_post_terms( $post_id, $args['status'], WP_REST_API_Log_Common::TAXONOMY_STATUS );
 
-			//wp_send_json( $args );
-
 		}
 
 
@@ -189,6 +187,71 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			}
 
 		}
+
+
+		private function insert_request_meta( $post_id, $args ) {
+
+			// TODO refactor this into more modular code
+
+			if ( ! empty( $args['request']['headers'] ) ) {
+
+				foreach ( $args['request']['headers'] as $key => $value ) {
+					if ( is_array( $value ) && 1 === count( $value ) ) {
+						$value = $value[0];
+					}
+
+					if ( ! empty( $value ) ) {
+
+						add_post_meta( $post_id, '_request_header_key_' . md5( $key ), $key );
+						add_post_meta( $post_id, '_request_header_value_' . md5( $key ), $value );
+
+					}
+
+				}
+
+			}
+
+
+			if ( ! empty( $args['request']['query_params'] ) ) {
+
+				foreach ( $args['request']['query_params'] as $key => $value ) {
+					if ( is_array( $value ) && 1 === count( $value ) ) {
+						$value = $value[0];
+					}
+
+					if ( ! empty( $value ) ) {
+
+						add_post_meta( $post_id, '_request_query_param_key_' . md5( $key ), $key );
+						add_post_meta( $post_id, '_request_query_param_value_' . md5( $key ), $value );
+
+					}
+
+				}
+
+			}
+
+
+			if ( ! empty( $args['request']['body_params'] ) ) {
+
+				foreach ( $args['request']['body_params'] as $key => $value ) {
+					if ( is_array( $value ) && 1 === count( $value ) ) {
+						$value = $value[0];
+					}
+
+					if ( ! empty( $value ) ) {
+
+						add_post_meta( $post_id, '_request_body_param_key_' . md5( $key ), $key );
+						add_post_meta( $post_id, '_request_body_param_value_' . md5( $key ), $value );
+
+					}
+
+				}
+
+			}
+
+
+		}
+
 
 
 		public function search( $args = array() ) {
