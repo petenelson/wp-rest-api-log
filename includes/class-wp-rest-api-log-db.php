@@ -257,7 +257,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		public function search( $args = array() ) {
 
 
-			$data = new stdClass();
+			$response = new stdClass();
 
 			$args = wp_parse_args( $args,
 				array(
@@ -276,7 +276,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				)
 			);
 
-			return null;
+			$response->paged_records = 
+
+
 
 			// TODO implement new searching here
 
