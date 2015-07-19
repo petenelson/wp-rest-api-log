@@ -258,6 +258,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 
 			$response = new stdClass();
+			$response->log_entries = array();
 
 			$args = wp_parse_args( $args,
 				array(
@@ -269,15 +270,31 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					'route_match_type'   => 'wildcard',
 					'method'             => '',
 					'page'               => 1,
-					'records_per_page'   => 50,
+					'posts_per_page'     => 50,
 					'id'                 => 0,
 					'fields'             => 'basic',
 					'params'             => array(),
 				)
 			);
 
-			$response->paged_records = 
+			$query_args = array(
+				'post_type'         => WP_REST_API_Log_Common::POST_TYPE,
+				'posts_per_page'    => $args['posts_per_page'],
+  				);
 
+			global $post;
+			$posts = array();
+			$query = new WP_Query( $query_args );
+			while ( $query->have_posts() ) {
+				$query->the_post();
+				$posts[] = $post;
+				// $posts[] = new WP_REST_API_Log_Entry( $post );
+			}
+
+
+			$response->log_entries = $posts;
+
+			return $response;
 
 
 			// TODO implement new searching here
