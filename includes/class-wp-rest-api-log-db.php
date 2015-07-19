@@ -418,16 +418,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		}
 
 
-		public function distinct_routes() {
-
-			// TODO refactor this
-
-			global $wpdb;
-			$table_name = self::table_name();
-			return $wpdb->get_col( "select distinct route from $table_name order by route" );
-		}
-
-
 		private function cleanup_data( $data ) {
 
 			// TODO refactor this
