@@ -6,9 +6,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 
 	class WP_REST_API_Log_Common {
 
-		static $plugin_name    = 'wp-rest-api-log';
-		static $version        = '2015-07-03-01';
-
+		const PLUGIN_NAME      = 'wp-rest-api-log';
+		const VERSION          = '2015-07-26-01';
 		const TEXT_DOMAIN      = 'wp-rest-api-log';
 
 
@@ -26,6 +25,17 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 		static public function api_is_enabled() {
 			return class_exists( 'WP_REST_Server' ) && apply_filters( 'rest_enabled', true );
 		}
+
+
+		static public function valid_methods() {
+			return apply_filters( self::PLUGIN_NAME . '-valid-methods', array( 'GET', 'POST', 'PUT', 'PATCH', 'DELETE' ) );
+		}
+
+
+		static public function is_valid_method( $method ) {
+			return apply_filters( self::PLUGIN_NAME . '-is-method-valid', in_array( $method, self::valid_methods() ) );
+		}
+
 
 
 	} // end class

