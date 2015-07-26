@@ -16,6 +16,8 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 		private function load( $post ) {
 
+			// TODO flush out this class
+
 		}
 
 

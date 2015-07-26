@@ -15,7 +15,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 		public function register_rest_routes() {
 
-			register_rest_route( self::$namespace, '/entries', array(
+			register_rest_route( self::$namespace, '/entry', array(
 				'methods'             => array( WP_REST_Server::READABLE ),
 				'callback'            => array( $this, 'get_items' ),
 				'permission_callback' => array( $this, 'get_permissions_check' ),
@@ -65,7 +65,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 			) );
 
 
-			register_rest_route( self::$namespace, '/entries/(?P<id>[\d]+)', array(
+			register_rest_route( self::$namespace, '/entry/(?P<id>[\d]+)', array(
 				'methods'             => array( WP_REST_Server::READABLE ),
 				'callback'            => array( $this, 'get_item' ),
 				'permission_callback' => array( $this, 'get_permissions_check' ),
@@ -81,11 +81,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 			) );
 
 
-			register_rest_route( self::$namespace, '/entries', array(
+			register_rest_route( self::$namespace, '/entry', array(
 				'methods'             => array( WP_REST_Server::DELETABLE ),
 				'callback'            => array( $this, 'delete_items' ),
 				'permission_callback' => array( $this, 'delete_items_permissions_check' ),
-				'args'                => array(
+				'args'                => array( // TODO refator delete, this won't work with $_REQUESTs
 					'older-than-seconds'       => array(
 						'sanitize_callback'    => 'absint',
 						'default'              => DAY_IN_SECONDS * 30,
@@ -167,12 +167,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 
 		public function get_permissions_check() {
-			return apply_filters( WP_REST_API_Log_Common::$plugin_name . '-can-view-entries', current_user_can( 'manage_options' ) );
+			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-can-view-entries', current_user_can( 'manage_options' ) );
 		}
 
 
 		public function delete_items_permissions_check() {
-			return apply_filters( WP_REST_API_Log_Common::$plugin_name . '-can-delete-entries', current_user_can( 'manage_options' ) );
+			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-can-delete-entries', current_user_can( 'manage_options' ) );
 		}
 
 	}

@@ -8,8 +8,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 
 		public function plugins_loaded() {
-			add_action( 'admin_init', array( $this, 'admin_init' ) );
-			add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+			// disabled for now
+			//add_action( 'admin_init', array( $this, 'admin_init' ) );
+			//add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		}
 
 
@@ -19,7 +20,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 
 		public function admin_menu() {
-			add_submenu_page( 'tools.php', 'WP REST API Log', 'WP REST API Log', 'manage_options', WP_REST_API_Log_Common::$plugin_name, array( $this, 'display_entries' ) );
+			add_submenu_page( 'tools.php', 'WP REST API Log', 'WP REST API Log', 'manage_options', WP_REST_API_Log_Common::PLUGIN_NAME, array( $this, 'display_entries' ) );
 		}
 
 
@@ -93,7 +94,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 
 		private function plugin_name() {
-			return WP_REST_API_Log_Common::$plugin_name . '-admin';
+			return WP_REST_API_Log_Common::PLUGIN_NAME . '-admin';
 		}
 
 

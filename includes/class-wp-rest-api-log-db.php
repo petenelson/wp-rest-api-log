@@ -9,12 +9,12 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		public function plugins_loaded() {
 			add_action( 'init', array( $this, 'register_custom_post_types' ) );
 			add_action( 'init', array( $this, 'register_custom_taxonomies' ) );
-			add_action( WP_REST_API_Log_Common::$plugin_name . '-insert', array( $this, 'insert' ), 10, 4 );
+			add_action( WP_REST_API_Log_Common::PLUGIN_NAME . '-insert', array( $this, 'insert' ), 10, 4 );
 		}
 
 
 		static private function plugin_name() {
-			return WP_REST_API_Log_Common::$plugin_name . '-entries';
+			return WP_REST_API_Log_Common::PLUGIN_NAME . '-entries';
 		}
 
 
@@ -35,7 +35,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				'hierarchical'        => false,
 				'public'              => true,
 				'show_ui'             => true,
-				'show_in_menu'        => true, // true during development
+				'show_in_menu'        => 'tools.php',
 				'show_in_admin_bar'   => false,
 				'show_in_nav_menus'   => false,
 				'publicly_queryable'  => true,
@@ -51,7 +51,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					)
 			);
 
-			$args = apply_filters( WP_REST_API_Log_Common::$plugin_name . '-register-post-type', $args );
+			$args = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-register-post-type', $args );
 
 			register_post_type( WP_REST_API_Log_Common::POST_TYPE, $args );
 
@@ -459,7 +459,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				$record->id            = absint( $record->id );
 				$record->milliseconds  = absint( $record->milliseconds );
 
-				$record->permalink     = add_query_arg( array( 'page' => WP_REST_API_Log_Common::$plugin_name, 'id' => $data->paged_records[ $i ]->id ), admin_url( 'tools.php' ) );
+				$record->permalink     = add_query_arg( array( 'page' => WP_REST_API_Log_Common::PLUGIN_NAME, 'id' => $data->paged_records[ $i ]->id ), admin_url( 'tools.php' ) );
 
 
 			}
