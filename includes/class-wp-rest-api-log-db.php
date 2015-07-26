@@ -6,6 +6,15 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 	class WP_REST_API_Log_DB {
 
+		const POST_TYPE        = 'wp-rest-api-log';
+		const TAXONOMY_METHOD  = 'wp-rest-api-log-method';
+		const TAXONOMY_STATUS  = 'wp-rest-api-log-status';
+
+		const POST_META_IP_ADDRESS     = '_ip-address';
+		const POST_META_MILLISECONDS   = '_milliseconds';
+		const POST_META_REQUEST_BODY   = '_request_body';
+
+
 		public function plugins_loaded() {
 			add_action( 'init', array( $this, 'register_custom_post_types' ) );
 			add_action( 'init', array( $this, 'register_custom_taxonomies' ) );
@@ -20,8 +29,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 		public function register_custom_post_types() {
 
-			$name_s = 'REST API LOG Entry';
-			$name_p = 'REST API LOG Entries';
+			$name_s = 'REST API Log Entry';
+			$name_p = 'REST API Log Entries';
 
 			$labels = array(
 				'name'                => __( $name_p, WP_REST_API_Log_Common::TEXT_DOMAIN ),
@@ -31,7 +40,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$args = array(
 				'labels'              => $labels,
 				'show_in_rest'        => true,
-				'rest_base'           => WP_REST_API_Log_Common::POST_TYPE, // allows the CPT to show up in the native API
+				'rest_base'           => self::POST_TYPE, // allows the CPT to show up in the native API
 				'hierarchical'        => false,
 				'public'              => true,
 				'show_ui'             => true,
@@ -53,7 +62,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			$args = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-register-post-type', $args );
 
-			register_post_type( WP_REST_API_Log_Common::POST_TYPE, $args );
+			register_post_type( self::POST_TYPE, $args );
 
 		}
 
@@ -83,7 +92,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				'capabilities'      => array(),
 			);
 
-			register_taxonomy( WP_REST_API_Log_Common::TAXONOMY_METHOD, array( WP_REST_API_Log_Common::POST_TYPE ), $args );
+			register_taxonomy( self::TAXONOMY_METHOD, array( self::POST_TYPE ), $args );
 
 
 			// HTTP Status
@@ -93,7 +102,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$args['labels']['name']           = __( $name_p, WP_REST_API_Log_Common::TEXT_DOMAIN );
 			$args['labels']['singular_name']  = __( $name_s, WP_REST_API_Log_Common::TEXT_DOMAIN );
 
-			register_taxonomy( WP_REST_API_Log_Common::TAXONOMY_STATUS, array( WP_REST_API_Log_Common::POST_TYPE ), $args );
+			register_taxonomy( self::TAXONOMY_STATUS, array( self::POST_TYPE ), $args );
 
 			// namespace?
 
@@ -130,7 +139,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 
 			$new_post = array(
-				'post_type'       => WP_REST_API_Log_Common::POST_TYPE,
+				'post_type'       => self::POST_TYPE,
 				'post_title'      => $args['route'],
 				'post_content'    => json_encode( $args['response']['body'] ),
 				'post_status'     => 'publish',
@@ -143,7 +152,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				$this->insert_post_meta( $post_id, $args );
 
 				$this->insert_request_meta( $post_id, $args );
-				//$this->insert_response_meta();
+				$this->insert_response_meta( $post_id, $args );
 
 				global $wp_rest_api_log_new_entry_id;
 				$wp_rest_api_log_new_entry_id = $post_id;
@@ -160,11 +169,11 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			if ( ! WP_REST_API_Log_Common::is_valid_method( $args['method'] ) ) {
 				$args['method'] = 'GET';
 			}
-			wp_set_post_terms( $post_id, $args['method'], WP_REST_API_Log_Common::TAXONOMY_METHOD );
+			wp_set_post_terms( $post_id, $args['method'], self::TAXONOMY_METHOD );
 
 			// store status code
 			$args['status'] = absint( $args['status'] );
-			wp_set_post_terms( $post_id, $args['status'], WP_REST_API_Log_Common::TAXONOMY_STATUS );
+			wp_set_post_terms( $post_id, $args['status'], self::TAXONOMY_STATUS );
 
 		}
 
@@ -172,9 +181,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		private function insert_post_meta( $post_id, $args ) {
 
 			$meta = array(
-				WP_REST_API_Log_Common::POST_META_IP_ADDRESS    => $args['ip_address'],
-				WP_REST_API_Log_Common::POST_META_MILLISECONDS  => $args['milliseconds'],
-				WP_REST_API_Log_Common::POST_META_REQUEST_BODY  => $args['request']['body'],
+				self::POST_META_IP_ADDRESS    => $args['ip_address'],
+				self::POST_META_MILLISECONDS  => $args['milliseconds'],
+				self::POST_META_REQUEST_BODY  => $args['request']['body'],
 				);
 
 			foreach ( $meta as $key => $value ) {
@@ -253,12 +262,32 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		}
 
 
+		private function insert_response_meta( $post_id, $args ) {
+
+			// TODO refactor this into more modular code
+
+			if ( ! empty( $args['response']['headers'] ) ) {
+
+				foreach ( $args['response']['headers'] as $key => $value ) {
+					if ( is_array( $value ) && 1 === count( $value ) ) {
+						$value = $value[0];
+					}
+
+					if ( ! empty( $value ) ) {
+
+						add_post_meta( $post_id, '_response_header_key_' . md5( $key ), $key );
+						add_post_meta( $post_id, '_response_header_value_' . md5( $key ), $value );
+
+					}
+
+				}
+
+			}
+
+		}
+
 
 		public function search( $args = array() ) {
-
-
-			$response = new stdClass();
-			$response->log_entries = array();
 
 			$args = wp_parse_args( $args,
 				array(
@@ -278,195 +307,32 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			);
 
 			$query_args = array(
-				'post_type'         => WP_REST_API_Log_Common::POST_TYPE,
+				'post_type'         => self::POST_TYPE,
 				'posts_per_page'    => $args['posts_per_page'],
   				);
+
+			if ( ! empty( $args['id'] ) ) {
+				$query_args['p'] = $args['id'];
+			}
+
+			// TODO implement searching of other fields here
 
 			global $post;
 			$posts = array();
 			$query = new WP_Query( $query_args );
+
 			while ( $query->have_posts() ) {
 				$query->the_post();
 				$posts[] = $post;
-				// $posts[] = new WP_REST_API_Log_Entry( $post );
 			}
 
+			wp_reset_postdata();
 
-			$response->log_entries = $posts;
+			return $posts;
 
-			return $response;
-
-
-			// TODO implement new searching here
-
-
-
-
-			$table_name   = self::table_name();
-			$from         = "from $table_name where 1 ";
-			$where        = '';
-			$join         = '';
-
-			if ( ! empty ( $args['id'] ) ) {
-				$where .= $wpdb->prepare( " and {$table_name}.id = %d", $args['id'] );
-			}
-
-			if ( ! empty ( $args['from'] ) && empty ( $args['id'] ) ) {
-				$where .= $wpdb->prepare( " and {$table_name}.time >= '%s'", $args['from'] );
-			}
-
-			if ( ! empty ( $args['to'] ) && empty ( $args['id'] ) ) {
-				$where .= $wpdb->prepare( " and {$table_name}.time <= '%s'", $args['to'] );
-			}
-
-			if ( ! empty ( $args['method'] ) ) {
-				$where .= $wpdb->prepare( " and {$table_name}.method = '%s'", $args['method'] );
-			}
-
-			if ( ! empty ( $args['before_id'] ) ) {
-				$where .= $wpdb->prepare( " and id < %d", $args['before_id'] );
-			}
-
-			if ( ! empty ( $args['after_id'] ) ) {
-				$where .= $wpdb->prepare( " and {$table_name}.id > %d", $args['after_id'] );
-			}
-
-			// TODO add query for params here
-
-			if ( is_array( $args['params'] ) && ! empty( $args['params'] ) && !empty( $args['params'][0]['name'] ) ) {
-				$data->logmeta_id_query = $db_meta->build_logmeta_id_query( $args['params'] );
-				$where .= ' and id in ( ' . $data->logmeta_id_query . ')';
-			}
-
-
-
-			// TODO refactor this to accept an array
-			if ( ! empty ( $args['route'] ) ) {
-
-
-				switch ( $args['route_match_type'] ) {
-
-					case 'starts-with':
-						$where .= $wpdb->prepare( " and route like %s", $args['route'] . '%' );
-						break;
-
-					case 'exact':
-						$where .= $wpdb->prepare( " and route like '%s'", $args['route'] );
-						break;
-
-					default:
-						$where .= $wpdb->prepare( " and route like '%%%s%%'", $args['route'] );
-						break;
-
-				}
-
-			}
-
-
-
-			// get a total count
-			$data->query_count = "select count(distinct {$table_name}.id) " . $from . $join . $where;
-			$data->total_records = absint( $wpdb->get_var( $data->query_count ) );
-
-			// get the records
-			$order_by = ' order by time desc';
-			$limit = '';
-			if ( empty( $args['id'] ) ) {
-				$args['records_per_page'] = absint( $args['records_per_page'] );
-				$args['page'] = absint( $args['page'] );
-				$limit = $wpdb->prepare( ' limit %d', $args['records_per_page'] );
-				if ( $args['page'] > 1 ) {
-					$limit .= $wpdb->prepare( ' offset %d', $args['page'] * $args['records_per_page'] );
-				}
-			}
-
-			switch ( $args['fields'] ) {
-				case 'basic';
-					$fields = 'id, time, ip_address, method, route, status, milliseconds, char_length(response_body) as response_body_length';
-					break;
-				default:
-					$fields = '*';
-					break;
-			}
-
-			$data->args = $args;
-			$data->query = 'select ' . $fields . ' ' . $from . $where . $order_by . $limit;
-			$data->paged_records = $wpdb->get_results( $data->query );
-
-			// cleanup data, set datatypes, etc
-			$data = $this->cleanup_data( $data );
-
-			// get the logmeta
-
-			if ( ! empty( $data->paged_records ) && 'basic' !== $args['fields'] ) {
-				$data->paged_records = $db_meta->add_meta_to_records( $data->paged_records );
-			}
-
-
-
-			return $data;
 
 		}
 
-
-		public function delete( $args ) {
-
-			return;
-
-			// TODO implement post trashing
-
-
-
-			global $wpdb;
-
-			$args = wp_parse_args( $args, array(
-				'older_than_seconds' => DAY_IN_SECONDS * 30,
-			));
-
-			$table_name = self::table_name();
-			$date = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) - absint( $args['older_than_seconds'] ) );
-
-			$data = new stdClass();
-			$data->args = $args;
-			$data->older_than_date = $date;
-			$data->query = $wpdb->prepare( "delete from $table_name where time < %s", $date );
-			$data->records_affected = $wpdb->query( $data->query );
-
-			return $data;
-
-		}
-
-
-		private function cleanup_data( $data ) {
-
-			// TODO refactor this
-
-
-			if ( ! is_array( $data->paged_records ) ) {
-				return $data;
-			}
-
-			foreach ( $data->paged_records as &$record ) {
-
-				if ( ! empty( $record->response_body ) ) {
-					$record->response_body_length = absint( strlen( $record->response_body ) );
-					$record->response_body = json_decode( $record->response_body );
-				} else {
-					$record->response_body = '';
-					$record->response_body_length = absint( $record->response_body_length );
-				}
-
-				$record->id            = absint( $record->id );
-				$record->milliseconds  = absint( $record->milliseconds );
-
-				$record->permalink     = add_query_arg( array( 'page' => WP_REST_API_Log_Common::PLUGIN_NAME, 'id' => $data->paged_records[ $i ]->id ), admin_url( 'tools.php' ) );
-
-
-			}
-
-			return $data;
-
-		}
 
 
 

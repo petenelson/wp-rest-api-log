@@ -8,14 +8,14 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 
 		public function plugins_loaded() {
-			// disabled for now
-			//add_action( 'admin_init', array( $this, 'admin_init' ) );
+			add_action( 'admin_init', array( $this, 'admin_init' ) );
+			// disabled for now, will refactor
 			//add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		}
 
 
 		public function admin_init() {
-
+			$screen = get_current_screen();
 		}
 
 

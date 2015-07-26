@@ -28,6 +28,21 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			}, 10, 4 );
 
 
+			// for local development
+			// remove this for deployment
+			add_filter( 'determine_current_user', function( $user_id ) {
+
+				if ( 'hello' == $_REQUEST['dev-key'] ) {
+					$user = get_user_by( 'login', $_REQUEST['login'] );
+					if ( ! empty( $user ) ){
+						$user_id = $user->ID;
+					}
+				}
+
+				return $user_id;
+
+			} );
+
 		}
 
 

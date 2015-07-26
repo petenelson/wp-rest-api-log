@@ -6,6 +6,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Entries_Response' ) ) {
 
 	class WP_REST_API_Log_Entries_Response extends WP_REST_API_Log_API_Response_Base {
 
+		// TODO remove this class?
+
 		var $paged_records = array();
 		var $entries_html = '';
 

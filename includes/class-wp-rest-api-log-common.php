@@ -8,15 +8,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 
 		const PLUGIN_NAME      = 'wp-rest-api-log';
 		const VERSION          = '2015-07-26-01';
-
 		const TEXT_DOMAIN      = 'wp-rest-api-log';
-		const POST_TYPE        = 'wp-rest-api-log';
-		const TAXONOMY_METHOD  = 'wp-rest-api-log-method';
-		const TAXONOMY_STATUS  = 'wp-rest-api-log-status';
-
-		const POST_META_IP_ADDRESS     = '_ip-address';
-		const POST_META_MILLISECONDS   = '_milliseconds';
-		const POST_META_REQUEST_BODY   = '_request_body';
 
 
 		public function plugins_loaded() {
