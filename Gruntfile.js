@@ -49,7 +49,7 @@ module.exports = function( grunt ) {
 			all: {
 				options: {
 					precision: 2,
-					sourceMap: true
+					sourceMap: false
 				},
 				files: {
 					'admin/css/wp-rest-api-log-admin.css': 'admin/css/sass/wp-rest-api-log-admin.scss'
@@ -60,7 +60,7 @@ module.exports = function( grunt ) {
 		postcss: {
 			dist: {
 				options: {
-					map: true,
+					map: false,
 					processors: [
 						require('autoprefixer-core')({
 							browsers: ['last 2 versions']
@@ -93,14 +93,14 @@ module.exports = function( grunt ) {
 
 		watch: {
 			styles: {
-				files: ['admin/css/sass/**/*.scss'],
+				files: ['admin/css/sass/*.scss'],
 				tasks: ['sass', 'postcss', 'cssmin'],
 				options: {
 					debounceDelay: 500
 				}
 			},
 			scripts: {
-				files: [ 'adnin/js/src/**/*.js' ],
+				files: [ 'adnin/js/src/*.js' ],
 				tasks: [ 'jshint', 'concat', 'uglify' ],
 				options: {
 					debounceDelay: 500

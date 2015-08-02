@@ -11,6 +11,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 			// disabled for now, will refactor
 			//add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+
+			add_filter( 'post_row_actions', array( $this, 'post_row_actions' ), 10, 2 );
+
 		}
 
 
@@ -28,7 +33,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 			if ( ! WP_REST_API_Log_Common::api_is_enabled() ) {
 				require_once dirname( __FILE__ ) . '/partials/wp-rest-api-log-api-is-disabled.php';
-				return;
 			}
 
 
@@ -71,25 +75,39 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		}
 
 
-		private function enqueue_scripts() {
+		public function enqueue_scripts() {
 
 			wp_enqueue_script( 'jquery' );
-			wp_enqueue_script( 'jquery-ui-datepicker' );
 
 			// https://highlightjs.org/
 			wp_enqueue_script( 'highlight-js', '//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js' );
 			wp_enqueue_style( 'highlight-js', '//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css' );
 
 			// http://trentrichardson.com/examples/timepicker/
-			wp_enqueue_script( 'jquery-ui-timepicker', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.js' );
-			wp_enqueue_style( 'jquery-ui-timepicker', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.css' );
+			//wp_enqueue_script( 'jquery-ui-timepicker', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.js' );
+			//wp_enqueue_style( 'jquery-ui-timepicker', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.css' );
 
-			wp_enqueue_script( $this->plugin_name(), plugin_dir_url( __FILE__ ) . 'js/wp-rest-api-log-admin.js', 'jquery', WP_REST_API_Log_Common::$version );
+			wp_enqueue_script( $this->plugin_name(), plugin_dir_url( __FILE__ ) . 'js/wp-rest-api-log-admin.min.js', 'jquery', WP_REST_API_Log_Common::VERSION );
 
-			wp_enqueue_style( 'jquery-ui-datepicker', 'https://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css' );
-			wp_enqueue_style( $this->plugin_name(), plugin_dir_url( __FILE__ ) . 'css/wp-rest-api-log-admin.css', '', WP_REST_API_Log_Common::$version );
+			//wp_enqueue_style( 'jquery-ui-datepicker', 'https://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css' );
+
+			wp_enqueue_style( $this->plugin_name(), plugin_dir_url( __FILE__ ) . 'css/wp-rest-api-log-admin.min.css', '', WP_REST_API_Log_Common::VERSION );
 
 
+		}
+
+
+		public function post_row_actions( $actions, $post ) {
+
+			if ( WP_REST_API_Log_Db::POST_TYPE === $post->post_type ) {
+
+				// turn off items
+				unset( $actions['edit'] );
+				unset( $actions[ 'inline hide-if-no-js' ] );
+
+			}
+
+			return $actions;
 		}
 
 
