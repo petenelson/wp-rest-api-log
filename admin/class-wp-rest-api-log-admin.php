@@ -14,8 +14,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
-			add_filter( 'post_row_actions', array( $this, 'post_row_actions' ), 10, 2 );
-
 		}
 
 
@@ -97,18 +95,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		}
 
 
-		public function post_row_actions( $actions, $post ) {
-
-			if ( WP_REST_API_Log_Db::POST_TYPE === $post->post_type ) {
-
-				// turn off items
-				unset( $actions['edit'] );
-				unset( $actions[ 'inline hide-if-no-js' ] );
-
-			}
-
-			return $actions;
-		}
 
 
 		private function plugin_name() {

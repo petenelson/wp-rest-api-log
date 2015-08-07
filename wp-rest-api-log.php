@@ -26,6 +26,7 @@ $includes = array(
 	'includes/class-' . $plugin_class_file . '-routes-response.php',
 	'includes/class-' . $plugin_class_file . '.php',
 	'admin/class-' . $plugin_class_file . '-admin.php',
+	'admin/class-' . $plugin_class_file . '-admin-list-table.php',
 );
 
 $class_base = 'WP_REST_API_Log';
@@ -37,6 +38,7 @@ $classes = array(
 	$class_base . '_Controller',
 	$class_base . '',
 	$class_base . '_Admin',
+	$class_base . '_Admin_List_Table',
 );
 
 
