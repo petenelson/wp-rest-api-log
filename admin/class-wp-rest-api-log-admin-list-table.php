@@ -37,18 +37,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 
 		public function custom_columns( $columns ) {
 
-			/*
-		 ["cb"]=>
-		  string(25) "<input type="checkbox" />"
-		  ["title"]=>
-		  string(5) "Title"
-		  ["author"]=>
-		  string(6) "Author"
-		  ["date"]=>
-		  string(4) "Date"
-		}
-		*/
-
 			unset( $columns['author'] );
 			$columns['method'] = 'Method';
 			$columns = array(
