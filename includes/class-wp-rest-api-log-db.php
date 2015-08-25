@@ -141,7 +141,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$new_post = array(
 				'post_type'       => self::POST_TYPE,
 				'post_title'      => $args['route'],
-				'post_content'    => json_encode( $args['response']['body'] ),
+				'post_content'    => json_encode( $args['response']['body'], JSON_PRETTY_PRINT ),
 				'post_status'     => 'publish',
 				);
 
