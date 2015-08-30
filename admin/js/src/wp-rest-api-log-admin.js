@@ -8,137 +8,14 @@
 			search_args: { },
 
 			document_ready: function() {
-
-				$( '.wp-rest-api-log-wrap' ).on( 'click', '.log-entries .entry-row', function( e ) {
-
-					if ( ! $( e.target ).hasClass( 'permalink' ) ) {
-						$.wp_rest_api_log.display_details( $( this ).data( 'id' ) );
-					}
-
-				});
-
-				$( '.wp-rest-api-log-wrap' ).on( 'click', '.log-entries .postbox h3', function() {
-					$.wp_rest_api_log.toggle_inside_element( $( this ) );
-				});
-
-				$( '.wp-rest-api-log-wrap .search-form .button-reset').click( function( e ) {
-
-					e.preventDefault();
-
-					// clear search params
-					$( '.wp-rest-api-log-wrap .search-form .clear-on-reset').val( '' );
-
-					$( '.wp-rest-api-log-wrap .table-wrap' ).html( $.wp_rest_api_log.reset_html ).addClass( 'visible' );
-					$.wp_rest_api_log.add_stripes();
-
-				} );
-
-
-				$( '.wp-rest-api-log-wrap .search-form form' ).submit( function( e ) {
-
-					$( this ).find('.ajax-wait').addClass( 'visible-inline' );
-					$( '.wp-rest-api-log-wrap .no-matches' ).removeClass( 'visible' );
-
-					e.preventDefault();
-
-					$.wp_rest_api_log.search_args = {
-						response_type:'wp_admin_html',
-						from:$( this ).find('.from').val(),
-						to:$( this ).find('.to').val(),
-						method:$( this ).find('.method').val(),
-						route:$( this ).find('.route').val(),
-						params:new Array( { name:$( this ).find('.param_name').val(), value:$( this ).find('.param_value').val() } )
-					};
-
-					$.wp_rest_api_log.search( $.wp_rest_api_log.search_args, $.wp_rest_api_log.display_entries );
-
-				});
-
-				$.wp_rest_api_log.reset_html = $( '.wp-rest-api-log-wrap .table-wrap' ).html();
-
-				$.wp_rest_api_log.add_stripes();
-
-				if ( wp_rest_api_log_admin.id !== '0' && wp_rest_api_log_admin.id !== 0 ) {
-					$( '.wp-rest-api-log-wrap .log-entries .entry-row' ).trigger( 'click' );
-				}
-
+				$.wp_rest_api_log.highlight_block();
 			},
 
-			search: function( args, callback ) {
+			highlight_block: function() {
 
-				$.get( wp_rest_api_log_admin.route, args, function( response ) {
-
-					callback( response );
-
-					$( '.wp-rest-api-log-wrap .ajax-wait' ).removeClass( 'visible' ).removeClass('visible-inline');
-
-				}).fail( function() {
-
-				});
-
-			},
-
-			display_entries: function( response ) {
-
-				if ( response && response.entries_html ) {
-					$( '.wp-rest-api-log-wrap .table-wrap').html( response.entries_html ).addClass( 'visible' );
-					$.wp_rest_api_log.add_stripes();
-				} else {
-					$( '.wp-rest-api-log-wrap .table-wrap').html( '' );
-					$( '.wp-rest-api-log-wrap .no-matches').addClass( 'visible' );
-				}
-
-			},
-
-			add_stripes: function() {
-				$( '.wp-rest-api-log-wrap .log-entries .entry-row' ).each( function ( i, element ) {
-					if ( i % 2 === 0 ) {
-						$( element ).addClass( 'alternate' );
-					}
-				} );
-			},
-
-			display_details: function( id ) {
-
-				var elemDetails = $.wp_rest_api_log.get_entry_details_element( id );
-
-				$( '.wp-rest-api-log-wrap .log-entries .entry-row').removeClass( 'entry-row-selected' );
-
-				if ( elemDetails.hasClass( 'entry-details-populated') ) {
-					$.wp_rest_api_log.toggle_entry_details_element( elemDetails );
-					return;
-				}
-
-				$( '.wp-rest-api-log-wrap .log-entries .entry-row-' + id ).addClass( 'entry-row-selected' );
-				$( '.wp-rest-api-log-wrap .log-entries .entry-row-' + id + ' .ajax-wait' ).addClass( 'visible' );
-
-				$.wp_rest_api_log.search( { id:id, fields:'all' }, $.wp_rest_api_log.populate_entry_details );
-
-			},
-
-			populate_entry_details: function( details ) {
-
-				if ( details.paged_records && details.paged_records.length === 1 ) {
-					details = details.paged_records[0];
-				}
-
-				var elemDetails = $.wp_rest_api_log.get_entry_details_element( details.id );
-
-				// populate data
-				elemDetails.find( '.request-headers .inside pre code').text( $.wp_rest_api_log.json_stringify( details.request.headers ) );
-				elemDetails.find( '.response-headers .inside pre code').text( $.wp_rest_api_log.json_stringify( details.response.headers ) );
-				elemDetails.find( '.querystring-parameters .inside pre code').text( $.wp_rest_api_log.json_stringify( details.request.query_params ) );
-				elemDetails.find( '.body-parameters .inside pre code').text( $.wp_rest_api_log.json_stringify( details.request.body_params ) );
-				elemDetails.find( '.response-body .inside pre code').text( $.wp_rest_api_log.json_stringify( details.response_body ) );
-
-				elemDetails.find( '.inside pre code').each( function( i, block ) {
+				$( '.wp-rest-api-log-entry' ).find( 'code' ).each( function( i, block ) {
 					hljs.highlightBlock( block );
-				});
-
-				// toggle display
-				$.wp_rest_api_log.toggle_entry_details_element( elemDetails );
-
-				elemDetails.addClass( 'entry-details-populated' );
+				} );
 
 			},
 
@@ -161,11 +38,8 @@
 				} else {
 					element.addClass( 'visible' ).removeClass( 'collapsed' );
 				}
-			},
-
-			get_entry_details_element: function( id ) {
-				return $( '.wp-rest-api-log-wrap .log-entries .entry-details-' + id );
 			}
+
 
 		} // end wp_rest_api_log object
 	} );
