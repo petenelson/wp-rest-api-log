@@ -61,6 +61,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 */
 		public function log_rest_api_response( $served, $result, $request, $rest_server ) {
 
+
 			// allow specific requests to not be logged
 			$bypass_insert = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-bypass-insert', false, $result, $request, $rest_server );
 			if ( $bypass_insert ) {
@@ -84,6 +85,8 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 					),
 				);
 
+
+			wp_send_json( $args  );
 
 			do_action( WP_REST_API_Log_Common::PLUGIN_NAME . '-insert', $args );
 

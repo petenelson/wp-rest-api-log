@@ -149,8 +149,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		}
 
 		public function get_routes( WP_REST_Request $request ) {
-			$db = new WP_REST_API_Log_DB();
-			return rest_ensure_response( new WP_REST_API_Log_Routes_Response( $db->distinct_routes() ) );
+			// TODO fix this
+			//$db = new WP_REST_API_Log_DB();
+			//return rest_ensure_response( new WP_REST_API_Log_Routes_Response( $db->distinct_routes() ) );
 		}
 
 

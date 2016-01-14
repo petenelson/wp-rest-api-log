@@ -13,8 +13,8 @@ if ( empty( $entry->ID ) ) {
 	wp_enqueue_script( $this->plugin_name() .'-highlight-js' );
 	wp_enqueue_style( $this->plugin_name() . '-highlight-css' );
 
-	wp_enqueue_script( $this->plugin_name() . '-admin' );
-	wp_enqueue_style( $this->plugin_name() . '-admin' );
+	wp_enqueue_script( $this->plugin_name() );
+	wp_enqueue_style( $this->plugin_name() );
 
 }
 
@@ -27,7 +27,7 @@ if ( empty( $entry->ID ) ) {
 	<div id="poststuff">
 
 		<div class="postbox request-headers">
-			<h3 class=""><span>Details</span></h3>
+			<h3 class="hndle"><span>Details</span></h3>
 
 			<div class="inside collapsed">
 				<ul>
@@ -42,27 +42,27 @@ if ( empty( $entry->ID ) ) {
 		</div>
 
 		<div class="postbox request-headers">
-			<h3 class=""><span><?php esc_html_e( 'Request Headers', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
+			<h3 class="hndle"><span><?php esc_html_e( 'Request Headers', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
 			<div class="inside collapsed"><pre><code><?php echo json_encode( $entry->request->headers, JSON_PRETTY_PRINT ); ?></code></pre></div>
 		</div>
 
 		<div class="postbox querystring-parameters">
-			<h3 class=""><span><?php esc_html_e( 'Query Parameters', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
+			<h3 class="hndle"><span><?php esc_html_e( 'Query Parameters', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
 			<div class="inside collapsed"><pre><code><?php echo json_encode( $entry->request->query_params, JSON_PRETTY_PRINT ); ?></code></pre></div>
 		</div>
 
 		<div class="postbox body-parameters">
-			<h3 class=""><span><?php esc_html_e( 'Body Parameters', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
+			<h3 class="hndle"><span><?php esc_html_e( 'Body Parameters', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
 			<div class="inside collapsed"><pre><code><?php echo json_encode( $entry->request->body_params, JSON_PRETTY_PRINT ); ?></code></pre></div>
 		</div>
 
 		<div class="postbox response-headers">
-			<h3 class=""><span><?php esc_html_e( 'Response Headers', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
+			<h3 class="hndle"><span><?php esc_html_e( 'Response Headers', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
 			<div class="inside collapsed"><pre><code><?php echo json_encode( $entry->response->headers, JSON_PRETTY_PRINT ); ?></code></pre></div>
 		</div>
 
 		<div class="postbox response-body">
-			<h3 class=""><span><?php esc_html_e( 'Response', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
+			<h3 class="hndle"><span><?php esc_html_e( 'Response', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
 			<div class="inside collapsed"><pre><code><?php echo $entry->response->body; ?></code></pre></div>
 		</div>
 
