@@ -11,6 +11,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 
 		public function plugins_loaded() {
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
+			add_action( 'restrict_manage_posts', array( $this, 'add_method_dropdown' ) );
 		}
 
 
@@ -82,6 +83,24 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 
 		}
 
+		public function add_method_dropdown( $post_type ) {
+			if ( 'wp-rest-api-log' === $post_type ) {
+
+				$selected_method   = filter_input( INPUT_GET, WP_REST_API_Log_DB::TAXONOMY_METHOD, FILTER_SANITIZE_STRING );
+				$methods           = array( 'GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS' );
+
+				?>
+					<label for="wp-rest-api-log-methods" class="screen-reader-text"><?php esc_html_e( 'Methods', 'wp-rest-api-log' ); ?></label>
+					<select name="<?php echo esc_attr( WP_REST_API_Log_DB::TAXONOMY_METHOD ); ?>" id="wp-rest-api-log-methods">
+						<option value=""><?php esc_html_e( 'All Methods', 'wp-rest-api-log' ); ?></option>
+						<?php foreach( $methods as $method ) : ?>
+							<option value="<?php echo esc_attr( $method ); ?>" <?php selected( $method, $selected_method ); ?>><?php echo esc_html( $method ); ?></option>
+						<?php endforeach; ?>
+					</select>
+
+				<?php
+			}
+		}
 
 		private function get_entry( $post_id ) {
 			if ( empty( $this->_post ) || $post_id !== $this->_post_id ) {
