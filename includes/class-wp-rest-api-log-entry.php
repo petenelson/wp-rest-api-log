@@ -118,7 +118,6 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			$this->ip_address      = get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_IP_ADDRESS, true );
 			$this->milliseconds    = absint( get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_MILLISECONDS, true ) );
 
-
 		}
 
 		private function load_taxonomies() {

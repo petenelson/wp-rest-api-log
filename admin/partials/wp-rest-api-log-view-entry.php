@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+
 $id = absint( filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT ) );
 
 if ( ! empty( $id ) ) {
@@ -8,21 +10,14 @@ if ( ! empty( $id ) ) {
 
 if ( empty( $entry->ID ) ) {
 	wp_die( __( 'Invalid entry ID', WP_REST_API_Log_Common::TEXT_DOMAIN ) );
-} else {
-
-	wp_enqueue_script( $this->plugin_name() .'-highlight-js' );
-	wp_enqueue_style( $this->plugin_name() . '-highlight-css' );
-
-	wp_enqueue_script( $this->plugin_name() );
-	wp_enqueue_style( $this->plugin_name() );
-
 }
 
-
 ?>
-<div class="wrap wp-rest-api-log-entry">
+<div class="wrap wp-rest-api-log-entry" id="wp-rest-api-log-entry">
 
-	<h1><?php echo esc_html( $entry->route ); ?></h1>
+	
+
+	<h1>Route: <?php echo esc_html( $entry->route ); ?></h1>
 
 	<div id="poststuff">
 
@@ -43,27 +38,27 @@ if ( empty( $entry->ID ) ) {
 
 		<div class="postbox request-headers">
 			<h3 class="hndle"><span><?php esc_html_e( 'Request Headers', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
-			<div class="inside collapsed"><pre><code><?php echo json_encode( $entry->request->headers, JSON_PRETTY_PRINT ); ?></code></pre></div>
+			<div class="inside collapsed"><pre><code class="json"><?php echo json_encode( $entry->request->headers, JSON_PRETTY_PRINT ); ?></code></pre></div>
 		</div>
 
 		<div class="postbox querystring-parameters">
 			<h3 class="hndle"><span><?php esc_html_e( 'Query Parameters', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
-			<div class="inside collapsed"><pre><code><?php echo json_encode( $entry->request->query_params, JSON_PRETTY_PRINT ); ?></code></pre></div>
+			<div class="inside collapsed"><pre><code class="json"><?php echo json_encode( $entry->request->query_params, JSON_PRETTY_PRINT ); ?></code></pre></div>
 		</div>
 
 		<div class="postbox body-parameters">
 			<h3 class="hndle"><span><?php esc_html_e( 'Body Parameters', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
-			<div class="inside collapsed"><pre><code><?php echo json_encode( $entry->request->body_params, JSON_PRETTY_PRINT ); ?></code></pre></div>
+			<div class="inside collapsed"><pre><code class="json"><?php echo json_encode( $entry->request->body_params, JSON_PRETTY_PRINT ); ?></code></pre></div>
 		</div>
 
 		<div class="postbox response-headers">
 			<h3 class="hndle"><span><?php esc_html_e( 'Response Headers', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
-			<div class="inside collapsed"><pre><code><?php echo json_encode( $entry->response->headers, JSON_PRETTY_PRINT ); ?></code></pre></div>
+			<div class="inside collapsed"><pre><code class="json"><?php echo json_encode( $entry->response->headers, JSON_PRETTY_PRINT ); ?></code></pre></div>
 		</div>
 
 		<div class="postbox response-body">
 			<h3 class="hndle"><span><?php esc_html_e( 'Response', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
-			<div class="inside collapsed"><pre><code><?php echo $entry->response->body; ?></code></pre></div>
+			<div class="inside collapsed"><pre><code><?php echo esc_html( $entry->response->body ); ?></code></pre></div>
 		</div>
 
 	</div>

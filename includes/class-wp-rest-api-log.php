@@ -86,8 +86,6 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 				);
 
 
-			wp_send_json( $args  );
-
 			do_action( WP_REST_API_Log_Common::PLUGIN_NAME . '-insert', $args );
 
 			return $served;

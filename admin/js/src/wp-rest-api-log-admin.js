@@ -1,62 +1,44 @@
 (function( $ ) {
-	'use strict';
 
-	$.extend( {
-		wp_rest_api_log: {
+	WP_REST_API_Log = {
 
-			reset_html: '',
-			search_args: { },
+		entry_element: null,
 
-			document_ready: function() {
-				$.wp_rest_api_log.highlight_block();
-			},
+		init: function() {
+			console.log( 'WP_REST_API_Log init' );
 
-			highlight_block: function() {
+			this.entry_element = $( document.getElementById( 'wp-rest-api-log-entry' ) );
 
-				$( '.wp-rest-api-log-entry' ).find( 'code' ).each( function( i, block ) {
-					hljs.highlightBlock( block );
-				} );
+			this.highlight_blocks();
+		},
 
-			},
+		populate_entry: function() {
+			if ( this.entry_element.length > 0 && 'undefined' !== typeof WP_REST_API_Log_Entry_Data ) {
 
-			json_stringify: function( obj ) {
-				return JSON.stringify( obj, null, 2 ); // spacing level = 2;
-			},
+				// this.entry_element.find( '.request-headers code'        ).html( this.json_stringify( WP_REST_API_Log_Entry_Data.entry.request.headers ) );
+				// this.entry_element.find( '.querystring-parameters code' ).html( this.json_stringify( WP_REST_API_Log_Entry_Data.entry.request.query_params ) );
+				// this.entry_element.find( '.body-parameters code'        ).html( this.json_stringify( WP_REST_API_Log_Entry_Data.entry.request.body_params ) );
 
-			toggle_entry_details_element: function( elemDetails ) {
-				if ( elemDetails.hasClass('entry-details-visible') ) {
-					elemDetails.removeClass( 'entry-details-visible' );
-				} else {
-					elemDetails.addClass( 'entry-details-visible' );
-				}
-			},
-
-			toggle_inside_element: function( element ) {
-				element = element.parent().find( '.inside' );
-				if ( element.hasClass('visible') ) {
-					element.removeClass( 'visible' ).addClass( 'collapsed' );
-				} else {
-					element.addClass( 'visible' ).removeClass( 'collapsed' );
-				}
 			}
+		},
+
+		highlight_blocks: function() {
+
+			this.entry_element.find( 'code' ).each( function( i, block ) {
+				hljs.highlightBlock( block );
+			} );
+
+		},
+
+		json_stringify: function( obj ) {
+			return JSON.stringify( obj, null, 2 ); // spacing level = 2;
+		}
 
 
-		} // end wp_rest_api_log object
+	};
+
+	$( document ).ready( function() {
+		WP_REST_API_Log.init();
 	} );
-
-
-
-	// send nonce to the WP API
-	$( document ).ajaxSend( function( event, xhr ) {
-		// you can also send _wp_rest_nonce in the GET or POST params
-		xhr.setRequestHeader( 'X-WP-Nonce', wp_rest_api_log_admin.nonce );
-	});
-
-
-	// hook up our JS
-	$( document ).ready(function() {
-		$.wp_rest_api_log.document_ready();
-	});
-
 
 })( jQuery );

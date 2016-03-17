@@ -57,25 +57,6 @@ module.exports = function( grunt ) {
 			}
 		},
 
-		postcss: {
-			dist: {
-				options: {
-					map: false,
-					processors: [
-						require('autoprefixer-core')({
-							browsers: ['last 2 versions']
-						}),
-						require('postcss-clearfix'),
-						require('postcss-pseudo-class-enter'),
-						require('cssnano')()
-					]
-				},
-				files: {
-					'admin/css/wp-rest-api-log-admin.css': [ 'admin/css/wp-rest-api-log-admin.css' ]
-				}
-			}
-		},
-
 		cssmin: {
 			options: {
 				sourceMap: true
@@ -94,16 +75,16 @@ module.exports = function( grunt ) {
 		watch: {
 			styles: {
 				files: ['admin/css/sass/*.scss'],
-				tasks: ['sass', 'postcss', 'cssmin'],
+				tasks: ['sass', 'cssmin'],
 				options: {
-					debounceDelay: 500
+					debounceDelay: 250
 				}
 			},
 			scripts: {
 				files: [ 'admin/js/src/*.js' ],
 				tasks: [ 'jshint', 'concat', 'uglify' ],
 				options: {
-					debounceDelay: 500
+					debounceDelay: 250
 				}
 			}
 		},
@@ -194,7 +175,7 @@ module.exports = function( grunt ) {
 	require('load-grunt-tasks')(grunt);
 
 	// Register tasks
-	grunt.registerTask( 'default', ['jshint', 'concat', 'uglify', 'sass', 'postcss', 'cssmin'] );
+	grunt.registerTask( 'default', ['jshint', 'concat', 'uglify', 'sass', 'cssmin'] );
 
 	grunt.registerTask( 'build', ['default', 'clean', 'copy', 'compress'] );
 

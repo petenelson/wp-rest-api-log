@@ -15,10 +15,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 
 		public function admin_menu() {
+
 			add_submenu_page(
-				NULL,
+				null,
 				__( 'REST API Log Entry', WP_REST_API_Log_Common::TEXT_DOMAIN ),
-				'', // menu title
+				'',
 				'manage_options',
 				WP_REST_API_Log_Common::PLUGIN_NAME . '-view-entry',
 				array( $this, 'display_log_entry')
@@ -30,12 +31,17 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 		public function register_scripts() {
 
-			// https://highlightjs.org/
-			wp_register_script( $this->plugin_name() .'-highlight-js',  '//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js' );
-			wp_register_style( $this->plugin_name() . '-highlight-css', '//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css' );
+			$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.min' : '';
 
-			wp_register_script( $this->plugin_name(), plugin_dir_url( __FILE__ ) . 'js/wp-rest-api-log-admin.min.js', 'jquery', WP_REST_API_Log_Common::VERSION );
-			wp_register_style( $this->plugin_name(), plugin_dir_url( __FILE__ ) . 'css/wp-rest-api-log-admin.min.css', '', WP_REST_API_Log_Common::VERSION );
+			// https://highlightjs.org/
+			$highlight_version = apply_filters( 'wp-rest-api-log-admin-highlist-js-version', '9.2.0' );
+			$highlight_style   = apply_filters( 'wp-rest-api-log-admin-highlist-js-version', 'github' );
+
+			wp_register_script( 'wp-rest-api-log-admin-highlight-js',   '//cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/highlight.min.js' );
+			wp_register_style(  'wp-rest-api-log-admin-highlight-js',  '//cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/styles/' . $highlight_style . '.min.css' );
+
+			wp_register_script( 'wp-rest-api-log-admin', plugin_dir_url( __FILE__ ) . 'js/wp-rest-api-log-admin' . $min . '.js', 'jquery', WP_REST_API_Log_Common::VERSION );
+			wp_register_style(  'wp-rest-api-log-admin', plugin_dir_url( __FILE__ ) . 'css/wp-rest-api-log-admin' . $min . '.css', '', WP_REST_API_Log_Common::VERSION );
 
 			// http://trentrichardson.com/examples/timepicker/
 			//wp_enqueue_script( 'jquery-ui-timepicker', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.js' );
@@ -46,7 +52,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 		public function display_log_entry() {
 
-			include_once apply_filters( $this->plugin_name() .'-view-entry-template' ,plugin_dir_path( __FILE__ ) .'partials/wp-rest-api-log-view-entry.php' );
+			include_once apply_filters( 'wp-rest-api-log-admin-view-entry-template', plugin_dir_path( __FILE__ ) .'partials/wp-rest-api-log-view-entry.php' );
+
+			wp_enqueue_script( 'wp-rest-api-log-admin-highlight-js' );
+			wp_enqueue_style(  'wp-rest-api-log-admin-highlight-js' );
+			wp_enqueue_script( 'wp-rest-api-log-admin' );
 
 		}
 
