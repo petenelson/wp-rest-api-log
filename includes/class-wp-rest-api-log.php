@@ -16,8 +16,8 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			// filter that is called by the REST API right before it sends a response
 			add_filter( 'rest_pre_serve_request', array( $this, 'log_rest_api_response' ), 9999, 4 );
 
+			// an example of disabling logging for specific requests
 			add_filter( 'wp-rest-api-log-bypass-insert', function( $bypass_insert, $result, $request, $rest_server ) {
-				// an example of disabling logging for specific requests
 
 				if ( stripos( $request->get_route(), '/wp-rest-api-log') !== false ) {
 					$bypass_insert = true;
@@ -29,7 +29,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 
 			// for local development
-			// remove this for deployment
+			// TODO remove this for deployment
 			add_filter( 'determine_current_user', function( $user_id ) {
 
 				if ( 'hello' == $_REQUEST['dev-key'] ) {
