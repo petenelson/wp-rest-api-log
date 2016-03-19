@@ -12,6 +12,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		public function plugins_loaded() {
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 			add_action( 'restrict_manage_posts', array( $this, 'add_method_dropdown' ) );
+			add_action( 'restrict_manage_posts', array( $this, 'add_status_dropdown' ) );
 		}
 
 
@@ -95,6 +96,25 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 						<option value=""><?php esc_html_e( 'All Methods', 'wp-rest-api-log' ); ?></option>
 						<?php foreach( $methods as $method ) : ?>
 							<option value="<?php echo esc_attr( $method ); ?>" <?php selected( $method, $selected_method ); ?>><?php echo esc_html( $method ); ?></option>
+						<?php endforeach; ?>
+					</select>
+
+				<?php
+			}
+		}
+
+		public function add_status_dropdown( $post_type ) {
+			if ( 'wp-rest-api-log' === $post_type ) {
+
+				$selected_status   = filter_input( INPUT_GET, WP_REST_API_Log_DB::TAXONOMY_STATUS, FILTER_SANITIZE_STRING );
+				$statuses          = get_terms( WP_REST_API_Log_DB::TAXONOMY_STATUS );
+
+				?>
+					<label for="wp-rest-api-log-statuses" class="screen-reader-text"><?php esc_html_e( 'Status', 'wp-rest-api-log' ); ?></label>
+					<select name="<?php echo esc_attr( WP_REST_API_Log_DB::TAXONOMY_STATUS ); ?>" id="wp-rest-api-log-statuses">
+						<option value=""><?php esc_html_e( 'All Statuses', 'wp-rest-api-log' ); ?></option>
+						<?php foreach( $statuses as $status ) : ?>
+							<option value="<?php echo esc_attr( $status->slug ); ?>" <?php selected( $status->slug, $selected_status ); ?>><?php echo esc_html( $status->name ); ?></option>
 						<?php endforeach; ?>
 					</select>
 
