@@ -11,6 +11,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			add_filter( 'post_type_link', array( $this, 'entry_permalink' ), 10, 2 );
 			add_action( 'admin_init', array( $this, 'register_scripts' ) );
 			add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+
+			add_action( 'admin_init', array( $this, 'create_migrate_legacy_db_cron' ) );
+
 		}
 
 
@@ -77,6 +80,18 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			return WP_REST_API_Log_Common::PLUGIN_NAME . '-admin';
 		}
 
+		/**
+		 * Creates a one-time cron job to migrate the legacy tables to
+		 * custom post type records
+		 *
+		 * @return void
+		 */
+		public function create_migrate_legacy_db_cron() {
+			$migrate_completed = get_option( 'wp-rest-api-log-migrate-completed' );
+			if ( false === $migrate_completed ) {
+				wp_schedule_single_event( time(), 'wp-rest-api-log-migrate-legacy-db' ); 
+			}
+		}
 
 
 	}

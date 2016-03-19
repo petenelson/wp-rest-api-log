@@ -19,6 +19,10 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			add_action( 'init', array( $this, 'register_custom_post_types' ) );
 			add_action( 'init', array( $this, 'register_custom_taxonomies' ) );
 			add_action( WP_REST_API_Log_Common::PLUGIN_NAME . '-insert', array( $this, 'insert' ), 10, 4 );
+
+			// called by the one-time cron job to migrate legacy db records
+			add_action( 'wp-rest-api-log-migrate-legacy-db', array( $this, 'migrate_db_records' ) );
+
 		}
 
 
@@ -108,7 +112,13 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 		}
 
-
+		/**
+		 * Inserts a REST API log custom post type record and corresponding
+		 * post meta and taxonomy terms
+		 *
+		 * @param  array $args
+		 * @return int
+		 */
 		public function insert( $args ) {
 
 			$args = wp_parse_args( $args, array(
@@ -334,6 +344,120 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		}
 
 
+		/**
+		 * Migrates records from the initial version of the plugin's
+		 * custom tables to custom post types
+		 *
+		 * @return
+		 */
+		public function migrate_db_records() {
+
+			$migrate_completed = get_option( 'wp-rest-api-log-migrate-completed' );
+
+			if ( false === $migrate_completed ) { 
+
+				global $wpdb;
+
+				$ids = $wpdb->get_col( "select * from {$wpdb->prefix}wp_rest_api_log" );
+
+				$post_ids = array();
+
+				foreach ( $ids as $id ) {
+
+					$query = new WP_Query( array(
+						'posts_per_page'           => 1,
+						'update_post_meta_cache'   => false,
+						'update_post_term_cache'   => false,
+						'post_type'                => self::POST_TYPE,
+						'meta_key'                 => '_wp_rest_api_log_migrated_id',
+						'meta_value'               => $id,
+						'fields'                   => 'ids',
+						)
+					);
+
+					if ( ! $query->have_posts() ) {
+						$post_ids[] = $this->migrate_db_record( $id );
+					}
+
+				}
+
+				wp_cache_flush();
+
+				add_option( 'wp-rest-api-log-migrate-completed', '1', '', 'no' );
+			}
+
+		}
+
+		/**
+		 * Migrates single record from the initial version of the plugin's
+		 * custom tables to a custom post type
+		 *
+		 * @return
+		 */
+		private function migrate_db_record( $id ) {
+
+			global $wpdb;
+
+			$log         = $wpdb->get_row( $wpdb->prepare( "select * from {$wpdb->prefix}wp_rest_api_log where id = %d", $id ) );
+			$meta_rows   = $wpdb->get_results( $wpdb->prepare( "select * from {$wpdb->prefix}wp_rest_api_logmeta where log_id = %d", $log->id ) );
+
+			$args = array(
+				'time'                  => $log->time,
+				'ip_address'            => $log->ip_address,
+				'route'                 => $log->route,
+				'method'                => $log->method,
+				'status'                => $log->status,
+				'request'               => array(
+					'body'                 => $log->request_body,
+					),
+				'response'               => array(
+					'body'                 => json_decode( $log->response_body ),
+					),
+				'milliseconds'          => $log->milliseconds,
+			);
+
+
+			foreach( $meta_rows as $meta_row ) {
+
+				$request_response = $meta_row->meta_request_response;
+
+				switch ( $meta_row->meta_type ) {
+					case 'header':
+						$meta_type = 'headers';
+						break;
+					case 'query':
+						$meta_type = 'query_params';
+						break;
+				}
+
+				if ( ! empty( $meta_type ) ) {
+					$args[ $meta_row->meta_request_response ][ $meta_type ][ $meta_row->meta_key ] = $meta_row->meta_value;
+				}
+
+			}
+
+			$post_id = $this->insert( $args );
+
+			// save the legacy ID so we don't migrate it again
+			update_post_meta( $post_id, '_wp_rest_api_log_migrated_id', $id );
+
+			// manually update the post dates
+			$wpdb->update(
+				$wpdb->posts,
+				array(
+					'post_date' => $log->time,
+					'post_date_gmt' => $log->time,
+					'post_modified' => $log->time,
+					'post_modified_gmt' => $log->time,
+					),
+				array(
+					'ID' => $post_id, // where clause
+					)
+			);
+
+			return $post_id;
+
+		}
 
 
 	} // end class
