@@ -27,6 +27,19 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 				WP_REST_API_Log_Common::PLUGIN_NAME . '-view-entry',
 				array( $this, 'display_log_entry')
 			);
+
+			global $submenu;
+			if ( ! empty( $submenu['tools.php'] ) ) {
+				foreach ( $submenu['tools.php'] as &$item ) {
+					if ( 'edit.php?post_type=wp-rest-api-log' === $item[2] ) {
+						$item[0] = __( 'REST API Log', 'wp-rest-api-log' );
+						if ( ! empty( $item[3] ) ) {
+							$item[3] = $item[0];
+						}
+					}
+				}
+			}
+
 		}
 
 
