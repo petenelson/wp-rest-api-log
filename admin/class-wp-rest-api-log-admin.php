@@ -8,11 +8,14 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 
 		public function plugins_loaded() {
-			add_filter( 'post_type_link', array( $this, 'entry_permalink' ), 10, 2 );
+			add_filter( 'post_type_link',     array( $this, 'entry_permalink' ), 10, 2 );
+			add_filter( 'get_edit_post_link', array( $this, 'entry_permalink' ), 10, 2 );
+
 			add_action( 'admin_init', array( $this, 'register_scripts' ) );
 			add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 
 			add_action( 'admin_init', array( $this, 'create_migrate_legacy_db_cron' ) );
+
 
 		}
 
@@ -78,7 +81,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 
 		public function entry_permalink( $permalink, $post ) {
-
+			$post = get_post( $post );
 			if ( WP_REST_API_Log_DB::POST_TYPE === $post->post_type ) {
 				$permalink = add_query_arg( array(
 					'page'  => WP_REST_API_Log_Common::PLUGIN_NAME . '-view-entry',
@@ -105,7 +108,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 				wp_schedule_single_event( time(), 'wp-rest-api-log-migrate-legacy-db' ); 
 			}
 		}
-
 
 	}
 
