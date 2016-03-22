@@ -34,7 +34,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 						),
 					'route-match-type'      => array(
 						'sanitize_callback'    => 'sanitize_key',
-						'default'              => 'wildcard',
+						'default'              => 'exact',
 						),
 					'id'                    => array(
 						'sanitize_callback'    => 'absint',

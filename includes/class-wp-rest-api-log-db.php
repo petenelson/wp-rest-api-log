@@ -23,6 +23,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			// called by the one-time cron job to migrate legacy db records
 			add_action( 'wp-rest-api-log-migrate-legacy-db', array( $this, 'migrate_db_records' ) );
 
+			// adds where statement when searching for routes
+			add_filter( 'posts_where', array( $this, 'add_where_route' ), 10, 2 );
+
 		}
 
 
@@ -306,11 +309,11 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					'from'               => '',
 					'to'                 => current_time( 'mysql' ),
 					'route'              => '',
-					'route_match_type'   => 'wildcard',
-					'method'             => '',
+					'route_match_type'   => 'exact',
+					'method'             => false,
+					'status'             => '',
 					'page'               => 1,
 					'posts_per_page'     => 50,
-					'id'                 => 0,
 					'fields'             => 'basic',
 					'params'             => array(),
 				)
@@ -320,6 +323,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				'post_type'         => self::POST_TYPE,
 				'posts_per_page'    => $args['posts_per_page'],
 				'date_query'        => array(),
+				'tax_query'         => array( 'relation' => 'AND' ),
   				);
 
 			if ( ! empty( $args['id'] ) ) {
@@ -328,6 +332,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			// TODO before and after ID needs custom SQL injected into the query
 			
+			// dates
 			if ( ! empty( $args['from'] ) ) {
 				$query_args['date_query']['after'] = $args['from'];
 			}
@@ -336,14 +341,17 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				$query_args['date_query']['before'] = $args['to'];
 			}
 
-			// wp_send_json( $query_args );
+			// route, handled by posts_where filter
+			if ( ! empty( $args['route'] ) ) {
+				$query_args['_wp-rest-api-log-route']              = $args['route'];
+				$query_args['_wp-rest-api-log-route-match-type']   = $args['route_match_type'];
+			}
 
 
-			global $post;
 			$posts = array();
 			$query = new WP_Query( $query_args );
 
-			// wp_send_json( $query->request );
+			//wp_send_json( $query->request );
 
 			if ( $query->have_posts() ) {
 				$posts = $query->posts;
@@ -351,6 +359,47 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			return $posts;
 
+		}
+
+		/**
+		 * Adds custom where statement for routes
+		 *
+		 * @param string $where original SQL
+		 * @param object $query WP_Query
+		 * @return string
+		 */
+		public function add_where_route( $where, $query ) {
+
+			$route = $query->get( '_wp-rest-api-log-route' );
+			if ( ! empty( $route ) ) {
+
+				global $wpdb;
+
+				$route_match_type   = $query->get( '_wp-rest-api-log-route-match-type' );
+				$route_start        = '';
+				$route_end          = '';
+
+				switch ( $route_match_type ) {
+
+					case 'starts_with':
+						$route_end = '%';
+						break;
+
+					case 'ends_with':
+						$route_start = '%';
+						break;
+
+					case 'wildcard':
+						$route_start   = '%';
+						$route_end     = '%';
+						break;
+				}
+
+				$where .= $wpdb->prepare( " AND {$wpdb->posts}.post_title like %s", $route_start . $route . $route_end );
+
+			}
+
+			return $where;
 		}
 
 
