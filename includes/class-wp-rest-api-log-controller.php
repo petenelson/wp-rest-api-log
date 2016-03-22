@@ -14,7 +14,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 		public function register_rest_routes() {
 
-			// TODO refactor fields and search to better match WP_Query
 			register_rest_route( WP_REST_API_Log_Common::PLUGIN_NAME, '/entries', array(
 				'methods'             => array( WP_REST_Server::READABLE ),
 				'callback'            => array( $this, 'get_items' ),
@@ -26,9 +25,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 					'to'                    => array(
 						'default'              => current_time( 'mysql' ),
 						),
-					'fields'                => array(
-						'default'              => 'basic',
-						),
+					// 'fields'                => array(
+					// 	'default'              => 'basic',
+					// 	),
 					'route'                 => array(
 						'default'              => '',
 						),
@@ -36,10 +35,10 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 						'sanitize_callback'    => 'sanitize_key',
 						'default'              => 'exact',
 						),
-					'id'                    => array(
-						'sanitize_callback'    => 'absint',
-						'default'              => 0,
-						),
+					// 'id'                    => array(
+					// 	'sanitize_callback'    => 'absint',
+					// 	'default'              => 0,
+					// 	),
 					'after-id'              => array(
 						'sanitize_callback'    => 'absint',
 						'default'              => 0,
@@ -56,11 +55,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 						'sanitize_callback'    => 'absint',
 						'default'              => 20,
 						),
-					'response_type'         => array(
-						'default'           => 'json',
-						),
-					'params'                => array(
-						),
+					// 'response_type'         => array(
+					// 	'default'           => 'json',
+					// 	),
+					// 'params'                => array(
+					// 	),
 				),
 			) );
 
