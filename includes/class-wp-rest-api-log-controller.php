@@ -105,7 +105,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 			$args = array(
 				'id'                  => $request['id'],
-				'fields'              => $request['fields'],
 				'page'                => $request['page'],
 				'records_per_page'    => $request['records-per-page'],
 				'after_id'            => $request['after-id'],

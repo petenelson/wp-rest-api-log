@@ -26,6 +26,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			// adds where statement when searching for routes
 			add_filter( 'posts_where', array( $this, 'add_where_route' ), 10, 2 );
 
+			// adds where statement when searching post id ranges
+			add_filter( 'posts_where', array( $this, 'add_where_post_id' ), 10, 2 );
+
 		}
 
 
@@ -311,7 +314,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					'route'              => '',
 					'route_match_type'   => 'exact',
 					'method'             => false,
-					'status'             => '',
+					'status'             => false,
 					'page'               => 1,
 					'posts_per_page'     => 50,
 					'fields'             => 'basic',
@@ -322,6 +325,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$query_args = array(
 				'post_type'         => self::POST_TYPE,
 				'posts_per_page'    => $args['posts_per_page'],
+				'paged'             => $args['page'],
 				'date_query'        => array(),
 				'tax_query'         => array( 'relation' => 'AND' ),
   				);
@@ -347,11 +351,19 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				$query_args['_wp-rest-api-log-route-match-type']   = $args['route_match_type'];
 			}
 
+			// post id, handled by posts_where filter
+			if ( ! empty( $args['after_id'] ) ) {
+				$query_args['_wp-rest-api-log-after-id']           = $args['after_id'];
+			}
+
+			if ( ! empty( $args['before_id'] ) ) {
+				$query_args['_wp-rest-api-log-before-id']          = $args['before_id'];
+			}
 
 			$posts = array();
 			$query = new WP_Query( $query_args );
 
-			//wp_send_json( $query->request );
+			// wp_send_json( $query->request );
 
 			if ( $query->have_posts() ) {
 				$posts = $query->posts;
@@ -402,6 +414,30 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			return $where;
 		}
 
+
+		/**
+		 * Adds custom where statement for post id ranges
+		 *
+		 * @param string $where original SQL
+		 * @param object $query WP_Query
+		 * @return string
+		 */
+		public function add_where_post_id( $where, $query ) {
+
+			global $wpdb;
+
+			$after_id = $query->get( '_wp-rest-api-log-after-id' );
+			if ( ! empty( $after_id ) ) {
+				$where .= $wpdb->prepare( " AND {$wpdb->posts}.ID > %d", $after_id );
+			}
+
+			$before_id = $query->get( '_wp-rest-api-log-before-id' );
+			if ( ! empty( $before_id ) ) {
+				$where .= $wpdb->prepare( " AND {$wpdb->posts}.ID < %d", $before_id );
+			}
+
+			return $where;
+		}
 
 		/**
 		 * Migrates records from the initial version of the plugin's
