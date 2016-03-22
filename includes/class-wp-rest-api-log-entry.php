@@ -75,7 +75,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 */
 		public $milliseconds;
 
-		public $links = array( 'self' => '' );
+		public $_links = array( 'self' => array( 'href' => '' ) );
 
 		private $_post;
 
@@ -111,7 +111,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			$this->time_gmt  = $this->_post->post_date_gmt;
 
 			if ( function_exists( 'rest_url' ) ) {
-				$this->links['self'] = rest_url( WP_REST_API_Log_Common::PLUGIN_NAME . '/entry/' . $this->ID );
+				$this->_links['self']['href'] = rest_url( WP_REST_API_Log_Common::PLUGIN_NAME . '/entry/' . $this->ID );
 			}
 		}
 
