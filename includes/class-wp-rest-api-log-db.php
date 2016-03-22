@@ -319,27 +319,37 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$query_args = array(
 				'post_type'         => self::POST_TYPE,
 				'posts_per_page'    => $args['posts_per_page'],
+				'date_query'        => array(),
   				);
 
 			if ( ! empty( $args['id'] ) ) {
 				$query_args['p'] = $args['id'];
 			}
 
-			// TODO implement searching of other fields here
+			// TODO before and after ID needs custom SQL injected into the query
+			
+			if ( ! empty( $args['from'] ) ) {
+				$query_args['date_query']['after'] = $args['from'];
+			}
+
+			if ( ! empty( $args['to'] ) ) {
+				$query_args['date_query']['before'] = $args['to'];
+			}
+
+			// wp_send_json( $query_args );
+
 
 			global $post;
 			$posts = array();
 			$query = new WP_Query( $query_args );
 
-			while ( $query->have_posts() ) {
-				$query->the_post();
-				$posts[] = $post;
+			// wp_send_json( $query->request );
+
+			if ( $query->have_posts() ) {
+				$posts = $query->posts;
 			}
 
-			wp_reset_postdata();
-
 			return $posts;
-
 
 		}
 
