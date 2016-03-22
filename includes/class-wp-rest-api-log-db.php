@@ -334,8 +334,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				$query_args['p'] = $args['id'];
 			}
 
-			// TODO before and after ID needs custom SQL injected into the query
-			
 			// dates
 			if ( ! empty( $args['from'] ) ) {
 				$query_args['date_query']['after'] = $args['from'];
@@ -358,6 +356,24 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			if ( ! empty( $args['before_id'] ) ) {
 				$query_args['_wp-rest-api-log-before-id']          = $args['before_id'];
+			}
+
+			// HTTP Method
+			if ( ! empty( $args['method'] ) ) {
+				$query_args['tax_query'][] = array(
+					'taxonomy' => self::TAXONOMY_METHOD,
+					'field'    => 'slug',
+					'terms'    => explode( ',', $args['method'] ),
+					);
+			}
+
+			// HTTP Status
+			if ( ! empty( $args['status'] ) ) {
+				$query_args['tax_query'][] = array(
+					'taxonomy' => self::TAXONOMY_STATUS,
+					'field'    => 'slug',
+					'terms'    => explode( ',', $args['status'] ),
+					);
 			}
 
 			$posts = array();

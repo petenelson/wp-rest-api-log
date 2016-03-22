@@ -112,6 +112,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				'from'                => $request['from'],
 				'to'                  => $request['to'],
 				'method'              => $request['method'],
+				'status'              => $request['status'],
 				'route'               => $request['route'],
 				'route_match_type'    => $request['route-match-type'],
 				'params'              => $request['params'],
