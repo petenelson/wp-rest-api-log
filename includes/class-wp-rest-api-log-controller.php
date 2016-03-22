@@ -14,8 +14,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 		public function register_rest_routes() {
 
-			// TODO refactor fields and search to better match WP_Query
-			register_rest_route( WP_REST_API_Log_Common::PLUGIN_NAME, '/entry', array(
+			register_rest_route( WP_REST_API_Log_Common::PLUGIN_NAME, '/entries', array(
 				'methods'             => array( WP_REST_Server::READABLE ),
 				'callback'            => array( $this, 'get_items' ),
 				'permission_callback' => array( $this, 'get_permissions_check' ),
@@ -26,20 +25,20 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 					'to'                    => array(
 						'default'              => current_time( 'mysql' ),
 						),
-					'fields'                => array(
-						'default'              => 'basic',
-						),
+					// 'fields'                => array(
+					// 	'default'              => 'basic',
+					// 	),
 					'route'                 => array(
 						'default'              => '',
 						),
 					'route-match-type'      => array(
 						'sanitize_callback'    => 'sanitize_key',
-						'default'              => 'wildcard',
+						'default'              => 'exact',
 						),
-					'id'                    => array(
-						'sanitize_callback'    => 'absint',
-						'default'              => 0,
-						),
+					// 'id'                    => array(
+					// 	'sanitize_callback'    => 'absint',
+					// 	'default'              => 0,
+					// 	),
 					'after-id'              => array(
 						'sanitize_callback'    => 'absint',
 						'default'              => 0,
@@ -56,11 +55,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 						'sanitize_callback'    => 'absint',
 						'default'              => 20,
 						),
-					'response_type'         => array(
-						'default'           => 'json',
-						),
-					'params'                => array(
-						),
+					// 'response_type'         => array(
+					// 	'default'           => 'json',
+					// 	),
+					// 'params'                => array(
+					// 	),
 				),
 			) );
 
@@ -102,10 +101,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 
 		public function get_items( WP_REST_Request $request ) {
-			// refactor all of this to better match WP_Query
+
 			$args = array(
 				'id'                  => $request['id'],
-				'fields'              => $request['fields'],
 				'page'                => $request['page'],
 				'records_per_page'    => $request['records-per-page'],
 				'after_id'            => $request['after-id'],
@@ -113,6 +111,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				'from'                => $request['from'],
 				'to'                  => $request['to'],
 				'method'              => $request['method'],
+				'status'              => $request['status'],
 				'route'               => $request['route'],
 				'route_match_type'    => $request['route-match-type'],
 				'params'              => $request['params'],
@@ -149,9 +148,17 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		}
 
 		public function get_routes( WP_REST_Request $request ) {
-			// TODO fix this
-			//$db = new WP_REST_API_Log_DB();
-			//return rest_ensure_response( new WP_REST_API_Log_Routes_Response( $db->distinct_routes() ) );
+
+			global $wpdb;
+
+			$query = $wpdb->prepare( "select distinct post_title from {$wpdb->posts} where post_type = %s and post_title is not null order by post_type",
+				WP_REST_API_Log_DB::POST_TYPE );
+
+			$routes = $wpdb->get_col( $query );
+
+
+			return rest_ensure_response( $routes );
+
 		}
 
 

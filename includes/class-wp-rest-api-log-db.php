@@ -23,6 +23,12 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			// called by the one-time cron job to migrate legacy db records
 			add_action( 'wp-rest-api-log-migrate-legacy-db', array( $this, 'migrate_db_records' ) );
 
+			// adds where statement when searching for routes
+			add_filter( 'posts_where', array( $this, 'add_where_route' ), 10, 2 );
+
+			// adds where statement when searching post id ranges
+			add_filter( 'posts_where', array( $this, 'add_where_post_id' ), 10, 2 );
+
 		}
 
 
@@ -306,11 +312,11 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					'from'               => '',
 					'to'                 => current_time( 'mysql' ),
 					'route'              => '',
-					'route_match_type'   => 'wildcard',
-					'method'             => '',
+					'route_match_type'   => 'exact',
+					'method'             => false,
+					'status'             => false,
 					'page'               => 1,
 					'posts_per_page'     => 50,
-					'id'                 => 0,
 					'fields'             => 'basic',
 					'params'             => array(),
 				)
@@ -319,30 +325,135 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$query_args = array(
 				'post_type'         => self::POST_TYPE,
 				'posts_per_page'    => $args['posts_per_page'],
+				'paged'             => $args['page'],
+				'date_query'        => array(),
+				'tax_query'         => array( 'relation' => 'AND' ),
   				);
 
 			if ( ! empty( $args['id'] ) ) {
 				$query_args['p'] = $args['id'];
 			}
 
-			// TODO implement searching of other fields here
+			// dates
+			if ( ! empty( $args['from'] ) ) {
+				$query_args['date_query']['after'] = $args['from'];
+			}
 
-			global $post;
+			if ( ! empty( $args['to'] ) ) {
+				$query_args['date_query']['before'] = $args['to'];
+			}
+
+			// route, handled by posts_where filter
+			if ( ! empty( $args['route'] ) ) {
+				$query_args['_wp-rest-api-log-route']              = $args['route'];
+				$query_args['_wp-rest-api-log-route-match-type']   = $args['route_match_type'];
+			}
+
+			// post id, handled by posts_where filter
+			if ( ! empty( $args['after_id'] ) ) {
+				$query_args['_wp-rest-api-log-after-id']           = $args['after_id'];
+			}
+
+			if ( ! empty( $args['before_id'] ) ) {
+				$query_args['_wp-rest-api-log-before-id']          = $args['before_id'];
+			}
+
+			// HTTP Method
+			if ( ! empty( $args['method'] ) ) {
+				$query_args['tax_query'][] = array(
+					'taxonomy' => self::TAXONOMY_METHOD,
+					'field'    => 'slug',
+					'terms'    => explode( ',', $args['method'] ),
+					);
+			}
+
+			// HTTP Status
+			if ( ! empty( $args['status'] ) ) {
+				$query_args['tax_query'][] = array(
+					'taxonomy' => self::TAXONOMY_STATUS,
+					'field'    => 'slug',
+					'terms'    => explode( ',', $args['status'] ),
+					);
+			}
+
 			$posts = array();
 			$query = new WP_Query( $query_args );
 
-			while ( $query->have_posts() ) {
-				$query->the_post();
-				$posts[] = $post;
-			}
+			// wp_send_json( $query->request );
 
-			wp_reset_postdata();
+			if ( $query->have_posts() ) {
+				$posts = $query->posts;
+			}
 
 			return $posts;
 
-
 		}
 
+		/**
+		 * Adds custom where statement for routes
+		 *
+		 * @param string $where original SQL
+		 * @param object $query WP_Query
+		 * @return string
+		 */
+		public function add_where_route( $where, $query ) {
+
+			$route = $query->get( '_wp-rest-api-log-route' );
+			if ( ! empty( $route ) ) {
+
+				global $wpdb;
+
+				$route_match_type   = $query->get( '_wp-rest-api-log-route-match-type' );
+				$route_start        = '';
+				$route_end          = '';
+
+				switch ( $route_match_type ) {
+
+					case 'starts_with':
+						$route_end = '%';
+						break;
+
+					case 'ends_with':
+						$route_start = '%';
+						break;
+
+					case 'wildcard':
+						$route_start   = '%';
+						$route_end     = '%';
+						break;
+				}
+
+				$where .= $wpdb->prepare( " AND {$wpdb->posts}.post_title like %s", $route_start . $route . $route_end );
+
+			}
+
+			return $where;
+		}
+
+
+		/**
+		 * Adds custom where statement for post id ranges
+		 *
+		 * @param string $where original SQL
+		 * @param object $query WP_Query
+		 * @return string
+		 */
+		public function add_where_post_id( $where, $query ) {
+
+			global $wpdb;
+
+			$after_id = $query->get( '_wp-rest-api-log-after-id' );
+			if ( ! empty( $after_id ) ) {
+				$where .= $wpdb->prepare( " AND {$wpdb->posts}.ID > %d", $after_id );
+			}
+
+			$before_id = $query->get( '_wp-rest-api-log-before-id' );
+			if ( ! empty( $before_id ) ) {
+				$where .= $wpdb->prepare( " AND {$wpdb->posts}.ID < %d", $before_id );
+			}
+
+			return $where;
+		}
 
 		/**
 		 * Migrates records from the initial version of the plugin's
