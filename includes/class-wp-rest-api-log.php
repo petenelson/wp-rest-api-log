@@ -29,19 +29,18 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 
 			// for local development
-			// TODO remove this for deployment
-			add_filter( 'determine_current_user', function( $user_id ) {
+			// add_filter( 'determine_current_user', function( $user_id ) {
 
-				if ( 'hello' == $_REQUEST['dev-key'] ) {
-					$user = get_user_by( 'login', $_REQUEST['login'] );
-					if ( ! empty( $user ) ){
-						$user_id = $user->ID;
-					}
-				}
+			// 	if ( 'hello' == $_REQUEST['dev-key'] ) {
+			// 		$user = get_user_by( 'login', $_REQUEST['login'] );
+			// 		if ( ! empty( $user ) ){
+			// 			$user_id = $user->ID;
+			// 		}
+			// 	}
 
-				return $user_id;
+			// 	return $user_id;
 
-			} );
+			// } );
 
 		}
 
