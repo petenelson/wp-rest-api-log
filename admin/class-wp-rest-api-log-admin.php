@@ -16,7 +16,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 			add_action( 'admin_init', array( $this, 'create_migrate_legacy_db_cron' ) );
 
-
 		}
 
 
