@@ -20,8 +20,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 			add_filter( 'post_row_actions',                          array( $this, 'post_row_actions' ), 10, 2 );
 			add_filter( "manage_edit-{$post_type}_columns" ,         array( $this, 'custom_columns' ) );
 			add_action( "manage_{$post_type}_posts_custom_column",   array( $this, 'custom_column' ), 10, 2 );
+
+			// remove edit and add new
 			add_filter( "bulk_actions-edit-{$post_type}",            array( $this, 'remove_edit_bulk_action' ) ) ;
 
+			// add dropdowns
 			add_action( 'restrict_manage_posts',                     array( $this, 'add_method_dropdown' ) );
 			add_action( 'restrict_manage_posts',                     array( $this, 'add_status_dropdown' ) );
 		}
@@ -134,6 +137,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 			return $this->_post;
 		}
 
+		/**
+		 * Removes the Edit option from bulk actions
+		 *
+		 * @param  array $actions
+		 * @return array
+		 */
 		public function remove_edit_bulk_action( $actions ) {
 			unset( $actions['edit'] );
 			return $actions;
