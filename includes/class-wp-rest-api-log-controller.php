@@ -156,7 +156,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 			$routes = $wpdb->get_col( $query );
 
-
 			return rest_ensure_response( $routes );
 
 		}
@@ -174,12 +173,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 
 		public function get_permissions_check() {
-			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-can-view-entries', current_user_can( 'manage_options' ) );
+			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-can-view-entries', current_user_can( 'read_' . WP_REST_API_Log_DB::POST_TYPE ) );
 		}
 
 
 		public function delete_items_permissions_check() {
-			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-can-delete-entries', current_user_can( 'manage_options' ) );
+			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-can-delete-entries', current_user_can( 'delete_' . WP_REST_API_Log_DB::POST_TYPE ) );
 		}
 
 	}

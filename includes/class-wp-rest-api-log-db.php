@@ -59,15 +59,18 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				'show_in_nav_menus'   => false,
 				'publicly_queryable'  => true,
 				'exclude_from_search' => true,
-				'has_archive'         => true,
-				'query_var'           => true,
+				'has_archive'         => false,
+				'query_var'           => false,
 				'can_export'          => true,
-				'rewrite'             => true,
-				'capability_type'     => 'post',
-				'supports'            => array(
-					'title', 'author',
-					'excerpt','custom-fields',
-					)
+				'rewrite'             => false,
+				'capabilities'        => array(
+					'read_post'     => 'read_' . self::POST_TYPE,
+					'delete_post'   => 'delete_' . self::POST_TYPE,
+					'edit_posts'    => 'edit_' . self::POST_TYPE . 's',
+					'edit_post'     => 'edit_' . self::POST_TYPE,
+					'create_posts'  => 'create_' . self::POST_TYPE . 's',
+					),
+				'supports'            => array( 'title', 'author', 'excerpt' ),
 			);
 
 			$args = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-register-post-type', $args );
@@ -155,6 +158,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 
 			$new_post = array(
+				'post_author'     => 0,
 				'post_type'       => self::POST_TYPE,
 				'post_title'      => $args['route'],
 				'post_content'    => json_encode( $args['response']['body'], JSON_PRETTY_PRINT ),

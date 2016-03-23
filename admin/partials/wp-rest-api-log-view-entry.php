@@ -3,13 +3,25 @@
 if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
 
 $id = absint( filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT ) );
+$post_type_object = get_post_type_object( WP_REST_API_Log_DB::POST_TYPE );
+
+if ( ! current_user_can( $post_type_object->cap->read_post, $id ) ) {
+	wp_die(
+		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
+		'<p>' . __( 'You are not allowed to read posts in this post type.', 'wp-rest-api-log' ) . '</p>',
+		403
+	);
+}
 
 if ( ! empty( $id ) ) {
 	$entry = new WP_REST_API_Log_Entry( $id );
 }
 
 if ( empty( $entry->ID ) ) {
-	wp_die( __( 'Invalid entry ID', WP_REST_API_Log_Common::TEXT_DOMAIN ) );
+	wp_die(
+		'<h1>' . __( 'Invalid WP REST API Log Entry ID', 'wp-rest-api-log' ) . '</h1>',
+		404
+	);
 }
 
 ?>

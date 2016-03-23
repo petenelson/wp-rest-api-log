@@ -11,10 +11,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			add_filter( 'post_type_link',     array( $this, 'entry_permalink' ), 10, 2 );
 			add_filter( 'get_edit_post_link', array( $this, 'entry_permalink' ), 10, 2 );
 
+			add_action( 'admin_init', array( $this, 'update_role_capabilities' ) );
 			add_action( 'admin_init', array( $this, 'register_scripts' ) );
-			add_action( 'admin_menu', array( $this, 'admin_menu' ) );
-
 			add_action( 'admin_init', array( $this, 'create_migrate_legacy_db_cron' ) );
+
+			add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 
 		}
 
@@ -25,7 +26,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 				null,
 				__( 'REST API Log Entry', WP_REST_API_Log_Common::TEXT_DOMAIN ),
 				'',
-				'manage_options',
+				'read_' . WP_REST_API_Log_DB::POST_TYPE,
 				WP_REST_API_Log_Common::PLUGIN_NAME . '-view-entry',
 				array( $this, 'display_log_entry')
 			);
@@ -43,8 +44,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			}
 
 		}
-
-
 
 
 		public function register_scripts() {
@@ -107,6 +106,66 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 				wp_schedule_single_event( time(), 'wp-rest-api-log-migrate-legacy-db' ); 
 			}
 		}
+
+		/**
+		 * Updates capabilities for roles to allow them access to the
+		 * plugin's custom post types
+		 *
+		 * @return
+		 */
+		public function update_role_capabilities() {
+
+			$post_type      = WP_REST_API_Log_DB::POST_TYPE;
+			$plugin_name    = WP_REST_API_Log_Common::PLUGIN_NAME;
+
+			$caps_version   = '2016-03-22-04';
+			$roles          = apply_filters( "{$plugin_name}-default-roles", array( 'administrator') );
+
+			$caps           = apply_filters( "{$plugin_name}-default-caps", array(
+				"read_{$post_type}",
+				"edit_{$post_type}s",
+				"delete_{$post_type}",
+				)
+			);
+
+			$option_key     = "{$plugin_name}-caps-version";
+			$version        = get_option( $option_key, false );
+
+			// build a unique string for the version based on the roles
+			foreach( $roles as $role ) {
+				$caps_version .= '_' . $role;
+			}
+
+			$caps_version   = md5( $caps_version );
+
+			if ( false === $version ) {
+				add_option( $option_key, $caps_version, '', 'no' );
+			}
+
+			if ( $version !== $caps_version ) {
+
+				foreach ( $roles as $role ) {
+					$role = get_role( $role );
+
+					if ( ! empty( $role ) ) {
+
+						$role->remove_cap( 'edit_wp-rest-api-logs' );
+
+						foreach( $caps as $cap ) {
+							$role->add_cap( $cap );
+						}
+
+					}
+				}
+
+				// store the update version string so we only update the caps
+				// when something has changed
+				update_option( $option_key, $caps_version );
+
+			}
+
+		}
+
 
 	}
 
