@@ -22,7 +22,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 			add_action( "manage_{$post_type}_posts_custom_column",   array( $this, 'custom_column' ), 10, 2 );
 
 			// remove edit and add new
-			add_filter( "bulk_actions-edit-{$post_type}",            array( $this, 'remove_edit_bulk_action' ) ) ;
+			add_filter( "bulk_actions-edit-{$post_type}",            array( $this, 'remove_edit_bulk_action' ) );
 
 			// add dropdowns
 			add_action( 'restrict_manage_posts',                     array( $this, 'add_method_dropdown' ) );
