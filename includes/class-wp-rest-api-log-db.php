@@ -22,6 +22,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			// called by the one-time cron job to migrate legacy db records
 			add_action( 'wp-rest-api-log-migrate-legacy-db', array( $this, 'migrate_db_records' ) );
+			add_action( 'admin_init', array( $this, 'migrate_db_records' ) );
 
 			// adds where statement when searching for routes
 			add_filter( 'posts_where', array( $this, 'add_where_route' ), 10, 2 );
@@ -433,30 +434,36 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 				global $wpdb;
 
-				$ids = $wpdb->get_col( "select * from {$wpdb->prefix}wp_rest_api_log" );
+				$existing_tables = $wpdb->get_col( "SHOW TABLES LIKE '{$wpdb->prefix}wp_rest_api_log%';" );
 
-				$post_ids = array();
+				if ( ! empty( $existing_tables ) ) {
 
-				foreach ( $ids as $id ) {
+					$ids = $wpdb->get_col( "select * from {$wpdb->prefix}wp_rest_api_log" );
 
-					$query = new WP_Query( array(
-						'posts_per_page'           => 1,
-						'update_post_meta_cache'   => false,
-						'update_post_term_cache'   => false,
-						'post_type'                => self::POST_TYPE,
-						'meta_key'                 => '_wp_rest_api_log_migrated_id',
-						'meta_value'               => $id,
-						'fields'                   => 'ids',
-						)
-					);
+					$post_ids = array();
 
-					if ( ! $query->have_posts() ) {
-						$post_ids[] = $this->migrate_db_record( $id );
+					foreach ( $ids as $id ) {
+
+						$query = new WP_Query( array(
+							'posts_per_page'           => 1,
+							'update_post_meta_cache'   => false,
+							'update_post_term_cache'   => false,
+							'post_type'                => self::POST_TYPE,
+							'meta_key'                 => '_wp_rest_api_log_migrated_id',
+							'meta_value'               => $id,
+							'fields'                   => 'ids',
+							)
+						);
+
+						if ( ! $query->have_posts() ) {
+							$post_ids[] = $this->migrate_db_record( $id );
+						}
+
 					}
 
-				}
+					wp_cache_flush();
 
-				wp_cache_flush();
+				}
 
 				add_option( 'wp-rest-api-log-migrate-completed', '1', '', 'no' );
 			}
