@@ -38,7 +38,7 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 
 		private function load() {
 
-			$this->headers   = $this->get_post_meta_array( 'header' );
+			$this->headers   = $this->get_post_meta_array( 'headers' );
 
 			if ( 'request' === $this->_type ) {
 				$this->body = get_post_meta( $this->_post->ID, '_request_body', true );
@@ -71,28 +71,24 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 			// loop through the post meta, find the keys for the array
 			foreach ( $this->_meta as $key => $value ) {
 
-				// ex: _request_header_key_67b3dba8bc6778101892eb77249db32e
-				$look_for = "_{$this->_type}_{$type}_key_";
+				// ex: _request_headers|Expires
+				// ex: _request_headers|Content-type
+				$look_for = "{$this->_type}_{$type}|";
+				$pos = stripos( $key, $look_for );
 
-				if ( 0 === stripos( $key, $look_for ) ) {
+				if ( 0 === $pos ) {
 
-					$hash = substr( $key , strlen( $look_for ) );
+					$meta_name = substr( $key, strlen( $look_for ) );
+
 					if ( is_array( $value ) && 1 === count( $value ) ) {
-						$meta_name = $value[0];
+						$meta[ $meta_name ] = maybe_unserialize( $value[0] );
 					} else {
-						$meta_name = $value;
+						$meta[ $meta_name ] = maybe_unserialize( $value );
 					}
 
-					// set the meta field we need to look for in the next loop
-					$meta[ $meta_name ] = $look_for = "_{$this->_type}_{$type}_value_" . $hash;
+
 				}
 
-			}
-
-
-			// loop through the look_fors that were set
-			foreach ( $meta as $name => $look_for_key ) {
-				$meta[ $name ] = get_post_meta( $this->_post->ID, $look_for_key, true );
 			}
 
 			return $meta;
