@@ -17,8 +17,8 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request' ) ) {
 
 		private function load() {
 
-			$this->body_params     = parent::get_post_meta_array( 'body_param' );
-			$this->query_params    = parent::get_post_meta_array( 'query_param' );
+			$this->body_params     = parent::get_post_meta_array( 'body_params' );
+			$this->query_params    = parent::get_post_meta_array( 'query_params' );
 
 		}
 

@@ -220,88 +220,50 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 		private function insert_request_meta( $post_id, $args ) {
 
-			// TODO refactor this into more modular code
 
-			if ( ! empty( $args['request']['headers'] ) ) {
+			$request = 'request';
+			$types   = array( 'headers', 'query_params', 'body_params' );
 
-				foreach ( $args['request']['headers'] as $key => $value ) {
-					if ( is_array( $value ) && 1 === count( $value ) ) {
-						$value = $value[0];
+			foreach( $types as $type ) {
+
+				if ( ! empty( $args[ $request ][ $type ] ) ) {
+					foreach ( $args[ $request ][ $type ] as $key => $value ) {
+
+						if ( is_array( $value ) && 1 === count( $value ) ) {
+							$value = $value[0];
+						}
+
+						if ( ! empty( $value ) ) {
+							add_post_meta( $post_id, "{$request}_{$type}|{$key}", $value );
+						}
+
 					}
-
-					if ( ! empty( $value ) ) {
-
-						add_post_meta( $post_id, '_request_header_key_' . md5( $key ), $key );
-						add_post_meta( $post_id, '_request_header_value_' . md5( $key ), $value );
-
-					}
-
 				}
-
 			}
-
-
-			if ( ! empty( $args['request']['query_params'] ) ) {
-
-				foreach ( $args['request']['query_params'] as $key => $value ) {
-					if ( is_array( $value ) && 1 === count( $value ) ) {
-						$value = $value[0];
-					}
-
-					if ( ! empty( $value ) ) {
-
-						add_post_meta( $post_id, '_request_query_param_key_' . md5( $key ), $key );
-						add_post_meta( $post_id, '_request_query_param_value_' . md5( $key ), $value );
-
-					}
-
-				}
-
-			}
-
-
-			if ( ! empty( $args['request']['body_params'] ) ) {
-
-				foreach ( $args['request']['body_params'] as $key => $value ) {
-					if ( is_array( $value ) && 1 === count( $value ) ) {
-						$value = $value[0];
-					}
-
-					if ( ! empty( $value ) ) {
-
-						add_post_meta( $post_id, '_request_body_param_key_' . md5( $key ), $key );
-						add_post_meta( $post_id, '_request_body_param_value_' . md5( $key ), $value );
-
-					}
-
-				}
-
-			}
-
 
 		}
 
 
 		private function insert_response_meta( $post_id, $args ) {
 
-			// TODO refactor this into more modular code
+			$response = 'response';
+			$types   = array( 'headers' );
 
-			if ( ! empty( $args['response']['headers'] ) ) {
+			foreach( $types as $type ) {
 
-				foreach ( $args['response']['headers'] as $key => $value ) {
-					if ( is_array( $value ) && 1 === count( $value ) ) {
-						$value = $value[0];
+				if ( ! empty( $args[ $response ][ $type ] ) ) {
+					foreach ( $args[ $response ][ $type ] as $key => $value ) {
+
+						if ( is_array( $value ) && 1 === count( $value ) ) {
+							$value = $value[0];
+						}
+
+						if ( ! empty( $value ) ) {
+							add_post_meta( $post_id, "{$response}_{$type}|{$key}", $value );
+						}
+
 					}
-
-					if ( ! empty( $value ) ) {
-
-						add_post_meta( $post_id, '_response_header_key_' . md5( $key ), $key );
-						add_post_meta( $post_id, '_response_header_value_' . md5( $key ), $value );
-
-					}
-
 				}
-
 			}
 
 		}
@@ -382,8 +344,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			$posts = array();
 			$query = new WP_Query( $query_args );
-
-			// wp_send_json( $query->request );
 
 			if ( $query->have_posts() ) {
 				$posts = $query->posts;
