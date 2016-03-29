@@ -166,7 +166,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				'post_status'     => 'publish',
 				);
 
-			$post_id = wp_insert_post( $new_post, $wp_error );
+			$post_id = wp_insert_post( $new_post );
 
 			if ( ! empty( $post_id ) ) {
 				$this->insert_post_terms( $post_id, $args );
