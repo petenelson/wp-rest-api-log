@@ -77,7 +77,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 						echo esc_html( $entry->status );
 						break;
 					case 'elapsed';
-						echo esc_html( number_format( $entry->milliseconds ) );
+						echo esc_html( number_format( $entry->milliseconds ) . 'ms' );
 						break;
 					case 'length';
 						echo esc_html( number_format( strlen( $entry->response->body ) ) );
