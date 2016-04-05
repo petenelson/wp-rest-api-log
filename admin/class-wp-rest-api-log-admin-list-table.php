@@ -27,6 +27,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 			// add dropdowns
 			add_action( 'restrict_manage_posts',                     array( $this, 'add_method_dropdown' ) );
 			add_action( 'restrict_manage_posts',                     array( $this, 'add_status_dropdown' ) );
+			add_action( 'restrict_manage_posts',                     array( $this, 'add_source_dropdown' ) );
+
 		}
 
 
@@ -122,6 +124,25 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 						<option value=""><?php esc_html_e( 'All Statuses', 'wp-rest-api-log' ); ?></option>
 						<?php foreach( $statuses as $status ) : ?>
 							<option value="<?php echo esc_attr( $status->slug ); ?>" <?php selected( $status->slug, $selected_status ); ?>><?php echo esc_html( $status->name ); ?></option>
+						<?php endforeach; ?>
+					</select>
+
+				<?php
+			}
+		}
+
+		public function add_source_dropdown( $post_type ) {
+			if ( 'wp-rest-api-log' === $post_type ) {
+
+				$selected_source   = filter_input( INPUT_GET, WP_REST_API_Log_DB::TAXONOMY_SOURCE, FILTER_SANITIZE_STRING );
+				$sourcees          = get_terms( WP_REST_API_Log_DB::TAXONOMY_SOURCE );
+
+				?>
+					<label for="wp-rest-api-log-sources" class="screen-reader-text"><?php esc_html_e( 'Source', 'wp-rest-api-log' ); ?></label>
+					<select name="<?php echo esc_attr( WP_REST_API_Log_DB::TAXONOMY_SOURCE ); ?>" id="wp-rest-api-log-sources">
+						<option value=""><?php esc_html_e( 'All Sources', 'wp-rest-api-log' ); ?></option>
+						<?php foreach( $sourcees as $source ) : ?>
+							<option value="<?php echo esc_attr( $source->slug ); ?>" <?php selected( $source->slug, $selected_source ); ?>><?php echo esc_html( $source->name ); ?></option>
 						<?php endforeach; ?>
 					</select>
 
