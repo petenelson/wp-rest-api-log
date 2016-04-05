@@ -40,16 +40,26 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 		public function register_custom_post_types() {
 
-			$name_s = 'REST API Log Entry';
-			$name_p = 'REST API Log Entries';
+			$args = $this->get_post_type_args(); 
 
+			register_post_type( self::POST_TYPE, $args );
+
+		}
+
+
+		public function get_post_type_labels() {
 			$labels = array(
-				'name'                => __( $name_p, WP_REST_API_Log_Common::TEXT_DOMAIN ),
-				'singular_name'       => __( $name_s, WP_REST_API_Log_Common::TEXT_DOMAIN ),
+				'name'                => __( 'REST API Log Entry', WP_REST_API_Log_Common::TEXT_DOMAIN ),
+				'singular_name'       => __( 'REST API Log Entries', WP_REST_API_Log_Common::TEXT_DOMAIN ),
 			);
+			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-post-type-labels', $labels );
+		}
+
+
+		public function get_post_type_args() {
 
 			$args = array(
-				'labels'              => $labels,
+				'labels'              => $this->get_post_type_labels(),
 				'show_in_rest'        => true,
 				'rest_base'           => self::POST_TYPE, // allows the CPT to show up in the native API
 				'hierarchical'        => false,
@@ -74,10 +84,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				'supports'            => array( 'title', 'author', 'excerpt' ),
 			);
 
-			$args = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-register-post-type', $args );
-
-			register_post_type( self::POST_TYPE, $args );
-
+			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-register-post-type', $args );
 		}
 
 

@@ -126,6 +126,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 		private function load_taxonomies() {
 			$post_id = $this->_post->ID;
+			// TODO refactor this, getting "Only variables should be passed by reference" strict errors
 			$this->method  = array_shift( wp_get_post_terms( $post_id, WP_REST_API_Log_DB::TAXONOMY_METHOD, array( 'fields' => 'names' ) ) );
 			$this->status  = array_shift( wp_get_post_terms( $post_id, WP_REST_API_Log_DB::TAXONOMY_STATUS, array( 'fields' => 'names' ) ) );
 		}
