@@ -9,6 +9,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		const POST_TYPE        = 'wp-rest-api-log';
 		const TAXONOMY_METHOD  = 'wp-rest-api-log-method';
 		const TAXONOMY_STATUS  = 'wp-rest-api-log-status';
+		const TAXONOMY_SOURCE  = 'wp-rest-api-log-source';
 
 		const POST_META_IP_ADDRESS     = '_ip-address';
 		const POST_META_MILLISECONDS   = '_milliseconds';
@@ -91,12 +92,10 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		public function register_custom_taxonomies() {
 
 			// HTTP Method
-			$name_s = 'Method';
-			$name_p = 'Methods';
 
 			$labels = array(
-				'name'                => __( $name_p, WP_REST_API_Log_Common::TEXT_DOMAIN ),
-				'singular_name'       => __( $name_s, WP_REST_API_Log_Common::TEXT_DOMAIN ),
+				'name'                => __( 'Method', WP_REST_API_Log_Common::TEXT_DOMAIN ),
+				'singular_name'       => __( 'Methods', WP_REST_API_Log_Common::TEXT_DOMAIN ),
 			);
 
 			$args = array(
@@ -117,13 +116,16 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 
 			// HTTP Status
-			$name_s = 'Status';
-			$name_p = 'Statuses';
-
-			$args['labels']['name']           = __( $name_p, WP_REST_API_Log_Common::TEXT_DOMAIN );
-			$args['labels']['singular_name']  = __( $name_s, WP_REST_API_Log_Common::TEXT_DOMAIN );
+			$args['labels']['name']           = __( 'Status', WP_REST_API_Log_Common::TEXT_DOMAIN );
+			$args['labels']['singular_name']  = __( 'Statuses', WP_REST_API_Log_Common::TEXT_DOMAIN );
 
 			register_taxonomy( self::TAXONOMY_STATUS, array( self::POST_TYPE ), $args );
+
+			// Source
+			$args['labels']['name']           = __( 'Log Source', WP_REST_API_Log_Common::TEXT_DOMAIN );
+			$args['labels']['singular_name']  = __( 'Log Sources', WP_REST_API_Log_Common::TEXT_DOMAIN );
+
+			register_taxonomy( self::TAXONOMY_SOURCE, array( self::POST_TYPE ), $args );
 
 			// namespace?
 
@@ -142,6 +144,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				'time'                  => current_time( 'mysql' ),
 				'ip_address'            => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_SANITIZE_STRING ),
 				'route'                 => '',
+				'source'                => 'WP REST API',
 				'method'                => filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING ),
 				'status'                => 200,
 				'request'               => array(
@@ -203,6 +206,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$args['status'] = absint( $args['status'] );
 			wp_set_post_terms( $post_id, $args['status'], self::TAXONOMY_STATUS );
 
+			// store the source
+			wp_set_post_terms( $post_id, $args['source'], self::TAXONOMY_SOURCE );
+
 		}
 
 
@@ -227,7 +233,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 
 		private function insert_request_meta( $post_id, $args ) {
-
 
 			$request = 'request';
 			$types   = array( 'headers', 'query_params', 'body_params' );
