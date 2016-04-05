@@ -39,6 +39,7 @@ if ( empty( $entry->ID ) ) {
 			<div class="inside collapsed">
 				<ul>
 					<li><?php esc_html_e( 'Date' ); ?>: <?php echo esc_html( $entry->time ); ?></li>
+					<li><?php esc_html_e( 'Source', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->source ); ?></li>
 					<li><?php esc_html_e( 'Method', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?>: <?php echo esc_html( $entry->method ); ?></li>
 					<li><?php esc_html_e( 'Status', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?>: <?php echo esc_html( $entry->status ); ?></li>
 					<li><?php esc_html_e( 'Elapsed Time', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?>: <?php echo esc_html( number_format( $entry->milliseconds ) ); ?>ms</li>

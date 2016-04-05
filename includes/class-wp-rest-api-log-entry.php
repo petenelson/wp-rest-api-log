@@ -126,11 +126,17 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 		private function load_taxonomies() {
 			$post_id = $this->_post->ID;
-			// TODO refactor this, getting "Only variables should be passed by reference" strict errors
-			$this->method  = array_shift( wp_get_post_terms( $post_id, WP_REST_API_Log_DB::TAXONOMY_METHOD, array( 'fields' => 'names' ) ) );
-			$this->status  = array_shift( wp_get_post_terms( $post_id, WP_REST_API_Log_DB::TAXONOMY_STATUS, array( 'fields' => 'names' ) ) );
+
+			$this->method  = $this->get_first_term_name( $post_id, WP_REST_API_Log_DB::TAXONOMY_METHOD );
+			$this->status  = $this->get_first_term_name( $post_id, WP_REST_API_Log_DB::TAXONOMY_STATUS );
+			$this->source  = $this->get_first_term_name( $post_id, WP_REST_API_Log_DB::TAXONOMY_SOURCE );
+
 		}
 
+		public function get_first_term_name( $post_id, $taxonomy ) {
+			$terms = wp_get_post_terms( $post_id, $taxonomy, array( 'fields' => 'names' ) );
+			return ! empty( $terms ) ? $terms[0] : '';
+		}
 
 
 	}
