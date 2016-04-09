@@ -24,19 +24,36 @@ if ( empty( $entry->ID ) ) {
 	);
 }
 
+$entry = apply_filters( 'wp-rest-api-log-display-entry', $entry );
+
+$json_display_options = array(
+	'request' => array(
+		'headers'      => ! empty( $entry->request->headers ) ? JSON_PRETTY_PRINT : 0,
+		'query_params' => ! empty( $entry->request->query_params ) ? JSON_PRETTY_PRINT : 0,
+		'body_params'  => ! empty( $entry->request->body_params ) ? JSON_PRETTY_PRINT : 0,
+		),
+	'response' => array(
+		'headers'      => ! empty( $entry->response->headers ) ? JSON_PRETTY_PRINT : 0,
+		),
+	);
+
+$json_display_options = apply_filters( 'wp-rest-api-log-json-display-options', $json_display_options, $entry );
+
+$classes = apply_filters( 'wp-rest-api-log-entry-display-classes', array( 'wrap', 'wp-rest-api-log-entry' ), $entry );
+
 ?>
-<div class="wrap wp-rest-api-log-entry" id="wp-rest-api-log-entry">
+<div class="<?php echo implode( ' ', array_map( 'esc_attr',  $classes ) ); ?>" id="wp-rest-api-log-entry">
 
-	
-
-	<h1>Route: <?php echo esc_html( $entry->route ); ?></h1>
+	<h1><?php esc_html_e( 'Route:', 'wp-rest-api-log' ); ?> <?php echo esc_html( $entry->route ); ?></h1>
 
 	<div id="poststuff">
 
-		<div class="postbox request-headers">
-			<h3 class="hndle"><span>Details</span></h3>
+		<?php do_action( 'wp-rest-api-log-display-entry-before', $entry ); ?>
 
-			<div class="inside collapsed">
+		<div class="postbox request-headers">
+			<h3 class="hndle"><span><?php esc_html_e( 'Details', 'wp-rest-api-log' ); ?></span></h3>
+
+			<div class="inside">
 				<ul>
 					<li><?php esc_html_e( 'Date' ); ?>: <?php echo esc_html( $entry->time ); ?></li>
 					<li><?php esc_html_e( 'Source', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->source ); ?></li>
@@ -49,31 +66,45 @@ if ( empty( $entry->ID ) ) {
 			</div>
 		</div>
 
+		<?php do_action( 'wp-rest-api-log-display-entry-before-request-headers', $entry ); ?>
+
 		<div class="postbox request-headers">
 			<h3 class="hndle"><span><?php esc_html_e( 'Request Headers', 'wp-rest-api-log' ); ?></span></h3>
-			<div class="inside collapsed"><pre><code class="json"><?php echo json_encode( $entry->request->headers, JSON_PRETTY_PRINT ); ?></code></pre></div>
+			<div class="inside"><pre><code class="json"><?php echo json_encode( $entry->request->headers, $json_display_options['request']['headers'] ); ?></code></pre></div>
 		</div>
+
+		<?php do_action( 'wp-rest-api-log-display-entry-before-request-querystring', $entry ); ?>
 
 		<div class="postbox querystring-parameters">
 			<h3 class="hndle"><span><?php esc_html_e( 'Query Parameters', 'wp-rest-api-log' ); ?></span></h3>
-			<div class="inside collapsed"><pre><code class="json"><?php echo json_encode( $entry->request->query_params, JSON_PRETTY_PRINT ); ?></code></pre></div>
+			<div class="inside"><pre><code class="json"><?php echo json_encode( $entry->request->query_params, $json_display_options['request']['query_params'] ); ?></code></pre></div>
 		</div>
+
+		<?php do_action( 'wp-rest-api-log-display-entry-before-request-body', $entry ); ?>
 
 		<div class="postbox body-parameters">
 			<h3 class="hndle"><span><?php esc_html_e( 'Body Parameters', 'wp-rest-api-log' ); ?></span></h3>
-			<div class="inside collapsed"><pre><code class="json"><?php echo json_encode( $entry->request->body_params, JSON_PRETTY_PRINT ); ?></code></pre></div>
+			<div class="inside"><pre><code class="json"><?php echo json_encode( $entry->request->body_params, $json_display_options['request']['body_params'] ); ?></code></pre></div>
 		</div>
+
+		<?php do_action( 'wp-rest-api-log-display-entry-before-response-headers', $entry ); ?>
 
 		<div class="postbox response-headers">
 			<h3 class="hndle"><span><?php esc_html_e( 'Response Headers', 'wp-rest-api-log' ); ?></span></h3>
-			<div class="inside collapsed"><pre><code class="json"><?php echo json_encode( $entry->response->headers, JSON_PRETTY_PRINT ); ?></code></pre></div>
+			<div class="inside"><pre><code class="json"><?php echo json_encode( $entry->response->headers, $json_display_options['response']['headers'] ); ?></code></pre></div>
 		</div>
+
+		<?php do_action( 'wp-rest-api-log-display-entry-before-response-body', $entry ); ?>
 
 		<div class="postbox response-body">
 			<h3 class="hndle"><span><?php esc_html_e( 'Response', 'wp-rest-api-log' ); ?></span></h3>
-			<div class="inside collapsed"><pre><code><?php echo esc_html( $entry->response->body ); ?></code></pre></div>
+			<div class="inside"><pre><code><?php echo esc_html( $entry->response->body ); ?></code></pre></div>
 		</div>
+
+		<?php do_action( 'wp-rest-api-log-display-entry-after', $entry ); ?>
 
 	</div>
 
 </div>
+<?php
+

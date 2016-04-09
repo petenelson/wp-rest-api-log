@@ -155,6 +155,10 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					'body'                 => '',
 					),
 				'milliseconds'          => 0,
+
+				// this can be a K/V array of additional post meta to store
+				'post_meta'             => array(),
+
 				)
 			);
 

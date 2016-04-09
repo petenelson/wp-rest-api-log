@@ -1,6 +1,7 @@
 (function( $ ) {
+	"use strict";
 
-	WP_REST_API_Log = {
+	var WP_REST_API_Log = {
 
 		entry_element: null,
 
