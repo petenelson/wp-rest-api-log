@@ -6,9 +6,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 
 	class WP_REST_API_Log_Settings {
 
-		private $settings_page         = 'wp-rest-api-log-settings';
-		private $settings_key_general  = 'wp-rest-api-log-settings-general';
-		private $settings_key_help     = 'wp-rest-api-log-settings-help';
+		public $settings_page         = 'wp-rest-api-log-settings';
+		public $settings_key_general  = 'wp-rest-api-log-settings-general';
+		public $settings_key_help     = 'wp-rest-api-log-settings-help';
 		private $plugin_settings_tabs  = array();
 
 
@@ -58,6 +58,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 			);
 		}
 
+		public function update_setting( $key, $setting, $value ) {
+			$option = get_option( $key );
+			$option[ $setting ] = $value;
+			update_option( $key, $option );
+		}
 
 		public function plugin_upgrade( ) {
 

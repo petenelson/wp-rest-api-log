@@ -16,6 +16,9 @@ if ( ! defined( 'WP_REST_API_LOG_ROOT' ) ) {
 	define( 'WP_REST_API_LOG_ROOT', trailingslashit( dirname( __FILE__ ) ) );
 }
 
+if ( ! defined( 'WP_REST_API_LOG_PATH' ) ) {
+	define( 'WP_REST_API_LOG_PATH', trailingslashit( plugin_dir_path( __FILE__ ) ) );
+}
 
 $plugin_class_file = 'wp-rest-api-log';
 
@@ -53,7 +56,11 @@ $classes = array(
 
 // include classes
 foreach ( $includes as $include ) {
-	require_once plugin_dir_path( __FILE__ ) . $include;
+	require_once WP_REST_API_LOG_PATH . $include;
+}
+
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require_once WP_REST_API_LOG_PATH . 'includes/wp-cli/setup.php';
 }
 
 // record the start time so we can log total millisecons
