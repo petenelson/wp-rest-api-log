@@ -100,7 +100,7 @@ module.exports = function( grunt ) {
 
 
 		clean: {
-			main: ['release/<%= pkg.version %>']
+			main: [ 'release/' ]
 		},
 
 
@@ -116,6 +116,7 @@ module.exports = function( grunt ) {
 						'admin/js/wp-rest-api-log-admin.js',
 						'admin/js/wp-rest-api-log-admin.min.js',
 						'admin/*.php',
+						'admin/partials/*.php',
 						], 
 						dest: 'release/' },
 
