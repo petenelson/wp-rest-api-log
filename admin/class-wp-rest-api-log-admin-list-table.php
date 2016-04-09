@@ -38,7 +38,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 
 				// turn off items
 				unset( $actions['edit'] );
-				unset( $actions[ 'inline hide-if-no-js' ] );
+				unset( $actions['inline hide-if-no-js'] );
+
+				wp_enqueue_script( 'wp-rest-api-log-admin' );
 
 			}
 
@@ -94,7 +96,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		}
 
 		public function add_method_dropdown( $post_type ) {
-			if ( 'wp-rest-api-log' === $post_type ) {
+			if ( WP_REST_API_Log_Db::POST_TYPE === $post_type ) {
 
 				$selected_method   = filter_input( INPUT_GET, WP_REST_API_Log_DB::TAXONOMY_METHOD, FILTER_SANITIZE_STRING );
 				$methods           = array( 'GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS' );
@@ -113,7 +115,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		}
 
 		public function add_status_dropdown( $post_type ) {
-			if ( 'wp-rest-api-log' === $post_type ) {
+			if ( WP_REST_API_Log_Db::POST_TYPE === $post_type ) {
 
 				$selected_status   = filter_input( INPUT_GET, WP_REST_API_Log_DB::TAXONOMY_STATUS, FILTER_SANITIZE_STRING );
 				$statuses          = get_terms( WP_REST_API_Log_DB::TAXONOMY_STATUS );
@@ -132,7 +134,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		}
 
 		public function add_source_dropdown( $post_type ) {
-			if ( 'wp-rest-api-log' === $post_type ) {
+			if ( WP_REST_API_Log_Db::POST_TYPE === $post_type ) {
 
 				$selected_source   = filter_input( INPUT_GET, WP_REST_API_Log_DB::TAXONOMY_SOURCE, FILTER_SANITIZE_STRING );
 				$sourcees          = get_terms( WP_REST_API_Log_DB::TAXONOMY_SOURCE );

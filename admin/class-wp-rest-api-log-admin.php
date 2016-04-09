@@ -118,7 +118,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			$post_type      = WP_REST_API_Log_DB::POST_TYPE;
 			$plugin_name    = WP_REST_API_Log_Common::PLUGIN_NAME;
 
-			$caps_version   = '2016-03-22-04';
+			$caps_version   = '2016-04-09-01';
 			$roles          = apply_filters( "{$plugin_name}-default-roles", array( 'administrator') );
 
 			$caps           = apply_filters( "{$plugin_name}-default-caps", array(
