@@ -1,0 +1,202 @@
+# Copyright (C) 2016 Pete Nelson
+# This file is distributed under the GPL2+.
+msgid ""
+msgstr ""
+"Project-Id-Version: WP REST API Log 1.0.0-beta2\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-rest-api-log\n"
+"POT-Creation-Date: 2016-04-09 15:49:35+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2016-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Generator: grunt-wp-i18n 0.5.4\n"
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:55
+#: admin/partials/wp-rest-api-log-view-entry.php:41
+msgid "Date"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:56
+#: admin/partials/wp-rest-api-log-view-entry.php:43
+#: includes/class-wp-rest-api-log-db.php:97
+msgid "Method"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:57
+msgid "Title"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:58
+#: admin/class-wp-rest-api-log-admin-list-table.php:122
+#: admin/partials/wp-rest-api-log-view-entry.php:44
+#: includes/class-wp-rest-api-log-db.php:119
+msgid "Status"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:59
+#: admin/partials/wp-rest-api-log-view-entry.php:45
+msgid "Elapsed Time"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:60
+#: admin/partials/wp-rest-api-log-view-entry.php:46
+msgid "Response Length"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:61
+#: admin/partials/wp-rest-api-log-view-entry.php:47
+msgid "IP Address"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:103
+#: includes/class-wp-rest-api-log-db.php:98
+msgid "Methods"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:105
+msgid "All Methods"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:124
+msgid "All Statuses"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:141
+#: admin/partials/wp-rest-api-log-view-entry.php:42
+msgid "Source"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:143
+msgid "All Sources"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin.php:27
+#: includes/class-wp-rest-api-log-db.php:53
+msgid "REST API Log Entry"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin.php:38
+#: includes/class-wp-rest-api-log-settings.php:277
+msgid "REST API Log"
+msgstr ""
+
+#: admin/partials/admin-help.php:7
+msgid "Contact"
+msgstr ""
+
+#: admin/partials/admin-help.php:9
+msgid "E-Mail"
+msgstr ""
+
+#: admin/partials/admin-help.php:10
+msgid "Twitter"
+msgstr ""
+
+#: admin/partials/admin-help.php:11
+msgid "GitHub"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "WP REST API Log"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-api-is-disabled.php:6
+msgid "The WP REST API is not enabled"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:10
+msgid "Cheatin&#8217; uh?"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:11
+msgid "You are not allowed to read posts in this post type."
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:22
+msgid "Invalid WP REST API Log Entry ID"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:53
+msgid "Request Headers"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:58
+msgid "Query Parameters"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:63
+msgid "Body Parameters"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:68
+msgid "Response Headers"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:73
+msgid "Response"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-db.php:54
+msgid "REST API Log Entries"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-db.php:120
+msgid "Statuses"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-db.php:125
+msgid "Log Source"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-db.php:126
+msgid "Log Sources"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-settings.php:40
+msgid ""
+"<strong>WP REST API Log activated!</strong> Please <a href=\"%s\">visit the "
+"Settings page</a> to customize the settings."
+msgstr ""
+
+#: includes/class-wp-rest-api-log-settings.php:87
+msgid "General"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-settings.php:95
+msgid "Enabled"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-settings.php:113
+msgid "Help"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-settings.php:260
+msgid "Yes"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-settings.php:261
+msgid "No"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-settings.php:277
+#: includes/class-wp-rest-api-log-settings.php:314
+msgid "Settings"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-settings.php:291
+msgid "Save Changes"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/petenelson/wp-rest-api-log"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Logs requests and responses for the WP REST API"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Pete Nelson"
+msgstr ""

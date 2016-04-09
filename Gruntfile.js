@@ -20,6 +20,15 @@ module.exports = function( grunt ) {
 			},
 		},
 
+		makepot: {
+			target: {
+				options: {
+					type:        'wp-plugin',
+					mainFile:    'wp-rest-api-log.php'
+				}
+			}
+		},
+
 		jshint: {
 			all: [
 				'Gruntfile.js',
