@@ -3,12 +3,17 @@
 Plugin Name: WP REST API Log
 Description: Logs requests and responses for the WP REST API
 Author: Pete Nelson
-Version: 1.0.0-beta1
+Version: 1.0.0-beta2
 Plugin URI: https://github.com/petenelson/wp-rest-api-log
 License: GPL2+
 */
 
 if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+
+if ( ! defined( 'WP_REST_API_LOG_ROOT' ) ) {
+	define( 'WP_REST_API_LOG_ROOT', trailingslashit( dirname( __FILE__ ) ) );
+}
+
 
 $plugin_class_file = 'wp-rest-api-log';
 
@@ -24,6 +29,7 @@ $includes = array(
 	'includes/class-' . $plugin_class_file . '-response-base.php',
 	'includes/class-' . $plugin_class_file . '-delete-response.php',
 	'includes/class-' . $plugin_class_file . '-routes-response.php',
+	'includes/class-' . $plugin_class_file . '-settings.php',
 	'includes/class-' . $plugin_class_file . '.php',
 	'admin/class-' . $plugin_class_file . '-admin.php',
 	'admin/class-' . $plugin_class_file . '-admin-list-table.php',
@@ -39,6 +45,7 @@ $classes = array(
 	$class_base . '',
 	$class_base . '_Admin',
 	$class_base . '_Admin_List_Table',
+	$class_base . '_Settings',
 );
 
 
