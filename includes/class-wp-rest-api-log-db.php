@@ -78,6 +78,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				'capabilities'        => array(
 					'read_post'     => 'read_' . self::POST_TYPE,
 					'delete_post'   => 'delete_' . self::POST_TYPE,
+					'delete_posts'  => 'delete_' . self::POST_TYPE . 's',
 					'edit_posts'    => 'edit_' . self::POST_TYPE . 's',
 					'edit_post'     => 'edit_' . self::POST_TYPE,
 					'create_posts'  => 'create_' . self::POST_TYPE . 's',
