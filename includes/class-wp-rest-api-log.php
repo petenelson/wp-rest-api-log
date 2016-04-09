@@ -60,6 +60,17 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 */
 		public function log_rest_api_response( $served, $result, $request, $rest_server ) {
 
+			// don't log anything if logging is not enabled
+			$logging_enabled = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-setting-is-enabled',
+				true,
+				'wp-rest-api-log-settings-general',
+				'logging-enabled'
+				);
+
+			if ( ! $logging_enabled ) {
+				return $served;
+			}
+
 
 			// allow specific requests to not be logged
 			$bypass_insert = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-bypass-insert', false, $result, $request, $rest_server );
