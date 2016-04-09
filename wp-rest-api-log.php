@@ -5,6 +5,8 @@ Description: Logs requests and responses for the WP REST API
 Author: Pete Nelson
 Version: 1.0.0-beta2
 Plugin URI: https://github.com/petenelson/wp-rest-api-log
+Text Domain: wp-rest-api-log
+Domain Path: /languages
 License: GPL2+
 */
 

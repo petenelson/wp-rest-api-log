@@ -50,8 +50,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 		public function get_post_type_labels() {
 			$labels = array(
-				'name'                => __( 'REST API Log Entry', WP_REST_API_Log_Common::TEXT_DOMAIN ),
-				'singular_name'       => __( 'REST API Log Entries', WP_REST_API_Log_Common::TEXT_DOMAIN ),
+				'name'                => __( 'REST API Log Entry', 'wp-rest-api-log' ),
+				'singular_name'       => __( 'REST API Log Entries', 'wp-rest-api-log' ),
 			);
 			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-post-type-labels', $labels );
 		}
@@ -94,8 +94,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			// HTTP Method
 
 			$labels = array(
-				'name'                => __( 'Method', WP_REST_API_Log_Common::TEXT_DOMAIN ),
-				'singular_name'       => __( 'Methods', WP_REST_API_Log_Common::TEXT_DOMAIN ),
+				'name'                => __( 'Method', 'wp-rest-api-log' ),
+				'singular_name'       => __( 'Methods', 'wp-rest-api-log' ),
 			);
 
 			$args = array(
@@ -116,14 +116,14 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 
 			// HTTP Status
-			$args['labels']['name']           = __( 'Status', WP_REST_API_Log_Common::TEXT_DOMAIN );
-			$args['labels']['singular_name']  = __( 'Statuses', WP_REST_API_Log_Common::TEXT_DOMAIN );
+			$args['labels']['name']           = __( 'Status', 'wp-rest-api-log' );
+			$args['labels']['singular_name']  = __( 'Statuses', 'wp-rest-api-log' );
 
 			register_taxonomy( self::TAXONOMY_STATUS, array( self::POST_TYPE ), $args );
 
 			// Source
-			$args['labels']['name']           = __( 'Log Source', WP_REST_API_Log_Common::TEXT_DOMAIN );
-			$args['labels']['singular_name']  = __( 'Log Sources', WP_REST_API_Log_Common::TEXT_DOMAIN );
+			$args['labels']['name']           = __( 'Log Source', 'wp-rest-api-log' );
+			$args['labels']['singular_name']  = __( 'Log Sources', 'wp-rest-api-log' );
 
 			register_taxonomy( self::TAXONOMY_SOURCE, array( self::POST_TYPE ), $args );
 

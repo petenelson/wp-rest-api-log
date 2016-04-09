@@ -53,12 +53,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 			$columns = array(
 				'cb'         => '<input type="checkbox" />',
 				'date'       => __( 'Date' ),
-				'method'     => __( 'Method', WP_REST_API_Log_Common::TEXT_DOMAIN ),
+				'method'     => __( 'Method', 'wp-rest-api-log' ),
 				'title'      => __( 'Title' ),
-				'status'     => __( 'Status', WP_REST_API_Log_Common::TEXT_DOMAIN ),
-				'elapsed'    => __( 'Elapsed Time', WP_REST_API_Log_Common::TEXT_DOMAIN ),
-				'length'     => __( 'Response Length', WP_REST_API_Log_Common::TEXT_DOMAIN ),
-				'ip-address' => __( 'IP Address', WP_REST_API_Log_Common::TEXT_DOMAIN ),
+				'status'     => __( 'Status', 'wp-rest-api-log' ),
+				'elapsed'    => __( 'Elapsed Time', 'wp-rest-api-log' ),
+				'length'     => __( 'Response Length', 'wp-rest-api-log' ),
+				'ip-address' => __( 'IP Address', 'wp-rest-api-log' ),
 				);
 
 

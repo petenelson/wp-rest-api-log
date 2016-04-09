@@ -19,7 +19,7 @@ if ( ! empty( $id ) ) {
 
 if ( empty( $entry->ID ) ) {
 	wp_die(
-		'<h1>' . __( 'Invalid WP REST API Log Entry ID', 'wp-rest-api-log' ) . '</h1>',
+		'<h1>' . esc_html_e( 'Invalid WP REST API Log Entry ID', 'wp-rest-api-log' ) . '</h1>',
 		404
 	);
 }
@@ -40,37 +40,37 @@ if ( empty( $entry->ID ) ) {
 				<ul>
 					<li><?php esc_html_e( 'Date' ); ?>: <?php echo esc_html( $entry->time ); ?></li>
 					<li><?php esc_html_e( 'Source', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->source ); ?></li>
-					<li><?php esc_html_e( 'Method', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?>: <?php echo esc_html( $entry->method ); ?></li>
-					<li><?php esc_html_e( 'Status', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?>: <?php echo esc_html( $entry->status ); ?></li>
-					<li><?php esc_html_e( 'Elapsed Time', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?>: <?php echo esc_html( number_format( $entry->milliseconds ) ); ?>ms</li>
-					<li><?php esc_html_e( 'Response Length', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?>: <?php echo esc_html( number_format( strlen( $entry->response->body ) ) ); ?></li>
-					<li><?php esc_html_e( 'IP Address', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?>: <?php echo esc_html( $entry->ip_address ); ?></li>
+					<li><?php esc_html_e( 'Method', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->method ); ?></li>
+					<li><?php esc_html_e( 'Status', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->status ); ?></li>
+					<li><?php esc_html_e( 'Elapsed Time', 'wp-rest-api-log' ); ?>: <?php echo esc_html( number_format( $entry->milliseconds ) ); ?>ms</li>
+					<li><?php esc_html_e( 'Response Length', 'wp-rest-api-log' ); ?>: <?php echo esc_html( number_format( strlen( $entry->response->body ) ) ); ?></li>
+					<li><?php esc_html_e( 'IP Address', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->ip_address ); ?></li>
 				</ul>
 			</div>
 		</div>
 
 		<div class="postbox request-headers">
-			<h3 class="hndle"><span><?php esc_html_e( 'Request Headers', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
+			<h3 class="hndle"><span><?php esc_html_e( 'Request Headers', 'wp-rest-api-log' ); ?></span></h3>
 			<div class="inside collapsed"><pre><code class="json"><?php echo json_encode( $entry->request->headers, JSON_PRETTY_PRINT ); ?></code></pre></div>
 		</div>
 
 		<div class="postbox querystring-parameters">
-			<h3 class="hndle"><span><?php esc_html_e( 'Query Parameters', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
+			<h3 class="hndle"><span><?php esc_html_e( 'Query Parameters', 'wp-rest-api-log' ); ?></span></h3>
 			<div class="inside collapsed"><pre><code class="json"><?php echo json_encode( $entry->request->query_params, JSON_PRETTY_PRINT ); ?></code></pre></div>
 		</div>
 
 		<div class="postbox body-parameters">
-			<h3 class="hndle"><span><?php esc_html_e( 'Body Parameters', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
+			<h3 class="hndle"><span><?php esc_html_e( 'Body Parameters', 'wp-rest-api-log' ); ?></span></h3>
 			<div class="inside collapsed"><pre><code class="json"><?php echo json_encode( $entry->request->body_params, JSON_PRETTY_PRINT ); ?></code></pre></div>
 		</div>
 
 		<div class="postbox response-headers">
-			<h3 class="hndle"><span><?php esc_html_e( 'Response Headers', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
+			<h3 class="hndle"><span><?php esc_html_e( 'Response Headers', 'wp-rest-api-log' ); ?></span></h3>
 			<div class="inside collapsed"><pre><code class="json"><?php echo json_encode( $entry->response->headers, JSON_PRETTY_PRINT ); ?></code></pre></div>
 		</div>
 
 		<div class="postbox response-body">
-			<h3 class="hndle"><span><?php esc_html_e( 'Response', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></span></h3>
+			<h3 class="hndle"><span><?php esc_html_e( 'Response', 'wp-rest-api-log' ); ?></span></h3>
 			<div class="inside collapsed"><pre><code><?php echo esc_html( $entry->response->body ); ?></code></pre></div>
 		</div>
 

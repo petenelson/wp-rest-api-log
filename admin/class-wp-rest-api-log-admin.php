@@ -24,7 +24,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 			add_submenu_page(
 				null,
-				__( 'REST API Log Entry', WP_REST_API_Log_Common::TEXT_DOMAIN ),
+				__( 'REST API Log Entry', 'wp-rest-api-log' ),
 				'',
 				'read_' . WP_REST_API_Log_DB::POST_TYPE,
 				WP_REST_API_Log_Common::PLUGIN_NAME . '-view-entry',
