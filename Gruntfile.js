@@ -98,50 +98,44 @@ module.exports = function( grunt ) {
 			}
 		},
 
+
 		clean: {
 			main: ['release/<%= pkg.version %>']
 		},
 
-		copy: {
-			// Copy the theme to a versioned release directory
-			main: {
-				src:  [
-					'**',
-					'!**/.*',
-					'!**/readme.md',
-					'!node_modules/**',
-					'!vendor/**',
-					'!tests/**',
-					'!release/**',
-					'!assets/css/sass/**',
-					'!assets/css/src/**',
-					'!assetsjs/src/**',
-					'!images/src/**',
-					'!bootstrap.php',
-					'!bower.json',
-					'!composer.json',
-					'!composer.lock',
-					'!Gruntfile.js',
-					'!package.json',
-					'!phpunit.xml',
-					'!phpunit.xml.dist'
-				],
-				dest: 'release/<%= pkg.version %>/'
-			}
+
+		copy:   {
+			// create release for WordPress repository
+			wp: {
+				files: [
+
+					// directories
+					{ expand: true, src: [ 
+						'admin/css/wp-rest-api-log-admin.css',
+						'admin/css/wp-rest-api-log-admin.min.css',
+						'admin/js/wp-rest-api-log-admin.js',
+						'admin/js/wp-rest-api-log-admin.min.js',
+						'admin/*.php',
+						], 
+						dest: 'release/' },
+
+					{ expand: true, src: ['includes/**'], dest: 'release/' },
+					{ expand: true, src: ['languages/**'], dest: 'release/' },
+
+					// root dir files
+					{
+						expand: true,
+						src: [
+							'*.php',
+							'readme.txt',
+							],
+						dest: 'release/'
+					}
+
+				]
+			} // wp
 		},
 
-		compress: {
-			main: {
-				options: {
-					mode: 'zip',
-					archive: './release/health.<%= pkg.version %>.zip'
-				},
-				expand: true,
-				cwd: 'release/<%= pkg.version %>/',
-				src: ['**/*'],
-				dest: 'health/'
-			}
-		},
 
 		phpunit: {
 			classes: {
@@ -154,41 +148,17 @@ module.exports = function( grunt ) {
 			}
 		},
 
-		qunit: {
-			all: ['tests/qunit/**/*.html']
-		},
-
-		phantomcss: {
-			options: {
-				mismatchTolerance: 0.05,
-				screenshots: 'test/phantomcss/baselines',
-				results: 'test/phantomcss/results',
-				viewportSize: [1280, 800]
-			},
-			src: [
-				'test/phantomcss/start.js',
-				'test/phantomcss/*-test.js'
-			]
-		},
-
-		hologram: {
-			generate: {
-				options: {
-					config: './hologram_config.yml'
-				}
-			}
-		}
 	} );
 
 	// Load tasks
 	require('load-grunt-tasks')(grunt);
 
 	// Register tasks
-	grunt.registerTask( 'default', ['jshint', 'concat', 'uglify', 'sass', 'cssmin'] );
+	grunt.registerTask( 'default', [ 'jshint', 'concat', 'uglify', 'sass', 'cssmin' ] );
 
-	grunt.registerTask( 'build', ['default', 'clean', 'copy', 'compress'] );
+	grunt.registerTask( 'build', ['default', 'clean', 'copy' ] );
 
-	grunt.registerTask( 'test', ['phpunit', 'qunit', 'phantomcss'] );
+	grunt.registerTask( 'test', [ 'phpunit' ] );
 
 	grunt.util.linefeed = '\n';
 };

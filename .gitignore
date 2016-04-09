@@ -1,7 +1,8 @@
-bower_components
-node_modules
-vendor
+/bower_components
+/node_modules
+/vendor
 composer.lock
-admin/css/*.css
-admin/css/*.map
-admin/js/*.js
+/admin/css/*.css
+/admin/css/*.map
+/admin/js/*.js
+/release
