@@ -230,6 +230,15 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				}
 			}
 
+			// log any additional post meta
+			if ( ! empty( $args['post_meta'] ) && is_array( $args['post_meta'] ) ) {
+
+				foreach( $args['post_meta'] as $key => $value ){
+					add_post_meta( $post_id, $key, $value );
+				}
+
+			}
+
 		}
 
 
