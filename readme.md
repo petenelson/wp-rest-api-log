@@ -10,6 +10,9 @@ Contact [Pete Nelson](https://twitter.com/gungeekatx)
 
 ## Changelog
 
+### v1.0.0-beta2 ???
+-
+
 ### v1.0.0-beta1 July 9, 2015
 - Initial beta release
 
