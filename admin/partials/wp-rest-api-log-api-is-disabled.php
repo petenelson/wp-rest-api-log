@@ -1,9 +1,9 @@
 <div class="wrap wp-rest-api-log-wrap">
 
-	<h2>WP REST API Log</h2>
+	<h2><?php esc_html_e( 'WP REST API Log', 'wp-rest-api-log' ); ?></h2>
 
 	<div class="error">
-		<p><?php _e( 'The WP REST API is not enabled', WP_REST_API_Log_Common::TEXT_DOMAIN ); ?></p>
+		<p><?php esc_html_e( 'The WP REST API is not enabled', 'wp-rest-api-log' ); ?></p>
 	</div>
 
 </div>
