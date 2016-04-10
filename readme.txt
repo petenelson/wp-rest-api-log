@@ -1,6 +1,6 @@
 === WP REST API Log ===
 Contributors: gungeekatx
-Tags: wp rest api, wp api, api, json, log
+Tags: wp rest api, rest api, wp api, api, json, log
 Donate link: https://github.com/petenelson/wp-rest-api-log
 Requires at least: 4.0
 Tested up to: 4.5
@@ -37,8 +37,13 @@ Roadmap
 
 == Changelog ==
 
-= v1.0.0-beta2 ??? =
-* 
+= v1.0.0-beta2 April 9, 2016 =
+* Switched from custom tables to built-in WordPress tables using a custom post type (wp-rest-api-log)
+* Method, status, and source are now tracked using taxonomies
+* Viewing log entries now uses the standard WordPress admin UI, includes filters for method, status, and source
+* Added admin settings with the option to enable or disable logging
+* Added WP-CLI support: wp rest-api-log
+* Added .pot file to support translations
 
 = v1.0.0-beta1 July 9, 2015 =
 * Initial release
