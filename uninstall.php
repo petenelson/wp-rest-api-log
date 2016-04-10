@@ -12,7 +12,7 @@ $tables = array(
 	);
 
 foreach ( $tables as $table_name ) {
-	$wpdb->query( "drop table $table_name");
+	$wpdb->query( "drop table if exists $table_name");
 }
 
 
