@@ -168,14 +168,23 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			// allow filtering
 			$args = apply_filters( self::plugin_name() . '-pre-insert', $args );
 
-
 			$new_post = array(
 				'post_author'     => 0,
 				'post_type'       => self::POST_TYPE,
 				'post_title'      => $args['route'],
-				'post_content'    => json_encode( $args['response']['body'], JSON_PRETTY_PRINT ),
+				'post_content'    => wp_json_encode( $args['response']['body'], JSON_PRETTY_PRINT ),
 				'post_status'     => 'publish',
+
+				// append a random string to the end to attempt a unique post slug
+				// route names will often be the same, so this helps WordPress from
+				// having to loop through several times while generating a unique
+				// post slug
+				'post_name'       => sanitize_title( $args['route'] ) . '-' . wp_generate_password( 6 ),
+
 				);
+
+			// allow filtering
+			$new_post = apply_filters( self::plugin_name() . '-pre-insert-new-post', $new_post, $args );
 
 			$post_id = wp_insert_post( $new_post );
 
@@ -450,13 +459,15 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 */
 		public function migrate_db_records() {
 
+			return;
+
 			global $wpdb;
 
 			$existing_tables = $wpdb->get_col( "SHOW TABLES LIKE '{$wpdb->prefix}wp_rest_api_log%';" );
 
 			if ( ! empty( $existing_tables ) ) {
 
-				$ids = $wpdb->get_col( "select * from {$wpdb->prefix}wp_rest_api_log" );
+				$ids = $wpdb->get_col( "select id from {$wpdb->prefix}wp_rest_api_log" );
 
 				$post_ids = array();
 
@@ -470,6 +481,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 						'meta_key'                 => '_wp_rest_api_log_migrated_id',
 						'meta_value'               => $id,
 						'fields'                   => 'ids',
+						'post_status'              => 'publish',
 						)
 					);
 
@@ -483,6 +495,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 				add_option( 'wp-rest-api-log-migrate-completed', '1', '', 'no' );
 			}
+
+			return $post_ids;
 
 		}
 
@@ -537,7 +551,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$post_id = $this->insert( $args );
 
 			// save the legacy ID so we don't migrate it again
-			update_post_meta( $post_id, '_wp_rest_api_log_migrated_id', $id );
+			add_post_meta( $post_id, '_wp_rest_api_log_migrated_id', $id );
 
 			// manually update the post dates
 			$wpdb->update(
