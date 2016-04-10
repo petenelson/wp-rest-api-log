@@ -138,28 +138,40 @@ module.exports = function( grunt ) {
 		},
 
 
-		phpunit: {
-			classes: {
-				dir: 'tests/phpunit/'
-			},
+		phplint: {
 			options: {
-				bin: 'vendor/bin/phpunit',
-				bootstrap: 'bootstrap.php',
-				colors: true
-			}
+				limit: 10,
+				stdout: true,
+				stderr: true
+			},
+			files: [
+				'admin/*.php',
+				'admin/**/*.php',
+				'includes/*.php',
+				'includes/**/*.php',
+				'*.php'
+			]
+		},
+
+		phpunit: {
+			'default': {
+				cmd: 'phpunit',
+				args: ['-c', 'phpunit.xml.dist']
+			},
 		},
 
 	} );
 
 	// Load tasks
 	require('load-grunt-tasks')(grunt);
+	require('phplint').gruntPlugin(grunt);
 
 	// Register tasks
 	grunt.registerTask( 'default', [ 'jshint', 'concat', 'uglify', 'sass', 'cssmin' ] );
 
 	grunt.registerTask( 'build', [ 'default', 'test', 'clean', 'copy' ] );
 
-	grunt.registerTask( 'test', [ 'phpunit' ] );
+	grunt.registerTask( 'test', [ 'phplint', 'phpunit' ] );
 
 	grunt.util.linefeed = '\n';
 };
