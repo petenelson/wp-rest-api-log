@@ -9,5 +9,8 @@
         }
     ],
     "require": {},
-    "require-dev": {}
+    "require-dev": {
+        "wp-coding-standards/wpcs": "2014-12-11",
+        "phpunit/phpunit": "^4.8"
+    }
 }
