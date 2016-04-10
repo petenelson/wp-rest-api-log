@@ -24,15 +24,16 @@ Find us on [GitHub](https://github.com/petenelson/wp-rest-api-log)!
 
 Roadmap
 
-* Implememt paging in the admin UI
-* Better search capabilities
+* Better search capabilities for log entries via the REST API endpoint
+* WooCommerce REST API Logging
 
 
 == Installation ==
 
 1. Upload the wp-rest-api-log directory to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Go to Tools -> WP REST API Log to start viewing log entries
+3. Go to Settings -> REST API Log to enable or disable logging
+3. Go to Tools -> REST API Log to start viewing log entries
 
 
 == Changelog ==
@@ -44,6 +45,8 @@ Roadmap
 * Added admin settings with the option to enable or disable logging
 * Added WP-CLI support: wp rest-api-log
 * Added .pot file to support translations
+
+**NOTE: if you are upgrading from the previous version, you can run the "wp rest-api-log migrate" WP-CLI command to migrate your existing logs into the new custom post type**
 
 = v1.0.0-beta1 July 9, 2015 =
 * Initial release
@@ -58,6 +61,8 @@ Roadmap
 * Added admin settings with the option to enable or disable logging
 * Added WP-CLI support: wp rest-api-log
 * Added .pot file to support translations
+
+**NOTE: if you are upgrading from the previous version, you can run the "wp rest-api-log migrate" WP-CLI command to migrate your existing logs into the new custom post type**
 
 
 == Frequently Asked Questions ==
