@@ -7,4 +7,3 @@ npm-debug.log
 /admin/css/*.map
 /admin/js/*.js
 /release
-/bin
