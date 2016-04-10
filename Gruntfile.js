@@ -157,7 +157,7 @@ module.exports = function( grunt ) {
 	// Register tasks
 	grunt.registerTask( 'default', [ 'jshint', 'concat', 'uglify', 'sass', 'cssmin' ] );
 
-	grunt.registerTask( 'build', ['default', 'clean', 'copy' ] );
+	grunt.registerTask( 'build', [ 'default', 'test', 'clean', 'copy' ] );
 
 	grunt.registerTask( 'test', [ 'phpunit' ] );
 

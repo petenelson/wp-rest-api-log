@@ -2,6 +2,7 @@
 /node_modules
 /vendor
 composer.lock
+npm-debug.log
 /admin/css/*.css
 /admin/css/*.map
 /admin/js/*.js
