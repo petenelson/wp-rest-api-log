@@ -16,34 +16,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 			add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 
-			add_action( 'wp_ajax_wp-rest-api-migrate-db', array( $this, 'migrate_db') );
-			add_action( 'admin_footer',                   array( $this, 'enqueue_migrate_script') );
-
-		}
-
-
-		public function migrate_db() {
-			$nonce = filter_input( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
-			if ( wp_verify_nonce( $nonce, 'wp-rest-api-log-migrate' ) ) {
-				$db = new WP_REST_API_Log_DB();
-				$post_ids = $db->migrate_db_records();
-				wp_send_json( array( 'completed' => true, 'post_ids' => $post_ids ) );
-			}
-		}
-
-
-		public function enqueue_migrate_script() {
-
-			if ( '1' !== get_option( 'wp-rest-api-log-migrate-completed' ) ) {
-				$data = array(
-					'action' => 'wp-rest-api-migrate-db',
-					'nonce'  => wp_create_nonce( 'wp-rest-api-log-migrate' )
-					);
-
-				wp_enqueue_script(  'wp-rest-api-log-admin' );
-				wp_localize_script( 'wp-rest-api-log-admin', 'WP_REST_API_Log_Migrate_Data', $data );
-			}
-
 		}
 
 

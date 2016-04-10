@@ -451,17 +451,19 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			return $where;
 		}
 
+
 		/**
-		 * Migrates records from the initial version of the plugin's
-		 * custom tables to custom post types
+		 * Gets a list of log IDs from the legacy custom table that need
+		 * to be migrated to a custom post type
 		 *
-		 * @return void
+		 * @return array
 		 */
-		public function migrate_db_records() {
+		public function get_log_ids_to_migrate() {
 
 			global $wpdb;
 
 			$existing_tables = $wpdb->get_col( "SHOW TABLES LIKE '{$wpdb->prefix}wp_rest_api_log%';" );
+			$log_ids = array();
 
 			if ( ! empty( $existing_tables ) ) {
 
@@ -484,17 +486,14 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					);
 
 					if ( ! $query->have_posts() ) {
-						$post_ids[] = $this->migrate_db_record( $id );
+						$log_ids[] = $id;
 					}
 
 				}
 
-				wp_cache_flush();
-
-				add_option( 'wp-rest-api-log-migrate-completed', '1', '', 'no' );
 			}
 
-			return $post_ids;
+			return $log_ids;
 
 		}
 
@@ -502,9 +501,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 * Migrates single record from the initial version of the plugin's
 		 * custom tables to a custom post type
 		 *
-		 * @return
+		 * @return int
 		 */
-		private function migrate_db_record( $id ) {
+		public function migrate_db_record( $id ) {
 
 			global $wpdb;
 

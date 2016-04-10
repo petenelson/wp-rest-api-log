@@ -6,9 +6,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 
 	class WP_REST_API_Log_Settings {
 
-		public $settings_page         = 'wp-rest-api-log-settings';
-		public $settings_key_general  = 'wp-rest-api-log-settings-general';
-		public $settings_key_help     = 'wp-rest-api-log-settings-help';
+		public $settings_page          = 'wp-rest-api-log-settings';
+		public $settings_key_general   = 'wp-rest-api-log-settings-general';
+		public $settings_key_help      = 'wp-rest-api-log-settings-help';
 		private $plugin_settings_tabs  = array();
 
 
