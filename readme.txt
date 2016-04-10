@@ -38,7 +38,7 @@ Roadmap
 
 == Changelog ==
 
-= v1.0.0-beta2 April 9, 2016 =
+= v1.0.0-beta2 April 10, 2016 =
 * Switched from custom tables to built-in WordPress tables using a custom post type (wp-rest-api-log)
 * Method, status, and source are now tracked using taxonomies
 * Viewing log entries now uses the standard WordPress admin UI, includes filters for method, status, and source
