@@ -1,16 +1,20 @@
 <?php
-/*
-Plugin Name: WP REST API Log
-Description: Logs requests and responses for the WP REST API
-Author: Pete Nelson
-Version: 1.0.0-beta2
-Plugin URI: https://github.com/petenelson/wp-rest-api-log
-Text Domain: wp-rest-api-log
-Domain Path: /languages
-License: GPL2+
-*/
+/**
+ * Plugin Name: WP REST API Log
+ * Description: Logs requests and responses for the WP REST API
+ * Author: Pete Nelson
+ * Version: 1.0.0-beta2
+ * Plugin URI: https://github.com/petenelson/wp-rest-api-log
+ * Text Domain: wp-rest-api-log
+ * Domain Path: /languages
+ * License: GPL2+
+ *
+ * @package wp-rest-api-log
+ */
 
-if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'restricted access' );
+}
 
 if ( ! defined( 'WP_REST_API_LOG_ROOT' ) ) {
 	define( 'WP_REST_API_LOG_ROOT', trailingslashit( dirname( __FILE__ ) ) );
@@ -54,7 +58,7 @@ $classes = array(
 );
 
 
-// include classes
+/* Include classes */
 foreach ( $includes as $include ) {
 	require_once WP_REST_API_LOG_PATH . $include;
 }
@@ -63,14 +67,14 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	require_once WP_REST_API_LOG_PATH . 'includes/wp-cli/setup.php';
 }
 
-// record the start time so we can log total millisecons
+/* Record the start time so we can log total millisecons */
 if ( class_exists( 'WP_REST_API_Log_Common' ) ) {
 	global $wp_rest_api_log_start;
 	$wp_rest_api_log_start = WP_REST_API_Log_Common::current_milliseconds();
 }
 
 
-// instantiate classes and hook into WordPress
+/* Instantiate classes and hook into WordPress */
 foreach ( $classes as $class ) {
 	$plugin = new $class();
 	if ( method_exists( $class, 'plugins_loaded' ) ) {
@@ -79,7 +83,7 @@ foreach ( $classes as $class ) {
 }
 
 
-// activation hook
+/* Activation hook */
 register_activation_hook( __FILE__, function() {
 	require_once 'includes/class-wp-rest-api-log-activator.php';
 	WP_REST_API_Log_Activator::activate();
