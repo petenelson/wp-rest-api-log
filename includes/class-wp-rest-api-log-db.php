@@ -459,8 +459,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 */
 		public function migrate_db_records() {
 
-			return;
-
 			global $wpdb;
 
 			$existing_tables = $wpdb->get_col( "SHOW TABLES LIKE '{$wpdb->prefix}wp_rest_api_log%';" );

@@ -12,8 +12,11 @@
 			this.highlightBlocks();
 			this.adjustPostsListsTable();
 
-		},
+			if ( 'undefined' !== typeof WP_REST_API_Log_Migrate_Data ) {
+				this.migrateLegacyDB();
+			}
 
+		},
 
 		highlightBlocks: function() {
 
@@ -29,6 +32,10 @@
 			if ( $( 'body' ).hasClass( 'post-type-wp-rest-api-log') ) {
 				$( '.wp-list-table' ).removeClass( 'fixed' );
 			}
+		},
+
+		migrateLegacyDB: function() {
+			$.get( ajaxurl, { "action":WP_REST_API_Log_Migrate_Data.action, "nonce":WP_REST_API_Log_Migrate_Data.nonce } );
 		}
 
 	};

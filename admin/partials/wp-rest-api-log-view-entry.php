@@ -70,28 +70,28 @@ $classes = apply_filters( 'wp-rest-api-log-entry-display-classes', array( 'wrap'
 
 		<div class="postbox request-headers">
 			<h3 class="hndle"><span><?php esc_html_e( 'Request Headers', 'wp-rest-api-log' ); ?></span></h3>
-			<div class="inside"><pre><code class="json"><?php echo json_encode( $entry->request->headers, $json_display_options['request']['headers'] ); ?></code></pre></div>
+			<div class="inside"><pre><code class="json"><?php echo wp_json_encode( $entry->request->headers, $json_display_options['request']['headers'] ); ?></code></pre></div>
 		</div>
 
 		<?php do_action( 'wp-rest-api-log-display-entry-before-request-querystring', $entry ); ?>
 
 		<div class="postbox querystring-parameters">
 			<h3 class="hndle"><span><?php esc_html_e( 'Query Parameters', 'wp-rest-api-log' ); ?></span></h3>
-			<div class="inside"><pre><code class="json"><?php echo json_encode( $entry->request->query_params, $json_display_options['request']['query_params'] ); ?></code></pre></div>
+			<div class="inside"><pre><code class="json"><?php echo wp_json_encode( $entry->request->query_params, $json_display_options['request']['query_params'] ); ?></code></pre></div>
 		</div>
 
 		<?php do_action( 'wp-rest-api-log-display-entry-before-request-body', $entry ); ?>
 
 		<div class="postbox body-parameters">
 			<h3 class="hndle"><span><?php esc_html_e( 'Body Parameters', 'wp-rest-api-log' ); ?></span></h3>
-			<div class="inside"><pre><code class="json"><?php echo json_encode( $entry->request->body_params, $json_display_options['request']['body_params'] ); ?></code></pre></div>
+			<div class="inside"><pre><code class="json"><?php echo wp_json_encode( $entry->request->body_params, $json_display_options['request']['body_params'] ); ?></code></pre></div>
 		</div>
 
 		<?php do_action( 'wp-rest-api-log-display-entry-before-response-headers', $entry ); ?>
 
 		<div class="postbox response-headers">
 			<h3 class="hndle"><span><?php esc_html_e( 'Response Headers', 'wp-rest-api-log' ); ?></span></h3>
-			<div class="inside"><pre><code class="json"><?php echo json_encode( $entry->response->headers, $json_display_options['response']['headers'] ); ?></code></pre></div>
+			<div class="inside"><pre><code class="json"><?php echo wp_json_encode( $entry->response->headers, $json_display_options['response']['headers'] ); ?></code></pre></div>
 		</div>
 
 		<?php do_action( 'wp-rest-api-log-display-entry-before-response-body', $entry ); ?>
