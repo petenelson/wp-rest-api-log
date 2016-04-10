@@ -13,12 +13,22 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 			add_action( 'admin_init', array( $this, 'update_role_capabilities' ) );
 			add_action( 'admin_init', array( $this, 'register_scripts' ) );
-			add_action( 'admin_init', array( $this, 'create_migrate_legacy_db_cron' ) );
 
 			add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 
+			add_action( 'wp_ajax_wp-rest-api-migrate-db', array( $this, 'migrate_db') );
+
 		}
 
+
+		public function migrate_db() {
+			$nonce = filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING );
+			if ( wp_verify_nonce( $nonce, 'wp-rest-api-log-migrate' ) ) {
+				$db = new WP_REST_API_Log_DB();
+				$db->migrate_db_records();
+				wp_send_json( array( 'completed' => true ) );
+			}
+		}
 
 		public function admin_menu() {
 
@@ -94,18 +104,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			return WP_REST_API_Log_Common::PLUGIN_NAME . '-admin';
 		}
 
-		/**
-		 * Creates a one-time cron job to migrate the legacy tables to
-		 * custom post type records
-		 *
-		 * @return void
-		 */
-		public function create_migrate_legacy_db_cron() {
-			$migrate_completed = get_option( 'wp-rest-api-log-migrate-completed' );
-			if ( false === $migrate_completed ) {
-				wp_schedule_single_event( time(), 'wp-rest-api-log-migrate-legacy-db' ); 
-			}
-		}
 
 		/**
 		 * Updates capabilities for roles to allow them access to the

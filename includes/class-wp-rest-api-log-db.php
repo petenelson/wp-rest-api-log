@@ -21,10 +21,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			add_action( 'init', array( $this, 'register_custom_taxonomies' ) );
 			add_action( WP_REST_API_Log_Common::PLUGIN_NAME . '-insert', array( $this, 'insert' ), 10, 4 );
 
-			// called by the one-time cron job to migrate legacy db records
-			add_action( 'wp-rest-api-log-migrate-legacy-db', array( $this, 'migrate_db_records' ) );
-			add_action( 'admin_init', array( $this, 'migrate_db_records' ) );
-
 			// adds where statement when searching for routes
 			add_filter( 'posts_where', array( $this, 'add_where_route' ), 10, 2 );
 
@@ -450,46 +446,40 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 * Migrates records from the initial version of the plugin's
 		 * custom tables to custom post types
 		 *
-		 * @return
+		 * @return void
 		 */
 		public function migrate_db_records() {
 
-			$migrate_completed = get_option( 'wp-rest-api-log-migrate-completed' );
+			global $wpdb;
 
-			if ( false === $migrate_completed ) { 
+			$existing_tables = $wpdb->get_col( "SHOW TABLES LIKE '{$wpdb->prefix}wp_rest_api_log%';" );
 
-				global $wpdb;
+			if ( ! empty( $existing_tables ) ) {
 
-				$existing_tables = $wpdb->get_col( "SHOW TABLES LIKE '{$wpdb->prefix}wp_rest_api_log%';" );
+				$ids = $wpdb->get_col( "select * from {$wpdb->prefix}wp_rest_api_log" );
 
-				if ( ! empty( $existing_tables ) ) {
+				$post_ids = array();
 
-					$ids = $wpdb->get_col( "select * from {$wpdb->prefix}wp_rest_api_log" );
+				foreach ( $ids as $id ) {
 
-					$post_ids = array();
+					$query = new WP_Query( array(
+						'posts_per_page'           => 1,
+						'update_post_meta_cache'   => false,
+						'update_post_term_cache'   => false,
+						'post_type'                => self::POST_TYPE,
+						'meta_key'                 => '_wp_rest_api_log_migrated_id',
+						'meta_value'               => $id,
+						'fields'                   => 'ids',
+						)
+					);
 
-					foreach ( $ids as $id ) {
-
-						$query = new WP_Query( array(
-							'posts_per_page'           => 1,
-							'update_post_meta_cache'   => false,
-							'update_post_term_cache'   => false,
-							'post_type'                => self::POST_TYPE,
-							'meta_key'                 => '_wp_rest_api_log_migrated_id',
-							'meta_value'               => $id,
-							'fields'                   => 'ids',
-							)
-						);
-
-						if ( ! $query->have_posts() ) {
-							$post_ids[] = $this->migrate_db_record( $id );
-						}
-
+					if ( ! $query->have_posts() ) {
+						$post_ids[] = $this->migrate_db_record( $id );
 					}
 
-					wp_cache_flush();
-
 				}
+
+				wp_cache_flush();
 
 				add_option( 'wp-rest-api-log-migrate-completed', '1', '', 'no' );
 			}
