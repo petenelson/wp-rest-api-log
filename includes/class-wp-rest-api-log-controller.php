@@ -133,7 +133,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 			if ( ! empty( $post ) && WP_REST_API_Log_DB::POST_TYPE === $post->post_type ) {
 				return rest_ensure_response( new WP_REST_API_Log_Entry( $post ) );
 			} else {
-				return new WP_Error( 'invalid_entry_id', __( sprintf( 'Invalid REST API Log ID %d.', $args['id'] ) ), array( 'status' => 404 ) );
+				return new WP_Error( 'invalid_entry_id', sprintf( __( 'Invalid REST API Log ID %d.', 'wp-rest-api-log' ), $args['id'] ), array( 'status' => 404 ) );
 			}
 
 		}
@@ -141,7 +141,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 		public function validate_entry_id( $id ) {
 			if ( $id < 1 ) {
-				return new WP_Error( 'invalid_entry_id', __( sprintf( 'Invalid REST API Log ID %d.', $args['id'] ) ), array( 'status' => 404 ) );
+				return new WP_Error( 'invalid_entry_id', sprintf( __( 'Invalid REST API Log ID %d.', 'wp-rest-api-log' ), $args['id'] ), array( 'status' => 404 ) );
 			} else {
 				return true;
 			}

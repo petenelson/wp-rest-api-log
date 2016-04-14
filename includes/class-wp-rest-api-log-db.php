@@ -45,10 +45,21 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 
 		public function get_post_type_labels() {
+
 			$labels = array(
-				'name'                => __( 'REST API Log Entry', 'wp-rest-api-log' ),
-				'singular_name'       => __( 'REST API Log Entries', 'wp-rest-api-log' ),
+				'name'               => esc_html__( 'REST API Log Entries', 'ms-research' ),
+				'singular_name'      => esc_html__( 'REST API Log Entry', 'ms-research' ),
+				'add_new'            => esc_html__( 'Add New REST API Log Entries', 'ms-research' ),
+				'add_new_item'       => esc_html__( 'Add New REST API Log Entry', 'ms-research' ),
+				'new_item'           => esc_html__( 'New REST API Log Entry', 'ms-research' ),
+				'edit_item'          => esc_html__( 'Edit Publication Page', 'ms-research' ),
+				'view_item'          => esc_html__( 'View REST API Log Entry', 'ms-research' ),
+				'all_items'          => esc_html__( 'All REST API Log Entries', 'ms-research' ),
+				'search_items'       => esc_html__( 'Search Entries', 'ms-research' ),
+				'not_found'          => esc_html__( 'No REST API Log Entries found', 'ms-research' ),
+				'not_found_in_trash' => esc_html__( 'No REST API Log Entries found in Trash', 'ms-research' ),
 			);
+
 			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-post-type-labels', $labels );
 		}
 

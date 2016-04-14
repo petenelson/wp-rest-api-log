@@ -279,7 +279,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 
 
 		public function admin_menu() {
-			add_options_page( 'REST API Log' . __( 'Settings' ), __( 'REST API Log', 'wp-rest-api-log' ), 'manage_options', $this->settings_page, array( $this, 'options_page' ), 30 );
+			add_options_page( 'REST API Log' . __( 'Settings' ), 'REST API Log', 'manage_options', $this->settings_page, array( $this, 'options_page' ), 30 );
 		}
 
 
