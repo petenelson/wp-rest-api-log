@@ -98,57 +98,39 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		public function add_method_dropdown( $post_type ) {
 			if ( WP_REST_API_Log_Db::POST_TYPE === $post_type ) {
 
-				$selected_method   = filter_input( INPUT_GET, WP_REST_API_Log_DB::TAXONOMY_METHOD, FILTER_SANITIZE_STRING );
-				$methods           = array( 'GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS' );
+				WP_REST_API_Log_Common::taxonomy_dropdown(
+					__( 'Method', 'wp-rest-api-log' ),
+					__( 'All Methods', 'wp-rest-api-log' ),
+					WP_REST_API_Log_DB::TAXONOMY_METHOD,
+					filter_input( INPUT_GET, WP_REST_API_Log_DB::TAXONOMY_METHOD, FILTER_SANITIZE_STRING )
+					);
 
-				?>
-					<label for="wp-rest-api-log-methods" class="screen-reader-text"><?php esc_html_e( 'Methods', 'wp-rest-api-log' ); ?></label>
-					<select name="<?php echo esc_attr( WP_REST_API_Log_DB::TAXONOMY_METHOD ); ?>" id="wp-rest-api-log-methods">
-						<option value=""><?php esc_html_e( 'All Methods', 'wp-rest-api-log' ); ?></option>
-						<?php foreach( $methods as $method ) : ?>
-							<option value="<?php echo esc_attr( $method ); ?>" <?php selected( $method, $selected_method ); ?>><?php echo esc_html( $method ); ?></option>
-						<?php endforeach; ?>
-					</select>
-
-				<?php
 			}
 		}
 
 		public function add_status_dropdown( $post_type ) {
 			if ( WP_REST_API_Log_Db::POST_TYPE === $post_type ) {
 
-				$selected_status   = filter_input( INPUT_GET, WP_REST_API_Log_DB::TAXONOMY_STATUS, FILTER_SANITIZE_STRING );
-				$statuses          = get_terms( WP_REST_API_Log_DB::TAXONOMY_STATUS );
+				WP_REST_API_Log_Common::taxonomy_dropdown(
+					__( 'Status', 'wp-rest-api-log' ),
+					__( 'All Statuses', 'wp-rest-api-log' ),
+					WP_REST_API_Log_DB::TAXONOMY_STATUS,
+					filter_input( INPUT_GET, WP_REST_API_Log_DB::TAXONOMY_STATUS, FILTER_SANITIZE_STRING )
+					);
 
-				?>
-					<label for="wp-rest-api-log-statuses" class="screen-reader-text"><?php esc_html_e( 'Status', 'wp-rest-api-log' ); ?></label>
-					<select name="<?php echo esc_attr( WP_REST_API_Log_DB::TAXONOMY_STATUS ); ?>" id="wp-rest-api-log-statuses">
-						<option value=""><?php esc_html_e( 'All Statuses', 'wp-rest-api-log' ); ?></option>
-						<?php foreach( $statuses as $status ) : ?>
-							<option value="<?php echo esc_attr( $status->slug ); ?>" <?php selected( $status->slug, $selected_status ); ?>><?php echo esc_html( $status->name ); ?></option>
-						<?php endforeach; ?>
-					</select>
-
-				<?php
 			}
 		}
 
 		public function add_source_dropdown( $post_type ) {
 			if ( WP_REST_API_Log_Db::POST_TYPE === $post_type ) {
 
-				$selected_source   = filter_input( INPUT_GET, WP_REST_API_Log_DB::TAXONOMY_SOURCE, FILTER_SANITIZE_STRING );
-				$sourcees          = get_terms( WP_REST_API_Log_DB::TAXONOMY_SOURCE );
+				WP_REST_API_Log_Common::taxonomy_dropdown(
+					__( 'Source', 'wp-rest-api-log' ),
+					__( 'All Sources', 'wp-rest-api-log' ),
+					WP_REST_API_Log_DB::TAXONOMY_SOURCE,
+					filter_input( INPUT_GET, WP_REST_API_Log_DB::TAXONOMY_SOURCE, FILTER_SANITIZE_STRING )
+					);
 
-				?>
-					<label for="wp-rest-api-log-sources" class="screen-reader-text"><?php esc_html_e( 'Source', 'wp-rest-api-log' ); ?></label>
-					<select name="<?php echo esc_attr( WP_REST_API_Log_DB::TAXONOMY_SOURCE ); ?>" id="wp-rest-api-log-sources">
-						<option value=""><?php esc_html_e( 'All Sources', 'wp-rest-api-log' ); ?></option>
-						<?php foreach( $sourcees as $source ) : ?>
-							<option value="<?php echo esc_attr( $source->slug ); ?>" <?php selected( $source->slug, $selected_source ); ?>><?php echo esc_html( $source->name ); ?></option>
-						<?php endforeach; ?>
-					</select>
-
-				<?php
 			}
 		}
 

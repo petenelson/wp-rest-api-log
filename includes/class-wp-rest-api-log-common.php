@@ -37,6 +37,22 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 		}
 
 
+		static public function taxonomy_dropdown( $label, $all_items_prompt, $taxonomy, $selected_slug ) {
+			$terms = get_terms( $taxonomy );
+
+			?>
+				<label for="<?php echo esc_attr( $taxonomy ); ?>" class="screen-reader-text"><?php echo esc_html( $label ) ?></label>
+				<select name="<?php echo esc_attr( $taxonomy ); ?>" id="<?php echo esc_attr( $taxonomy ); ?>">
+					<option value=""><?php echo esc_html( $all_items_prompt ); ?></option>
+					<?php foreach( $terms as $term ) : ?>
+						<option value="<?php echo esc_attr( $term->slug ); ?>" <?php selected( $term->slug, $selected_slug ); ?>><?php echo esc_html( $term->name ); ?></option>
+					<?php endforeach; ?>
+				</select>
+
+			<?php
+		}
+
+
 	} // end class
 
 }
