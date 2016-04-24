@@ -38,8 +38,9 @@ $includes = array(
 	'includes/class-' . $plugin_class_file . '-response-base.php',
 	'includes/class-' . $plugin_class_file . '-delete-response.php',
 	'includes/class-' . $plugin_class_file . '-routes-response.php',
-	'includes/class-' . $plugin_class_file . '-settings.php',
 	'includes/class-' . $plugin_class_file . '.php',
+	'includes/settings/class-' . $plugin_class_file . '-settings-base.php',
+	'includes/settings/class-' . $plugin_class_file . '-settings.php',
 	'admin/class-' . $plugin_class_file . '-admin.php',
 	'admin/class-' . $plugin_class_file . '-admin-list-table.php',
 );
@@ -54,7 +55,6 @@ $classes = array(
 	$class_base . '',
 	$class_base . '_Admin',
 	$class_base . '_Admin_List_Table',
-	$class_base . '_Settings',
 );
 
 
@@ -82,6 +82,7 @@ foreach ( $classes as $class ) {
 	}
 }
 
+//WP_REST_API_Log_Settings::plugins_loaded();
 
 /* Activation hook */
 register_activation_hook( __FILE__, function() {
