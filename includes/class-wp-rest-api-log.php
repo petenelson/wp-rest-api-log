@@ -19,8 +19,15 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			// an example of disabling logging for specific requests
 			add_filter( 'wp-rest-api-log-bypass-insert', function( $bypass_insert, $result, $request, $rest_server ) {
 
-				if ( stripos( $request->get_route(), '/wp-rest-api-log') !== false ) {
-					$bypass_insert = true;
+				$ignore_routes = array(
+					'/wp-rest-api-log',
+					'/oembed/1.0/embed',
+					);
+
+				foreach ( $ignore_routes as $route ) {
+					if ( stripos( $request->get_route(), $route ) !== false ) {
+						return true;
+					}
 				}
 
 				return $bypass_insert;
@@ -63,7 +70,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			// don't log anything if logging is not enabled
 			$logging_enabled = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-setting-is-enabled',
 				true,
-				'wp-rest-api-log-settings-general',
+				'general',
 				'logging-enabled'
 				);
 
