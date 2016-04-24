@@ -36,11 +36,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Base' ) ) {
 
 			$option[ $setting ] = $value;
 
-			if ( empty( $sanitize_callback ) ) {
-				$sanitize_callback = array( __CLASS__, "sanitize_{$key}_settings" );
+			if ( ! empty( $sanitize_callback ) ) {
+				$option = call_user_func( $sanitize_callback, $option );
 			}
-
-			$option = call_user_func( $sanitize_callback, $option );
 
 			return update_option( $options_key, $option );
 		}

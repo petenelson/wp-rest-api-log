@@ -14,10 +14,9 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command  {
 	 */
 	function enable() {
 
-		$settings = new WP_REST_API_Log_Settings();
-		$settings->update_setting( $settings->settings_key_general, 'logging-enabled', '1' );
+		WP_REST_API_Log_Settings_General::change_enabled_setting( 'general', 'logging-enabled', true, 'WP_REST_API_Log_Settings_General::sanitize_settings' );
 
-		$option = get_option( $settings->settings_key_general );
+		$option = get_option( WP_REST_API_Log_Settings_General::$settings_key );
 
 		if ( ! empty( $option ) && isset( $option['logging-enabled'] ) && '1' === $option['logging-enabled'] ) {
 			WP_CLI::Success( "REST API Log enabled" );	
@@ -39,10 +38,9 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command  {
 	 */
 	function disable() {
 
-		$settings = new WP_REST_API_Log_Settings();
-		$settings->update_setting( $settings->settings_key_general, 'logging-enabled', '0' );
+		WP_REST_API_Log_Settings_General::change_enabled_setting( 'general', 'logging-enabled', false, 'WP_REST_API_Log_Settings_General::sanitize_settings' );
 
-		$option = get_option( $settings->settings_key_general );
+		$option = get_option( WP_REST_API_Log_Settings_General::$settings_key );
 
 		if ( ! empty( $option ) && isset( $option['logging-enabled'] ) && '0' === $option['logging-enabled'] ) {
 			WP_CLI::Success( "REST API Log disabled" );	
@@ -64,9 +62,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command  {
 	 */
 	function status() {
 
-		$settings = new WP_REST_API_Log_Settings();
-
-		$option = get_option( $settings->settings_key_general );
+		$option = get_option( WP_REST_API_Log_Settings_General::$settings_key );
 
 		if ( ! empty( $option ) && isset( $option['logging-enabled'] ) && '1' === $option['logging-enabled'] ) {
 			WP_CLI::Line( "REST API Log is enabled" );	

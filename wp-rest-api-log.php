@@ -40,6 +40,8 @@ $includes = array(
 	'includes/class-' . $plugin_class_file . '-routes-response.php',
 	'includes/class-' . $plugin_class_file . '.php',
 	'includes/settings/class-' . $plugin_class_file . '-settings-base.php',
+	'includes/settings/class-' . $plugin_class_file . '-settings-general.php',
+	'includes/settings/class-' . $plugin_class_file . '-settings-help.php',
 	'includes/settings/class-' . $plugin_class_file . '-settings.php',
 	'admin/class-' . $plugin_class_file . '-admin.php',
 	'admin/class-' . $plugin_class_file . '-admin-list-table.php',
@@ -82,7 +84,9 @@ foreach ( $classes as $class ) {
 	}
 }
 
-//WP_REST_API_Log_Settings::plugins_loaded();
+WP_REST_API_Log_Settings::plugins_loaded();
+WP_REST_API_Log_Settings_General::plugins_loaded();
+WP_REST_API_Log_Settings_Help::plugins_loaded();
 
 /* Activation hook */
 register_activation_hook( __FILE__, function() {
