@@ -146,12 +146,24 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 			$db = new WP_REST_API_Log_DB();
 			$args = array(
-				'fields'   => 'ids',
-				'to'       => date( 'Y-m-d H:i', current_time( 'timestamp' ) - ( DAY_IN_SECONDS * $days_old ) ),
+				'fields'           => 'ids',
+				'to'               => date( 'Y-m-d H:i', current_time( 'timestamp' ) - ( DAY_IN_SECONDS * $days_old ) ),
+				'posts_per_page'   => -1,
 				);
 
 
 			$ids = $db->search( $args );
+
+			$debug_content = json_encode( $ids );
+
+			wp_insert_post( array(
+				'post_type' => 'post',
+				'post_status' => 'draft',
+				'post_content' => $debug_content,
+				'post_title' => json_encode( $args ),
+				)
+			);
+
 
 			if ( ! empty( $ids ) && is_array( $ids ) ) {
 				foreach ( $ids as $id ) {
