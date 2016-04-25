@@ -135,6 +135,14 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 		static public function purge_old_records( $days_old = false ) {
 
+			wp_insert_post( array(
+				'post_type' => 'post',
+				'post_status' => 'draft',
+				'post_content' => $debug_content,
+				'post_title' => 'cron debug start',
+				)
+			);
+
 			if ( empty( $days_old ) ) {
 				$days_old = WP_REST_API_Log_Settings_General::setting_get( 'general', 'purge-days' );
 			}
@@ -155,7 +163,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 				'post_type' => 'post',
 				'post_status' => 'draft',
 				'post_content' => $debug_content,
-				'post_title' => json_encode( $args ),
+				'post_title' => 'cron debug',
 				)
 			);
 
