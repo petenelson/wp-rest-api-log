@@ -129,8 +129,9 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		}
 
 		public function create_purge_cron() {
-			wp_clear_scheduled_hook( 'WP_REST_API_Log::purge_old_records' );
-			wp_schedule_event( time() + 30, 'hourly', 'WP_REST_API_Log::purge_old_records' );
+			if ( ! wp_next_scheduled( 'WP_REST_API_Log::purge_old_records' ) ) {
+				wp_schedule_event( time() + 30, 'hourly', 'WP_REST_API_Log::purge_old_records' );
+			}
 		}
 
 		static public function purge_old_records( $days_old = false ) {
