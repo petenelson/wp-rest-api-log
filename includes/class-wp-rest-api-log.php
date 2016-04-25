@@ -129,19 +129,14 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		}
 
 		public function create_purge_cron() {
-			if ( ! wp_next_scheduled( 'WP_REST_API_Log::purge_old_records' ) ) {
-				wp_schedule_event( time(), 'hourly', 'WP_REST_API_Log::purge_old_records' );
-			}
+			wp_clear_scheduled_hook( 'WP_REST_API_Log::purge_old_records' );
+			wp_schedule_event( current_time( 'timestap' ) + 30, 'hourly', 'WP_REST_API_Log::purge_old_records' );
 		}
-
 
 		static public function purge_old_records( $days_old = false ) {
 
 			if ( empty( $days_old ) ) {
 				$days_old = WP_REST_API_Log_Settings_General::setting_get( 'general', 'purge-days' );
-				if ( empty( $days_old ) ) {
-					return;
-				}
 			}
 
 			$db = new WP_REST_API_Log_DB();
@@ -163,6 +158,10 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 				'post_title' => json_encode( $args ),
 				)
 			);
+
+			if ( empty( $days_old ) ) {
+				return;
+			}
 
 
 			if ( ! empty( $ids ) && is_array( $ids ) ) {
