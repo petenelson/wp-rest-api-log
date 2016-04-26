@@ -134,12 +134,12 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			}
 		}
 
-		static public function purge_old_records( $days_old = false ) {
+		static public function purge_old_records( $days_old = false, $dry_run = false ) {
 
 			wp_insert_post( array(
 				'post_type' => 'post',
 				'post_status' => 'draft',
-				'post_content' => $debug_content,
+				'post_content' => '',
 				'post_title' => 'cron debug start',
 				)
 			);
@@ -158,7 +158,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 			$ids = $db->search( $args );
 
-			$debug_content = json_encode( $ids );
+			$debug_content = json_encode( $args ) . '     ' . json_encode( $ids );
 
 			wp_insert_post( array(
 				'post_type' => 'post',
@@ -172,12 +172,18 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 				return;
 			}
 
+			$number_deleted = 0;
 
 			if ( ! empty( $ids ) && is_array( $ids ) ) {
 				foreach ( $ids as $id ) {
-					wp_delete_post( $id, true );
+					if ( ! $dry_run ) {
+						wp_delete_post( $id, true );
+					}
+					$number_deleted++;
 				}
 			}
+
+			return $number_deleted;
 
 		}
 

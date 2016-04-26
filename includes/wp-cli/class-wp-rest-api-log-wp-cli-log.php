@@ -110,4 +110,38 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command  {
 
 	}
 
+	/**
+	 * Migrates records from the legacy custom tables into custom post type
+	 *
+	 * ## OPTIONS
+	 *
+	 * [<days_old>]
+	 * Delete entries older than this many days, defaults to whatever you
+	 * have configured in the plugin settings
+	 *
+	 * --dry-run
+	 * Shows number of entries that would be deleted but does not
+	 * delete them
+	 * 
+	 * ## EXAMPLES
+	 *
+	 *     wp rest-api-log purge
+	 *
+	 *     wp rest-api-log purge 90
+	 *
+	 * @synopsis [<days_old>] [--dry-run]
+	 */
+	function purge( $positional_args, $assoc_args = array() ) {
+
+		$days_old     = absint( $positional_args[0] );
+		$dry_run      = ! empty( $assoc_args['dry-run'] );
+
+		WP_CLI::Line( "Purging old REST API log entries..." );
+
+		$number_deleted = WP_REST_API_Log::purge_old_records( $days_old, $dry_run );
+
+		WP_CLI::Success( sprintf( "%d entries purged", $number_deleted ) );
+
+	}
+
 }
