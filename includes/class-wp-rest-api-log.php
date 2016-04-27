@@ -50,6 +50,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			// } );
 
 			add_action( 'admin_init', array( $this, 'create_purge_cron' ) );
+			add_action( 'wp-rest-api-log-purge-old-records', array( $this, 'purge_old_records' ) );
 
 		}
 
@@ -129,23 +130,20 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		}
 
 		public function create_purge_cron() {
-			if ( ! wp_next_scheduled( 'WP_REST_API_Log::purge_old_records' ) ) {
-				wp_schedule_event( time() + 30, 'hourly', 'WP_REST_API_Log::purge_old_records' );
+			if ( ! wp_next_scheduled( 'wp-rest-api-log-purge-old-records' ) ) {
+				wp_schedule_event( time() + 60, 'hourly', 'wp-rest-api-log-purge-old-records' );
 			}
 		}
 
-		static public function purge_old_records( $days_old = false, $dry_run = false ) {
-
-			wp_insert_post( array(
-				'post_type' => 'post',
-				'post_status' => 'draft',
-				'post_content' => '',
-				'post_title' => 'cron debug start',
-				)
-			);
+		public function purge_old_records( $days_old = false, $dry_run = false ) {
 
 			if ( empty( $days_old ) ) {
 				$days_old = WP_REST_API_Log_Settings_General::setting_get( 'general', 'purge-days' );
+			}
+
+			$days_old = absint( $days_old );
+			if ( empty( $days_old ) ) {
+				return;
 			}
 
 			$db = new WP_REST_API_Log_DB();
@@ -157,21 +155,6 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 
 			$ids = $db->search( $args );
-
-			$debug_content = json_encode( $args ) . '     ' . json_encode( $ids );
-
-			wp_insert_post( array(
-				'post_type' => 'post',
-				'post_status' => 'draft',
-				'post_content' => $debug_content,
-				'post_title' => 'cron debug',
-				)
-			);
-
-			if ( empty( $days_old ) ) {
-				return;
-			}
-
 			$number_deleted = 0;
 
 			if ( ! empty( $ids ) && is_array( $ids ) ) {
