@@ -49,6 +49,9 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 			// } );
 
+			add_action( 'admin_init', array( $this, 'create_purge_cron' ) );
+			add_action( 'wp-rest-api-log-purge-old-records', array( $this, 'purge_old_records' ) );
+
 		}
 
 
@@ -126,6 +129,46 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			}
 		}
 
+		public function create_purge_cron() {
+			if ( ! wp_next_scheduled( 'wp-rest-api-log-purge-old-records' ) ) {
+				wp_schedule_event( time() + 60, 'hourly', 'wp-rest-api-log-purge-old-records' );
+			}
+		}
+
+		public function purge_old_records( $days_old = false, $dry_run = false ) {
+
+			if ( empty( $days_old ) ) {
+				$days_old = WP_REST_API_Log_Settings_General::setting_get( 'general', 'purge-days' );
+			}
+
+			$days_old = absint( $days_old );
+			if ( empty( $days_old ) ) {
+				return;
+			}
+
+			$db = new WP_REST_API_Log_DB();
+			$args = array(
+				'fields'           => 'ids',
+				'to'               => date( 'Y-m-d H:i', current_time( 'timestamp' ) - ( DAY_IN_SECONDS * $days_old ) ),
+				'posts_per_page'   => -1,
+				);
+
+
+			$ids = $db->search( $args );
+			$number_deleted = 0;
+
+			if ( ! empty( $ids ) && is_array( $ids ) ) {
+				foreach ( $ids as $id ) {
+					if ( ! $dry_run ) {
+						wp_delete_post( $id, true );
+					}
+					$number_deleted++;
+				}
+			}
+
+			return $number_deleted;
+
+		}
 
 	} // end class
 

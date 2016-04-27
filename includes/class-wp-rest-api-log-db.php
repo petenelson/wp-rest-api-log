@@ -326,7 +326,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					'status'             => false,
 					'page'               => 1,
 					'posts_per_page'     => 50,
-					'fields'             => 'basic',
 					'params'             => array(),
 				)
 			);
@@ -338,6 +337,10 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				'date_query'        => array(),
 				'tax_query'         => array( 'relation' => 'AND' ),
   				);
+
+			if ( ! empty( $args['fields'] ) ) {
+				$query_args['fields'] = $args['fields'];
+			}
 
 			if ( ! empty( $args['id'] ) ) {
 				$query_args['p'] = $args['id'];
