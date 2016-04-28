@@ -16,6 +16,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 			add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 
+			add_filter( 'wp_link_query_args', array( $this, 'wp_link_query_args' ) );
+
 		}
 
 
@@ -152,6 +154,28 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 			}
 
+		}
+
+
+		/**
+		 * Removes the wp-rest-api-log post type from the link query args
+		 *
+		 * @param  array $query query args
+		 * @return array
+		 */
+		public function wp_link_query_args( $query ) {
+
+			if ( isset( $query['post_type' ] ) && is_array( $query['post_type'] ) ) {
+				for ( $i = count( $query['post_type'] )-1; $i >= 0; $i-- ) {
+					if ( WP_REST_API_Log_DB::POST_TYPE === $query['post_type'][ $i ] ) {
+						unset( $query['post_type'][ $i ] );
+						break;
+					}
+				}
+
+			}
+
+			return $query;
 		}
 
 
