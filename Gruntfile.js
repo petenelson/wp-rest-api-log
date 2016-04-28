@@ -29,6 +29,26 @@ module.exports = function( grunt ) {
 			}
 		},
 
+		wp_readme_to_markdown: {
+			options: {
+				screenshot_url: "https://raw.githubusercontent.com/petenelson/dashboard-directory-size/master/assets/{screenshot}.png",
+				},
+			your_target: {
+				files: {
+					'README.md': 'readme.txt'
+				}
+			},
+		},
+
+		insert: {
+			options: {},
+			badges: {
+				src: "badges.md",
+				dest: "README.md",
+				match: "**License URI:** http://www.gnu.org/licenses/gpl-2.0.html  "
+			},
+		},
+
 		jshint: {
 			all: [
 				'Gruntfile.js',
@@ -169,7 +189,9 @@ module.exports = function( grunt ) {
 	// Register tasks
 	grunt.registerTask( 'default', [ 'jshint', 'concat', 'uglify', 'sass', 'cssmin' ] );
 
-	grunt.registerTask( 'build', [ 'default', 'clean', 'copy' ] );
+	grunt.registerTask( 'readme', ['wp_readme_to_markdown', 'insert:badges'] );
+
+	grunt.registerTask( 'wp', [ 'default', 'clean', 'copy' ] );
 
 	grunt.registerTask( 'test', [ 'phplint', 'phpunit' ] );
 
