@@ -21,7 +21,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 		static public function register_general_settings() {
 			$key = self::$settings_key;
 
-			register_setting( $key, $key, array( __CLASS__, 'sanitize_general_settings') );
+			register_setting( $key, $key, array( __CLASS__, 'sanitize_settings') );
 
 			$section = 'general';
 
@@ -30,9 +30,25 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 			add_settings_field( 'logging-enabled', __( 'Enabled', 'wp-rest-api-log' ), array( __CLASS__, 'settings_yes_no' ), $key, $section,
 				array( 'key' => $key, 'name' => 'logging-enabled', 'after' => '' ) );
 
+			add_settings_field( 'purge-days', __( 'Days to Retain Old Entries', 'rest-api-toolbox' ), array( __CLASS__, 'settings_input' ), $key, $section,
+				array(
+					'key' => $key,
+					'name' => 'purge-days',
+					'after' => __( 'Entries older than this will be deleted, leave blank to keep all entries', 'rest-api-toolbox' ),
+					'size' => 3,
+					'maxlength' => 3,
+					)
+				);
+
 		}
 
 		static public function sanitize_settings( $settings ) {
+
+			$settings['purge-days'] = empty( $settings['purge-days'] ) ? '' : absint( $settings['purge-days'] );
+
+			if ( 0 === $settings['purge-days'] ) {
+				$settings['purge-days'] = '';
+			}
 
 			return $settings;
 		}

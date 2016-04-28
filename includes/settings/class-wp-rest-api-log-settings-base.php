@@ -60,6 +60,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Base' ) ) {
 			return '1' === self::setting_get( $key, $setting, '0' );
 		}
 
+		static public function filter_setting_is_enabled( $enabled, $key, $setting ) {
+			return self::setting_is_enabled( $key, $setting );
+		}
 
 		static public function setting_get( $key, $setting, $value = '' ) {
 

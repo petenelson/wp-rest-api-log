@@ -4,7 +4,7 @@ Tags: wp rest api, rest api, wp api, api, json, log
 Donate link: https://github.com/petenelson/wp-rest-api-log
 Requires at least: 4.0
 Tested up to: 4.5
-Stable tag: 1.0.0-beta2
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,11 @@ Roadmap
 
 == Changelog ==
 
+= v1.1.0 April 28 2016 =
+* Added cron job to cleanup old log entries
+* Added setting to exclude the WP core /oembed API endpoint
+* Don't diplay log entries in the Insert Link modal
+
 = v1.0.0-beta2 April 10, 2016 =
 * Switched from custom tables to built-in WordPress tables using a custom post type (wp-rest-api-log)
 * Method, status, and source are now tracked using taxonomies
@@ -53,6 +58,11 @@ Roadmap
 
 
 == Upgrade Notice ==
+
+= v1.1.0 April 28 2016 =
+* Added cron job to cleanup old log entries
+* Added setting to exclude the WP core /oembed API endpoint
+* Don't diplay log entries in the Insert Link modal
 
 = v1.0.0-beta2 April 9, 2016 =
 * Switched from custom tables to built-in WordPress tables using a custom post type (wp-rest-api-log)

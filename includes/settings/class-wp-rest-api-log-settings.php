@@ -13,7 +13,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 			add_action( 'admin_notices', array( __CLASS__, 'activation_admin_notice' ) );
 
 			// filters to get plugin settings
-			add_filter( 'wp-rest-api-log-setting-is-enabled', array( __CLASS__, 'setting_is_enabled' ), 10, 2 );
+			add_filter( 'wp-rest-api-log-setting-is-enabled', array( __CLASS__, 'filter_setting_is_enabled' ), 10, 3 );
 			add_filter( 'wp-rest-api-log-setting-get', array( __CLASS__, 'setting_get' ), 10, 3 );
 
 		}
