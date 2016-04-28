@@ -83,5 +83,5 @@ We can answer them here!
 ## Screenshots ##
 
 ### 1. Sample admin screen ###
-![Sample admin screen](https://raw.githubusercontent.com/petenelson/dashboard-directory-size/master/assets/screenshot-1.png)
+![Sample admin screen](https://raw.githubusercontent.com/petenelson/wp-rest-api-log/master/assets/screenshot-1.png)
 
