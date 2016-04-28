@@ -38,6 +38,9 @@ Roadmap
 
 == Changelog ==
 
+= v1.1.0 ??? 2016 =
+* Don't diplay log entries in the Insert Link modal
+
 = v1.0.0-beta2 April 10, 2016 =
 * Switched from custom tables to built-in WordPress tables using a custom post type (wp-rest-api-log)
 * Method, status, and source are now tracked using taxonomies
