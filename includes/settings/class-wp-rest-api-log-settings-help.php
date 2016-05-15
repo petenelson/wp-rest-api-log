@@ -8,15 +8,18 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Help' ) ) {
 
 		static $settings_key  = 'wp-rest-api-log-settings-help';
 
+
 		static public function plugins_loaded() {
 			add_action( 'admin_init', array( __CLASS__, 'register_help_settings' ) );
 			add_filter( 'wp-rest-api-log-settings-tabs', array( __CLASS__, 'add_tab') );
 		}
 
+
 		static public function add_tab( $tabs ) {
 			$tabs[ self::$settings_key ] = __( 'Help', 'wp-rest-api-log' );
 			return $tabs;
 		}
+
 
 		static public function register_help_settings( $title ) {
 

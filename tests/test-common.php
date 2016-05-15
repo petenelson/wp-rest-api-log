@@ -1,6 +1,6 @@
 <?php
 /**
- * Class SampleTest
+ * Class WP_REST_API_Log_Test_Common
  *
  * @package 
  */

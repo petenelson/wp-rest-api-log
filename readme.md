@@ -4,7 +4,7 @@
 **Donate link:** https://github.com/petenelson/wp-rest-api-log  
 **Requires at least:** 4.0  
 **Tested up to:** 4.5  
-**Stable tag:** 1.1.0  
+**Stable tag:** 1.1.1  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -42,7 +42,10 @@ Roadmap
 
 ## Changelog ##
 
-### v1.1.0 April 28 2016 ###
+### v1.1.1 May 15, 2016 ###
+* Fixed error during activation (props pavelevap)
+
+### v1.1.0 April 28, 2016 ###
 * Added cron job to cleanup old log entries
 * Added setting to exclude the WP core /oembed API endpoint
 * Don't diplay log entries in the Insert Link modal
@@ -63,7 +66,10 @@ Roadmap
 
 ## Upgrade Notice ##
 
-### v1.1.0 April 28 2016 ###
+### v1.1.1 May 15, 2016 ###
+* Fixed error during activation (props pavelevap)
+
+### v1.1.0 April 28, 2016 ###
 * Added cron job to cleanup old log entries
 * Added setting to exclude the WP core /oembed API endpoint
 * Don't diplay log entries in the Insert Link modal
