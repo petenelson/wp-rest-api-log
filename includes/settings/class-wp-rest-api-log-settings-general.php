@@ -8,15 +8,25 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 
 		static $settings_key  = 'wp-rest-api-log-settings-general';
 
+
 		static public function plugins_loaded() {
 			add_action( 'admin_init', array( __CLASS__, 'register_general_settings' ) );
 			add_filter( 'wp-rest-api-log-settings-tabs', array( __CLASS__, 'add_tab') );
 		}
 
+
 		static public function add_tab( $tabs ) {
 			$tabs[ self::$settings_key ] = __( 'General', 'wp-rest-api-log' );
 			return $tabs;
 		}
+
+
+		static public function get_default_settings() {
+			return array(
+				'logging-enabled'   => '1',
+			);
+		}
+
 
 		static public function register_general_settings() {
 			$key = self::$settings_key;
@@ -41,6 +51,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 				);
 
 		}
+
 
 		static public function sanitize_settings( $settings ) {
 
