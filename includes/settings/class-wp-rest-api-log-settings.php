@@ -38,6 +38,14 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 		}
 
 
+
+		static public function create_default_settings() {
+			// create default settings
+			add_option( WP_REST_API_Log_Settings_General::$settings_key, WP_REST_API_Log_Settings_General::get_default_settings(), '', $autoload = 'no' );
+			add_option( WP_REST_API_Log_Settings_Routes::$settings_key,  WP_REST_API_Log_Settings_Routes::get_default_settings(),  '', $autoload = 'no' );
+		}
+
+
 		static public function admin_menu() {
 			add_options_page( 'REST API Log ' . __( 'Settings' ), __( 'REST API Log', 'wp-rest-api-log' ), 'manage_options', self::$settings_page, array( __CLASS__, 'options_page' ), 30 );
 		}
