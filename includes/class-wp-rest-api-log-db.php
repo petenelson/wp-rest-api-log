@@ -273,7 +273,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					foreach ( $args[ $request ][ $type ] as $key => $value ) {
 
 						if ( is_array( $value ) && 1 === count( $value ) ) {
-							$value = $value[0];
+							$value = reset( $value );
 						}
 
 						if ( ! empty( $value ) ) {
