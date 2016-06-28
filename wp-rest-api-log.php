@@ -38,6 +38,7 @@ $includes = array(
 	'includes/class-' . $plugin_class_file . '-response-base.php',
 	'includes/class-' . $plugin_class_file . '-delete-response.php',
 	'includes/class-' . $plugin_class_file . '-routes-response.php',
+	'includes/class-' . $plugin_class_file . '-elasticpress.php',
 	'includes/class-' . $plugin_class_file . '.php',
 	'includes/settings/class-' . $plugin_class_file . '-settings-base.php',
 	'includes/settings/class-' . $plugin_class_file . '-settings-general.php',
@@ -85,6 +86,8 @@ foreach ( $classes as $class ) {
 		add_action( 'plugins_loaded', array( $plugin, 'plugins_loaded' ), 1 );
 	}
 }
+
+WP_REST_API_Log_ElasticPress::plugins_loaded();
 
 WP_REST_API_Log_Settings::plugins_loaded();
 WP_REST_API_Log_Settings_General::plugins_loaded();
