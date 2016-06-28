@@ -77,13 +77,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 		}
 
 
-		private function current_tab() {
+		static private function current_tab() {
 			$current_tab = filter_input( INPUT_GET, 'tab', FILTER_SANITIZE_STRING );
 			return empty( $current_tab ) ? 'wp-rest-api-log-settings-general' : $current_tab;
 		}
 
 
-		private function plugin_options_tabs() {
+		static private function plugin_options_tabs() {
 			$current_tab = self::current_tab();
 
 			echo '<h2>' . __( 'Settings' ) . ' &rsaquo; REST API Log</h2><h2 class="nav-tab-wrapper">';
