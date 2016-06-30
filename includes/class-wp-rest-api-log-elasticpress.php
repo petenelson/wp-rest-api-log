@@ -122,12 +122,6 @@ if ( ! class_exists( 'WP_REST_API_Log_ElasticPress' ) ) {
 				// store the response body
 				if ( ! empty( $query['request']['body'] ) ) {
 					$args['response']['body'] = json_decode( $query['request']['body'] );
-
-
-					if ( is_plugin_active( 'jovosearch' ) ) {
-						// Jovosearch is putting <span class="jovo-search-result"> inside the JSON
-					}
-
 				}
 
 			}
