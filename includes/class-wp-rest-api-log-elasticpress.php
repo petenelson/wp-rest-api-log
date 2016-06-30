@@ -74,8 +74,9 @@ if ( ! class_exists( 'WP_REST_API_Log_ElasticPress' ) ) {
 				'source'                => 'ElasticPress',
 				'milliseconds'          => 0,
 				'request'               => array(
-					'body'                 => '',
+					'body_params'          => array(),
 					'headers'              => array(),
+					'body'                 => '',
 					),
 				'response'              => array(
 					'body'                 => '',
@@ -91,9 +92,9 @@ if ( ! class_exists( 'WP_REST_API_Log_ElasticPress' ) ) {
 
 			if ( ! empty( $query['args'] ) ) {
 
-				// reformat the request body
+				// store the JSON sent to ElasticSearch
 				if ( ! empty( $query['args']['body'] ) ) {
-					$args['request']['body'] = json_encode( json_decode( $query['args']['body'] ), JSON_PRETTY_PRINT );
+					$args['request']['body'] = base64_encode( $query['args']['body'] );
 				}
 
 				// add the method
@@ -105,7 +106,7 @@ if ( ! class_exists( 'WP_REST_API_Log_ElasticPress' ) ) {
 
 			if ( ! empty( $query['request'] ) ) {
 
-				// actually the response headers
+				// this is actually the response headers
 				if ( ! empty( $query['request']['headers'] ) && is_array( $query['request']['headers'] ) ) {
 
 					foreach( $query['request']['headers'] as $header => $value ) {
@@ -113,12 +114,20 @@ if ( ! class_exists( 'WP_REST_API_Log_ElasticPress' ) ) {
 					}
 				}
 
+				// store the HTTP response code
 				if ( ! empty( $query['request']['response'] ) && ! empty( $query['request']['response']['code'] ) ) {
 					$args['status'] = $query['request']['response']['code'];
 				}
 
+				// store the response body
 				if ( ! empty( $query['request']['body'] ) ) {
 					$args['response']['body'] = json_decode( $query['request']['body'] );
+
+
+					if ( is_plugin_active( 'jovosearch' ) ) {
+						// Jovosearch is putting <span class="jovo-search-result"> inside the JSON
+					}
+
 				}
 
 			}
