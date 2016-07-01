@@ -26,6 +26,16 @@ if ( empty( $entry->ID ) ) {
 
 $entry = apply_filters( 'wp-rest-api-log-display-entry', $entry );
 
+$body_content = ! empty( $entry->request->body ) ? $entry->request->body : '';
+
+if ( 'ElasticPress' === $entry->source ) {
+	// these request bodies are base64 encoded JSON
+	if ( ! empty( $body_content ) ) {
+		$body_object = json_decode( base64_decode( $body_content ) );
+		$body_content = '';
+	}
+}
+
 $json_display_options = array(
 	'request' => array(
 		'headers'      => ! empty( $entry->request->headers ) ? JSON_PRETTY_PRINT : 0,
@@ -86,6 +96,21 @@ $classes = apply_filters( 'wp-rest-api-log-entry-display-classes', array( 'wrap'
 			<h3 class="hndle"><span><?php esc_html_e( 'Body Parameters', 'wp-rest-api-log' ); ?></span></h3>
 			<div class="inside"><pre><code class="json"><?php echo wp_json_encode( $entry->request->body_params, $json_display_options['request']['body_params'] ); ?></code></pre></div>
 		</div>
+
+
+		<?php if ( ! empty( $body_object ) || ! empty( $body_content ) ) : ?>
+			<?php do_action( 'wp-rest-api-log-display-entry-before-request-body-content', $entry ); ?>
+
+			<div class="postbox body-content-parameters">
+				<h3 class="hndle"><span><?php esc_html_e( 'Body Content', 'wp-rest-api-log' ); ?></span></h3>
+				<?php if ( ! empty( $body_object ) ) : ?>
+					<div class="inside"><pre><code class="json"><?php echo esc_html( wp_json_encode( $body_object, JSON_PRETTY_PRINT ) ); ?></code></pre></div>
+				<?php endif; ?>
+				<?php if ( ! empty( $body_content ) ) : ?>
+					<div class="inside"><pre><code><?php echo esc_html( $body_content ); ?></code></pre></div>
+				<?php endif; ?>
+			</div>
+		<?php endif; ?>
 
 		<?php do_action( 'wp-rest-api-log-display-entry-before-response-headers', $entry ); ?>
 

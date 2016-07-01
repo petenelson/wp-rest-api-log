@@ -17,10 +17,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 
 
 		static public function current_milliseconds() {
-			list( $usec, $sec ) = explode( " ", microtime() );
-			return ( ( (float)$usec + (float)$sec ) ) * 1000;
+			return self::microtime_to_milliseconds( microtime() );
 		}
 
+		static public function microtime_to_milliseconds( $microtime ) {
+			list( $usec, $sec ) = explode( " ", $microtime );
+			return ( ( (float)$usec + (float)$sec ) ) * 1000;
+		}
 
 		static public function api_is_enabled() {
 			return class_exists( 'WP_REST_Server' ) && apply_filters( 'rest_enabled', true );
