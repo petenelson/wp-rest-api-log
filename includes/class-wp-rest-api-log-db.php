@@ -82,6 +82,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				'query_var'           => false,
 				'can_export'          => true,
 				'rewrite'             => false,
+				'map_meta_cap'        => false,
 				'capabilities'        => array(
 					'read_post'     => 'read_' . self::POST_TYPE,
 					'delete_post'   => 'delete_' . self::POST_TYPE,

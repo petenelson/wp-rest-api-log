@@ -53,15 +53,26 @@ if ( ! class_exists( 'WP_REST_API_Log_ElasticPress' ) ) {
 				return false;
 			}
 
-
 			$log_query = true;
+
 			$route = '';
 			if ( ! empty( $query['url'] ) && ! empty( $query['host'] ) ) {
 				$route = $query['url'];
 				// don't log the _stats/indexing request by default
 				if ( false !== strpos( $query['url'], '_stats/indexing' ) ) {
-					return false;
+					$log_query = false;
 				}
+
+				// don't log the plugins list
+				if ( false !== strpos( $query['url'], '_nodes?plugin=true' ) ) {
+					$log_query = false;
+				}
+			}
+
+			$log_query = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-elasticpress-log-query', $log_query, $query );
+
+			if ( ! $log_query ) {
+				return false;
 			}
 
 
