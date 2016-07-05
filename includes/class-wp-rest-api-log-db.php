@@ -484,8 +484,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 				$ids = $wpdb->get_col( "select id from {$wpdb->prefix}wp_rest_api_log" );
 
-				$post_ids = array();
-
 				foreach ( $ids as $id ) {
 
 					$query = new WP_Query( array(
@@ -542,8 +540,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 
 			foreach( $meta_rows as $meta_row ) {
-
-				$request_response = $meta_row->meta_request_response;
 
 				switch ( $meta_row->meta_type ) {
 					case 'header':
