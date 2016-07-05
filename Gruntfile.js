@@ -138,10 +138,10 @@ module.exports = function( grunt ) {
 						'admin/*.php',
 						'admin/partials/*.php',
 						], 
-						dest: 'release/' },
+						dest: 'release/wp-rest-api-log' },
 
-					{ expand: true, src: ['includes/**'], dest: 'release/' },
-					{ expand: true, src: ['languages/**'], dest: 'release/' },
+					{ expand: true, src: ['includes/**'], dest: 'release/wp-rest-api-log' },
+					{ expand: true, src: ['languages/**'], dest: 'release/wp-rest-api-log' },
 
 					// root dir files
 					{
@@ -150,7 +150,7 @@ module.exports = function( grunt ) {
 							'*.php',
 							'readme.txt',
 							],
-						dest: 'release/'
+						dest: 'release/wp-rest-api-log'
 					}
 
 				]
