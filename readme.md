@@ -23,6 +23,7 @@ Includes:
 * WordPress admin page to view and search log entries
 * API endpoint to access log entries via JSON
 * filters to customize logging
+* ElasticPress logging
 
 Find us on [GitHub](https://github.com/petenelson/wp-rest-api-log)!
 
@@ -76,8 +77,11 @@ Roadmap
 
 ## Frequently Asked Questions ##
 
-### Do you have any questions? ###
-We can answer them here!
+### How do I use ElasticPress logging? ###
+
+[ElasticPress](https://wordpress.org/plugins/elasticpress/) is a plugin than interfaces WordPress to the [ElasticSearch](https://www.elastic.co/products/elasticsearch) search service.  Because ElasticSearch has its own REST API for indexing and searching data, it was a natural fit to extend logging support via this REST API Logging plugin.
+
+You can go into Settings > ElasticPress to enable logging for requests & responses.  You can also disable REST API logging if you only need ElasticPress logging.
 
 
 ## Screenshots ##
