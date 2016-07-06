@@ -28,7 +28,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Help' ) ) {
 
 
 		static public function section_header( $args ) {
-			include_once REST_API_TOOLBOX_ROOT . 'admin/partials/admin-help.php';
+			include_once WP_REST_API_LOG_ROOT . 'admin/partials/admin-help.php';
 		}
 
 	}
