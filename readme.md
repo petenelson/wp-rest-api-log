@@ -43,7 +43,7 @@ Roadmap
 
 ## Changelog ##
 
-### v1.2.0 July 5, 2016 ###
+### v1.2.0 July 6, 2016 ###
 * Added support for [ElasticPress](https://wordpress.org/plugins/elasticpress/) logging
 * Fixed undefined constant error on Help page (props vinigarcia87)
 
