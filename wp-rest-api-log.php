@@ -3,7 +3,7 @@
  * Plugin Name: WP REST API Log
  * Description: Logs requests and responses for the WP REST API
  * Author: Pete Nelson
- * Version: 1.1.1
+ * Version: 1.2.0
  * Plugin URI: https://github.com/petenelson/wp-rest-api-log
  * Text Domain: wp-rest-api-log
  * Domain Path: /languages
@@ -29,6 +29,7 @@ $plugin_class_file = 'wp-rest-api-log';
 $includes = array(
 	'includes/class-' . $plugin_class_file . '-common.php',
 	'includes/class-' . $plugin_class_file . '-db.php',
+	'includes/class-' . $plugin_class_file . '-post-type.php',
 	'includes/class-' . $plugin_class_file . '-i18n.php',
 	'includes/class-' . $plugin_class_file . '-controller.php',
 	'includes/class-' . $plugin_class_file . '-request-response-base.php',
@@ -38,10 +39,12 @@ $includes = array(
 	'includes/class-' . $plugin_class_file . '-response-base.php',
 	'includes/class-' . $plugin_class_file . '-delete-response.php',
 	'includes/class-' . $plugin_class_file . '-routes-response.php',
+	'includes/class-' . $plugin_class_file . '-elasticpress.php',
 	'includes/class-' . $plugin_class_file . '.php',
 	'includes/settings/class-' . $plugin_class_file . '-settings-base.php',
 	'includes/settings/class-' . $plugin_class_file . '-settings-general.php',
 	'includes/settings/class-' . $plugin_class_file . '-settings-routes.php',
+	'includes/settings/class-' . $plugin_class_file . '-settings-elasticpress.php',
 	'includes/settings/class-' . $plugin_class_file . '-settings-help.php',
 	'includes/settings/class-' . $plugin_class_file . '-settings.php',
 	'admin/class-' . $plugin_class_file . '-admin.php',
@@ -53,6 +56,7 @@ $class_base = 'WP_REST_API_Log';
 $classes = array(
 	$class_base . '_Common',
 	$class_base . '_DB',
+	$class_base . '_Post_Type',
 	$class_base . '_i18n',
 	$class_base . '_Controller',
 	$class_base . '',
@@ -85,9 +89,12 @@ foreach ( $classes as $class ) {
 	}
 }
 
+WP_REST_API_Log_ElasticPress::plugins_loaded();
+
 WP_REST_API_Log_Settings::plugins_loaded();
 WP_REST_API_Log_Settings_General::plugins_loaded();
 WP_REST_API_Log_Settings_Routes::plugins_loaded();
+WP_REST_API_Log_Settings_ElasticPress::plugins_loaded();
 WP_REST_API_Log_Settings_Help::plugins_loaded();
 
 /* Activation hook */

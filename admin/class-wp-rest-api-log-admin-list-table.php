@@ -98,11 +98,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		public function add_method_dropdown( $post_type ) {
 			if ( WP_REST_API_Log_Db::POST_TYPE === $post_type ) {
 
+				$method = WP_REST_API_Log_DB::TAXONOMY_METHOD;
+
 				WP_REST_API_Log_Common::taxonomy_dropdown(
 					__( 'Method', 'wp-rest-api-log' ),
 					__( 'All Methods', 'wp-rest-api-log' ),
-					WP_REST_API_Log_DB::TAXONOMY_METHOD,
-					filter_input( INPUT_GET, WP_REST_API_Log_DB::TAXONOMY_METHOD, FILTER_SANITIZE_STRING )
+					$method,
+					filter_input( INPUT_GET, $method, FILTER_SANITIZE_STRING )
 					);
 
 			}
@@ -111,11 +113,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		public function add_status_dropdown( $post_type ) {
 			if ( WP_REST_API_Log_Db::POST_TYPE === $post_type ) {
 
+				$status = WP_REST_API_Log_DB::TAXONOMY_STATUS;
+
 				WP_REST_API_Log_Common::taxonomy_dropdown(
 					__( 'Status', 'wp-rest-api-log' ),
 					__( 'All Statuses', 'wp-rest-api-log' ),
-					WP_REST_API_Log_DB::TAXONOMY_STATUS,
-					filter_input( INPUT_GET, WP_REST_API_Log_DB::TAXONOMY_STATUS, FILTER_SANITIZE_STRING )
+					$status,
+					filter_input( INPUT_GET, $status, FILTER_SANITIZE_STRING )
 					);
 
 			}
@@ -124,11 +128,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		public function add_source_dropdown( $post_type ) {
 			if ( WP_REST_API_Log_Db::POST_TYPE === $post_type ) {
 
+				$source = WP_REST_API_Log_DB::TAXONOMY_SOURCE;
+
 				WP_REST_API_Log_Common::taxonomy_dropdown(
 					__( 'Source', 'wp-rest-api-log' ),
 					__( 'All Sources', 'wp-rest-api-log' ),
-					WP_REST_API_Log_DB::TAXONOMY_SOURCE,
-					filter_input( INPUT_GET, WP_REST_API_Log_DB::TAXONOMY_SOURCE, FILTER_SANITIZE_STRING )
+					$source,
+					filter_input( INPUT_GET, $source, FILTER_SANITIZE_STRING )
 					);
 
 			}

@@ -18,6 +18,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 			add_filter( 'wp_link_query_args', array( $this, 'wp_link_query_args' ) );
 
+			add_filter( 'admin_title', 'WP_REST_API_Log_Admin::admin_title', 10, 2 );
+
 		}
 
 
@@ -107,7 +109,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			$post_type      = WP_REST_API_Log_DB::POST_TYPE;
 			$plugin_name    = WP_REST_API_Log_Common::PLUGIN_NAME;
 
-			$caps_version   = '2016-04-09-02';
+			$caps_version   = '2016-07-01-02';
 			$roles          = apply_filters( "{$plugin_name}-default-roles", array( 'administrator') );
 
 			$caps           = apply_filters( "{$plugin_name}-default-caps", array(
@@ -176,6 +178,21 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			}
 
 			return $query;
+		}
+
+		/**
+		 * Adjusts the title tag when viewing a log entry
+		 *
+		 * @param  string $admin_title
+		 * @param  string $title
+		 * @return string
+		 */
+		static public function admin_title( $admin_title, $title ) {
+			$screen = get_current_screen();
+			if ( ! empty( $screen ) && 'tools_page_wp-rest-api-log-view-entry' === $screen->id ) {
+				$admin_title = __( 'REST API Log Entry', 'wp-rest-api-log' ) . $admin_title;
+			}
+			return $admin_title;
 		}
 
 
