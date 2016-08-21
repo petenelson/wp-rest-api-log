@@ -39,6 +39,10 @@ Roadmap
 
 == Changelog ==
 
+= v1.3.0 August 21, 2016 =
+* Updated Highlight JS version
+* Updated the internal process for granting administrator role access to the custom post type
+
 = v1.2.0 July 6, 2016 =
 * Added support for [ElasticPress](https://wordpress.org/plugins/elasticpress/) logging
 * Fixed undefined constant error on Help page (props vinigarcia87)
@@ -67,9 +71,9 @@ Roadmap
 
 == Upgrade Notice ==
 
-= v1.2.0 July 6, 2016 =
-* Added support for [ElasticPress](https://wordpress.org/plugins/elasticpress/) logging
-* Fixed undefined constant error on Help page (props vinigarcia87)
+= v1.3.0 August 21, 2016 =
+* Updated Highlight JS version
+* Updated the internal process for granting administrator role access to the custom post type
 
 == Frequently Asked Questions ==
 
