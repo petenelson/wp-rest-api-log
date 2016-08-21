@@ -10,7 +10,7 @@
     ],
     "require": {},
     "require-dev": {
-        "wp-coding-standards/wpcs": "2014-12-11",
+        "wp-coding-standards/wpcs": "dev-master",
         "phpunit/phpunit": "^4.8"
     }
 }
