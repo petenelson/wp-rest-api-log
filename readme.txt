@@ -3,7 +3,7 @@ Contributors: gungeekatx
 Tags: wp rest api, rest api, wp api, api, json, log
 Donate link: https://github.com/petenelson/wp-rest-api-log
 Requires at least: 4.0
-Tested up to: 4.5
+Tested up to: 4.6
 Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -39,6 +39,10 @@ Roadmap
 
 == Changelog ==
 
+= v1.3.0 August 21, 2016 =
+* Updated Highlight JS version
+* Updated the internal process for granting administrator role access to the custom post type
+
 = v1.2.0 July 6, 2016 =
 * Added support for [ElasticPress](https://wordpress.org/plugins/elasticpress/) logging
 * Fixed undefined constant error on Help page (props vinigarcia87)
@@ -67,9 +71,9 @@ Roadmap
 
 == Upgrade Notice ==
 
-= v1.2.0 July 6, 2016 =
-* Added support for [ElasticPress](https://wordpress.org/plugins/elasticpress/) logging
-* Fixed undefined constant error on Help page (props vinigarcia87)
+= v1.3.0 August 21, 2016 =
+* Updated Highlight JS version
+* Updated the internal process for granting administrator role access to the custom post type
 
 == Frequently Asked Questions ==
 
