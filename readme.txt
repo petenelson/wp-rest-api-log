@@ -1,24 +1,25 @@
-=== WP REST API Log ===
+=== REST API Log ===
 Contributors: gungeekatx
-Tags: wp rest api, rest api, wp api, api, json, log
+Tags: wp rest api, rest api, wp api, api, json, log, logging
 Donate link: https://github.com/petenelson/wp-rest-api-log
 Requires at least: 4.0
 Tested up to: 4.6
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-WordPress plugin to log WP REST API requests and responses
+WordPress plugin to log REST API requests and responses
 
 == Description ==
 
-WordPress plugin to log [WP REST API](http://wp-api.org/) requests and responses (for v2 of the API).
+WordPress plugin to log [REST API](http://v2.wp-api.org/) requests and responses (for v2 of the API).
 
 Includes:
 
 * WordPress admin page to view and search log entries
 * API endpoint to access log entries via JSON
 * filters to customize logging
+* Custom endpoint logging
 * ElasticPress logging
 
 Find us on [GitHub](https://github.com/petenelson/wp-rest-api-log)!
@@ -39,8 +40,10 @@ Roadmap
 
 == Changelog ==
 
-= v1.3.0 August 21, 2016 =
-* Updated Highlight JS version
+= v1.4.0 October 6, 2016 =
+* Changed plugin name to REST API Log
+* Changed the wp-rest-api-log post type 'public' setting to false to prevent it from showing up in searches.
+* Updated Highlight JS version to 9.7.0
 * Updated the internal process for granting administrator role access to the custom post type
 
 = v1.2.0 July 6, 2016 =
@@ -71,8 +74,10 @@ Roadmap
 
 == Upgrade Notice ==
 
-= v1.3.0 August 21, 2016 =
-* Updated Highlight JS version
+= v1.4.0 October 6, 2016 =
+* Changed plugin name to REST API Log
+* Changed the wp-rest-api-log post type 'public' setting to false to prevent it from showing up in searches.
+* Updated Highlight JS version to 9.7.0
 * Updated the internal process for granting administrator role access to the custom post type
 
 == Frequently Asked Questions ==
