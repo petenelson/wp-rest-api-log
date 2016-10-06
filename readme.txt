@@ -8,11 +8,11 @@ Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-WordPress plugin to log WP REST API requests and responses
+WordPress plugin to log REST API requests and responses
 
 == Description ==
 
-WordPress plugin to log [WP REST API](http://v2.wp-api.org/) requests and responses (for v2 of the API).
+WordPress plugin to log [REST API](http://v2.wp-api.org/) requests and responses (for v2 of the API).
 
 Includes:
 

@@ -12,11 +12,11 @@
 [![Travis CI](https://travis-ci.org/petenelson/wp-rest-api-log.svg)](https://travis-ci.org/petenelson/wp-rest-api-log)
 
 
-WordPress plugin to log WP REST API requests and responses
+WordPress plugin to log REST API requests and responses
 
 ## Description ##
 
-WordPress plugin to log [WP REST API](http://v2.wp-api.org/) requests and responses (for v2 of the API).
+WordPress plugin to log [REST API](http://v2.wp-api.org/) requests and responses (for v2 of the API).
 
 Includes:
 
