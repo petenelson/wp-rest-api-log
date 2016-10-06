@@ -19,6 +19,7 @@ Includes:
 * WordPress admin page to view and search log entries
 * API endpoint to access log entries via JSON
 * filters to customize logging
+* Custom endpoint logging
 * ElasticPress logging
 
 Find us on [GitHub](https://github.com/petenelson/wp-rest-api-log)!
@@ -38,6 +39,11 @@ Roadmap
 
 
 == Changelog ==
+
+= v1.4.0 October 6, 2016 =
+* Changed plugin name to REST API Log
+* Changed the wp-rest-api-log post type 'public' setting to false to prevent it from showing
+  up in searches.
 
 = v1.3.0 August 21, 2016 =
 * Updated Highlight JS version
@@ -70,6 +76,11 @@ Roadmap
 
 
 == Upgrade Notice ==
+
+= v1.4.0 October 6, 2016 =
+* Changed plugin name to REST API Log
+* Changed the wp-rest-api-log post type 'public' setting to false to prevent it from showing
+  up in searches.
 
 = v1.3.0 August 21, 2016 =
 * Updated Highlight JS version
