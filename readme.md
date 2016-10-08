@@ -44,11 +44,13 @@ Roadmap
 
 ## Changelog ##
 
-### v1.4.0 October 6, 2016 ###
+### v1.3.0 October 6, 2016 ###
 * Changed plugin name to REST API Log
 * Changed the wp-rest-api-log post type 'public' setting to false to prevent it from showing up in searches.
 * Updated Highlight JS version to 9.7.0
 * Updated the internal process for granting administrator role access to the custom post type
+* Bug fix: Header values with colons were not being stored correctly.
+* Bug fix: Use proper HTML escaping when viewing log entries.
 
 ### v1.2.0 July 6, 2016 ###
 * Added support for [ElasticPress](https://wordpress.org/plugins/elasticpress/) logging
@@ -78,11 +80,13 @@ Roadmap
 
 ## Upgrade Notice ##
 
-### v1.4.0 October 6, 2016 ###
+### v1.3.0 October 6, 2016 ###
 * Changed plugin name to REST API Log
 * Changed the wp-rest-api-log post type 'public' setting to false to prevent it from showing up in searches.
 * Updated Highlight JS version to 9.7.0
 * Updated the internal process for granting administrator role access to the custom post type
+* Bug fix: Header values with colons were not being stored correctly.
+* Bug fix: Use proper HTML escaping when viewing log entries.
 
 ## Frequently Asked Questions ##
 
