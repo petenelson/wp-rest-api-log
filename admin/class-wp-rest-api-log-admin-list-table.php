@@ -91,7 +91,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 						break;
 
 					case 'ip-address':
-						$ip_address_display = WP_REST_API_Log_Settings_Base::setting_get( 'general', 'ip-address-display', 'ip_address' );
+						$ip_address_display = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-setting-get',
+							'general',
+							'ip-address-display',
+							'ip_address'
+							);
+
 						if ( 'http_x_forwarded_for' === $ip_address_display ) {
 							echo esc_html( $entry->http_x_forwarded_for );
 						} else {
