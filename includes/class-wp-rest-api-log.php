@@ -120,7 +120,14 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 				foreach ( headers_list() as $header ) {
 					$header = explode( ':', $header );
 					if ( count( $header ) > 1 ) {
-						$headers[ $header[0] ] = trim( $header[1] );
+
+						// Grab the header name.
+						$header_name = array_shift( $header );
+
+						// Grab any remaining items in the array as the value
+						$header_value = implode( '', $header );
+
+						$headers[ $header_name ] = trim( $header_value );
 					}
 				}
 				return $headers;
