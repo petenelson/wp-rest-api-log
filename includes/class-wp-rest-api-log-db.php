@@ -11,9 +11,10 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		const TAXONOMY_STATUS  = 'wp-rest-api-log-status';
 		const TAXONOMY_SOURCE  = 'wp-rest-api-log-source';
 
-		const POST_META_IP_ADDRESS     = '_ip-address';
-		const POST_META_MILLISECONDS   = '_milliseconds';
-		const POST_META_REQUEST_BODY   = '_request_body';
+		const POST_META_IP_ADDRESS             = '_ip-address';
+		const POST_META_HTTP_X_FORWARDED_FOR   = '_http_x_forwarded_for';
+		const POST_META_MILLISECONDS           = '_milliseconds';
+		const POST_META_REQUEST_BODY           = '_request_body';
 
 
 		public function plugins_loaded() {
@@ -45,6 +46,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$args = wp_parse_args( $args, array(
 				'time'                  => current_time( 'mysql' ),
 				'ip_address'            => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_SANITIZE_STRING ),
+				'http_x_forwarded_for'  => filter_input( INPUT_SERVER, 'HTTP_X_FORWARDED_FOR', FILTER_SANITIZE_STRING ),
 				'route'                 => '',
 				'source'                => 'WP REST API',
 				'method'                => filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING ),
@@ -130,9 +132,10 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		private function insert_post_meta( $post_id, $args ) {
 
 			$meta = array(
-				self::POST_META_IP_ADDRESS    => $args['ip_address'],
-				self::POST_META_MILLISECONDS  => $args['milliseconds'],
-				self::POST_META_REQUEST_BODY  => $args['request']['body'],
+				self::POST_META_IP_ADDRESS             => $args['ip_address'],
+				self::POST_META_HTTP_X_FORWARDED_FOR   => $args['http_x_forwarded_for'],
+				self::POST_META_MILLISECONDS           => $args['milliseconds'],
+				self::POST_META_REQUEST_BODY           => $args['request']['body'],
 				);
 
 			foreach ( $meta as $key => $value ) {

@@ -50,6 +50,20 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 					)
 				);
 
+			add_settings_field( 'ip-address-display', __( 'IP Address Display', 'rest-api-toolbox' ), array( __CLASS__, 'settings_check_radio_list' ), $key, $section,
+				array(
+					'key' => $key,
+					'name' => 'ip-address-display',
+					'type' => 'radio',
+					'after' => __( 'Sets the IP address displayed in the list of log entries.', 'rest-api-toolbox' ),
+					'items' => array(
+						'ip_address'           => __( 'IP Address', 'wp-rest-api-log' ),
+						'http_x_forwarded_for' => __( 'HTTP X Forwarded For', 'wp-rest-api-log' ),
+						),
+					'default' => array( 'ip_address' ),
+					)
+				);
+
 		}
 
 
