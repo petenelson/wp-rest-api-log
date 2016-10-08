@@ -11,9 +11,10 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		const TAXONOMY_STATUS  = 'wp-rest-api-log-status';
 		const TAXONOMY_SOURCE  = 'wp-rest-api-log-source';
 
-		const POST_META_IP_ADDRESS     = '_ip-address';
-		const POST_META_MILLISECONDS   = '_milliseconds';
-		const POST_META_REQUEST_BODY   = '_request_body';
+		const POST_META_IP_ADDRESS             = '_ip-address';
+		const POST_META_HTTP_X_FORWARDED_FOR   = '_http-x-forwarded-for';
+		const POST_META_MILLISECONDS           = '_milliseconds';
+		const POST_META_REQUEST_BODY           = '_request_body';
 
 
 		public function plugins_loaded() {
