@@ -95,6 +95,52 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 
 		}
 
+		/**
+		 * Runs esc_html() on various fields for display in the admin.
+		 *
+		 * @param  object $entry REST API Log Entry
+		 * @return object
+		 */
+		static public function esc_html_fields( $entry ) {
+
+			// Get the list of request fiels.
+			$request_fields = array(
+				'query_params',
+				'headers',
+				);
+
+			$request_fields = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-esc-html-request-fields', $request_fields );
+
+
+			// Get the list of response fiels.
+			$response_fields = array(
+				'headers',
+				);
+
+			$response_fields = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-esc-html-response-fields', $response_fields );
+
+			// Run esc_html on the request fields.
+			foreach( $request_fields as $field ) {
+				if ( is_array( $entry->request->$field ) ) {
+					$entry->request->$field = array_map( 'esc_html', $entry->request->$field );
+				} else {
+					$entry->request->$field = esc_html( $entry->request->$field );
+				}
+			}
+
+			// Run esc_html on the response fields.
+			foreach( $response_fields  as $field ) {
+				if ( is_array( $entry->response->$field ) ) {
+					$entry->response->$field = array_map( 'esc_html', $entry->response->$field );
+				} else {
+					$entry->response->$field = esc_html( $entry->response->$field );
+				}
+			}
+
+			return $entry;
+
+		}
+
 
 	}
 

@@ -24,6 +24,9 @@ if ( empty( $entry->ID ) ) {
 	);
 }
 
+// HTML encode some of the values for display in the admin partial.
+$entry = WP_REST_API_Log_API_Request_Response_Base::esc_html_fields( $entry );
+
 $entry = apply_filters( 'wp-rest-api-log-display-entry', $entry );
 
 $body_content = ! empty( $entry->request->body ) ? $entry->request->body : '';
@@ -72,6 +75,9 @@ $classes = apply_filters( 'wp-rest-api-log-entry-display-classes', array( 'wrap'
 					<li><?php esc_html_e( 'Elapsed Time', 'wp-rest-api-log' ); ?>: <?php echo esc_html( number_format( $entry->milliseconds ) ); ?>ms</li>
 					<li><?php esc_html_e( 'Response Length', 'wp-rest-api-log' ); ?>: <?php echo esc_html( number_format( strlen( $entry->response->body ) ) ); ?></li>
 					<li><?php esc_html_e( 'IP Address', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->ip_address ); ?></li>
+					<?php if ( ! empty( $entry->http_x_forwarded_for ) ) : ?>
+						<li><?php esc_html_e( 'HTTP X Forwarded For', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->http_x_forwarded_for ); ?></li>
+					<?php endif; ?>
 				</ul>
 			</div>
 		</div>

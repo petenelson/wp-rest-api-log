@@ -48,7 +48,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_type' ) ) {
 				'show_in_rest'        => true,
 				'rest_base'           => WP_REST_API_Log_DB::POST_TYPE, // allows the CPT to show up in the native API
 				'hierarchical'        => false,
-				'public'              => true,
+				'public'              => false,
 				'show_ui'             => true,
 				'show_in_menu'        => 'tools.php',
 				'show_in_admin_bar'   => false,
