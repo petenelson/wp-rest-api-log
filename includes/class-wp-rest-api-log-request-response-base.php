@@ -95,6 +95,44 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 
 		}
 
+		/**
+		 * Runs esc_html() on various fields for display in the admin.
+		 *
+		 * @param  object $entry REST API Log Entry
+		 * @return object
+		 */
+		static public function esc_html_fields( $entry ) {
+
+			$request_fields = array(
+				'query_params',
+				'headers',
+				);
+
+			$response_fields = array(
+				'headers',
+				);
+
+
+			foreach( $request_fields as $field ) {
+				if ( is_array( $entry->request->$field ) ) {
+					$entry->request->$field = array_map( 'esc_html', $entry->request->$field );
+				} else {
+					$entry->request->$field = esc_html( $entry->request->$field );
+				}
+			}
+
+			foreach( $response_fields  as $field ) {
+				if ( is_array( $entry->response->$field ) ) {
+					$entry->response->$field = array_map( 'esc_html', $entry->response->$field );
+				} else {
+					$entry->response->$field = esc_html( $entry->response->$field );
+				}
+			}
+
+			return $entry;
+
+		}
+
 
 	}
 

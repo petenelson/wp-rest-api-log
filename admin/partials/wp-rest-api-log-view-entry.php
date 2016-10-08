@@ -24,6 +24,9 @@ if ( empty( $entry->ID ) ) {
 	);
 }
 
+// HTML encode some of the values for display in the admin partial.
+$entry = WP_REST_API_Log_API_Request_Response_Base::esc_html_fields( $entry );
+
 $entry = apply_filters( 'wp-rest-api-log-display-entry', $entry );
 
 $body_content = ! empty( $entry->request->body ) ? $entry->request->body : '';
