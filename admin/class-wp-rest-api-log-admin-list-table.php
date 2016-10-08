@@ -74,20 +74,29 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 			if ( ! empty( $entry ) ) {
 
 				switch ( $column ) {
-					case 'method';
+					case 'method':
 						echo esc_html( $entry->method );
 						break;
-					case 'status';
+
+					case 'status':
 						echo esc_html( $entry->status );
 						break;
-					case 'elapsed';
+
+					case 'elapsed':
 						echo esc_html( number_format( $entry->milliseconds ) . 'ms' );
 						break;
-					case 'length';
+
+					case 'length':
 						echo esc_html( number_format( strlen( $entry->response->body ) ) );
 						break;
-					case 'ip-address';
-						echo esc_html( $entry->ip_address );
+
+					case 'ip-address':
+						$ip_address_display = WP_REST_API_Log_Settings_Base::setting_get( 'general', 'ip-address-display', 'ip_address' );
+						if ( 'http_x_forwarded_for' === $ip_address_display ) {
+							echo esc_html( $entry->http_x_forwarded_for );
+						} else {
+							echo esc_html( $entry->ip_address );
+						}
 						break;
 				}
 
