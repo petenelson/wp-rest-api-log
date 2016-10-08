@@ -55,7 +55,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.min' : '';
 
 			// https://highlightjs.org/
-			$highlight_version = apply_filters( 'wp-rest-api-log-admin-highlight-js-version', '9.6.0' );
+			$highlight_version = apply_filters( 'wp-rest-api-log-admin-highlight-js-version', '9.7.0' );
 			$highlight_style   = apply_filters( 'wp-rest-api-log-admin-highlight-js-version', 'github' );
 
 			wp_register_script( 'wp-rest-api-log-admin-highlight-js',   '//cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/highlight.min.js' );
@@ -151,9 +151,16 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			// Give the administrator role access to the custom post type
 			if ( ! empty( $user ) && ! empty( $user->roles ) && in_array( 'administrator', $user->roles ) ) {
 
-				$allcaps['read_' . WP_REST_API_Log_DB::POST_TYPE]       = true;
-				$allcaps['edit_' . WP_REST_API_Log_DB::POST_TYPE . 's'] = true;
-				$allcaps['delete_' . WP_REST_API_Log_DB::POST_TYPE ]    = true;
+				$post_type = get_post_type_object( WP_REST_API_Log_DB::POST_TYPE );
+
+				if ( ! empty( $post_type ) ) {
+					$allcaps[ $post_type->cap->edit_posts ]        = true;
+					$allcaps[ $post_type->cap->edit_others_posts ] = true;
+					$allcaps[ $post_type->cap->delete_posts ]      = true;
+					$allcaps[ $post_type->cap->read_post ]         = true;
+					$allcaps[ $post_type->cap->edit_post ]         = true;
+					$allcaps[ $post_type->cap->delete_post ]       = true;
+				}
 
 			}
 

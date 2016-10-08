@@ -40,6 +40,12 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		public $ip_address;
 
 		/**
+		 * HTTP_X_FORWARDED_FOR address of the request (from postmeta)
+		 * @var string
+		 */
+		public $http_x_forwarded_for;
+
+		/**
 		 * HTTP method of the request (from wp-rest-api-log-method taxonomy)
 		 * @var string
 		 */
@@ -119,8 +125,9 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 			$post_id = $this->_post->ID;
 
-			$this->ip_address      = get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_IP_ADDRESS, true );
-			$this->milliseconds    = absint( get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_MILLISECONDS, true ) );
+			$this->ip_address             = get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_IP_ADDRESS, true );
+			$this->http_x_forwarded_for   = get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_HTTP_X_FORWARDED_FOR, true );
+			$this->milliseconds           = absint( get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_MILLISECONDS, true ) );
 
 		}
 

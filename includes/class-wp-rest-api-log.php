@@ -8,7 +8,8 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 
 		/**
-		 * plugins_loaded WordPress hook
+		 * The plugins_loaded WordPress hook.
+		 *
 		 * @return void
 		 */
 		public function plugins_loaded() {
@@ -56,16 +57,12 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 
 		/**
-		 * Logs the REST API request & response right before it returns the data to the client
+		 * Logs the REST API request & response right before it returns the data to the client.
 		 *
-		 * @param  bool   $served        true if the response was served by something other than the REST API, otherwise false
-		 *
-		 * @param  object $result        response data
-		 *
-		 * @param  object $request       request data
-		 *
-		 * @param  object $rest_server   REST API server
-		 *
+		 * @param  bool   $served      True if the response was served by something other than the REST API, otherwise false,
+		 * @param  object $result      REST API response data.
+		 * @param  object $request     REST API request data.
+		 * @param  object $rest_server REST API server.
 		 * @return bool   $served
 		 */
 		public function log_rest_api_response( $served, $result, $request, $rest_server ) {
@@ -89,7 +86,8 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			}
 
 			$args = array(
-				'ip_address'            => $_SERVER['REMOTE_ADDR'],
+				'ip_address'            => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_SANITIZE_STRING ),
+				'http_x_forwarded_for'  => filter_input( INPUT_SERVER, 'HTTP_X_FORWARDED_FOR', FILTER_SANITIZE_STRING ),
 				'route'                 => $request->get_route(),
 				'method'                => $request->get_method(),
 				'status'                => $result->get_status(),
@@ -120,7 +118,14 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 				foreach ( headers_list() as $header ) {
 					$header = explode( ':', $header );
 					if ( count( $header ) > 1 ) {
-						$headers[ $header[0] ] = trim( $header[1] );
+
+						// Grab the header name.
+						$header_name = array_shift( $header );
+
+						// Grab any remaining items in the array as the value
+						$header_value = implode( '', $header );
+
+						$headers[ $header_name ] = trim( $header_value );
 					}
 				}
 				return $headers;
