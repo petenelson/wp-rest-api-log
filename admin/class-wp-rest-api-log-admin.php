@@ -151,9 +151,16 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			// Give the administrator role access to the custom post type
 			if ( ! empty( $user ) && ! empty( $user->roles ) && in_array( 'administrator', $user->roles ) ) {
 
-				$allcaps['read_' . WP_REST_API_Log_DB::POST_TYPE]       = true;
-				$allcaps['edit_' . WP_REST_API_Log_DB::POST_TYPE . 's'] = true;
-				$allcaps['delete_' . WP_REST_API_Log_DB::POST_TYPE ]    = true;
+				$post_type = get_post_type_object( WP_REST_API_Log_DB::POST_TYPE );
+
+				if ( ! empty( $post_type ) ) {
+					$allcaps[ $post_type->cap->edit_posts ]        = true;
+					$allcaps[ $post_type->cap->edit_others_posts ] = true;
+					$allcaps[ $post_type->cap->delete_posts ]      = true;
+					$allcaps[ $post_type->cap->read_post ]         = true;
+					$allcaps[ $post_type->cap->edit_post ]         = true;
+					$allcaps[ $post_type->cap->delete_post ]       = true;
+				}
 
 			}
 
