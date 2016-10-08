@@ -125,21 +125,41 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Base' ) ) {
 		}
 
 
-		static public function settings_checkbox_list( $args ) {
-			extract( wp_parse_args( $args,
+		static public function settings_check_radio_list( $args ) {
+
+			$args = wp_parse_args( $args,
 				array(
 					'name' => '',
+					'type' => 'checkbox',
 					'key' => '',
 					'items' => array(),
 					'after' => '',
 					'legend' => '',
+					'default' => array(),
 				)
-			) );
+			);
+
+			$name      = $args['name'];
+			$type      = $args['type'];
+			$key       = $args['key'];
+			$items     = $args['items'];
+			$after     = $args['after'];
+			$legend    = $args['legend'];
+			$default   = $args['default'];
 
 			$option = get_option( $key );
-			$values = isset( $option[$name] ) ? $option[$name] : '';
-			if ( ! is_array( $values ) ) {
-				$values = array();
+			$values = isset( $option[ $name ] ) ? $option[ $name ] : '';
+			if ( ! is_array( $values ) && ! empty( $values ) ) {
+				$values = array( $values );
+			}
+
+			if ( empty( $values ) && ! empty ( $default ) ) {
+				$values = $default;
+			}
+
+			$input_name = "{$key}[{$name}]";
+			if ( 'checkbox' === $type ) {
+				$input_name .= '[]';
 			}
 
 			?>
@@ -148,16 +168,15 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Base' ) ) {
 						<?php echo esc_html( $legend ) ?>
 					</legend>
 
-					<?php foreach ( $items as $value => $value_dispay ) : ?>
-						<label>
-							<input type="checkbox" name="<?php echo $key ?>[<?php echo $name ?>][]" value="<?php echo $value ?>" <?php checked( in_array( $value, $values) ); ?> />
-							<?php echo esc_html( $value_dispay ); ?>
-						</label>
+					<?php foreach ( $items as $value => $value_dispay ) : $id = $key . '_' . $name . '_' . sanitize_key( $value ); ?>
+						<input type="<?php echo esc_attr( $type ); ?>" id="<?php echo esc_attr( $id ); ?>" name="<?php echo esc_attr( $input_name ); ?>" value="<?php echo $value ?>" <?php checked( in_array( $value, $values ) ); ?> />
+						<label for="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $value_dispay ); ?></label>
 						<br/>
 					<?php endforeach; ?>
 				</fieldset>
 			<?php
 
+			self::output_after( $after );
 		}
 
 
@@ -213,7 +232,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Base' ) ) {
 
 		static public function output_after( $after ) {
 			if ( ! empty( $after ) ) {
-				echo '<div>' . wp_kses_post( $after ) . '</div>';
+				echo '<p class="description">' . wp_kses_post( $after ) . '</p>';
 			}
 		}
 
