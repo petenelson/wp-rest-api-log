@@ -41,6 +41,7 @@ Roadmap
 == Changelog ==
 
 = v1.3.0 December 5, 2016 =
+* Added support for logging HTTP_X_FORWARDED_FOR, useful for servers behind a proxy or load balancer.
 * Changed plugin name to REST API Log
 * Changed the wp-rest-api-log post type 'public' setting to false to prevent it from showing up in searches.
 * Updated Highlight JS version to 9.7.0
@@ -77,6 +78,8 @@ Roadmap
 == Upgrade Notice ==
 
 = v1.3.0 December 5, 2016 =
+= v1.3.0 October 8, 2016 =
+* Added support for logging HTTP_X_FORWARDED_FOR, useful for servers behind a proxy or load balancer.
 * Changed plugin name to REST API Log
 * Changed the wp-rest-api-log post type 'public' setting to false to prevent it from showing up in searches.
 * Updated Highlight JS version to 9.7.0
