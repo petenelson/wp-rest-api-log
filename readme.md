@@ -22,7 +22,7 @@ Includes:
 
 * WordPress admin page to view and search log entries
 * API endpoint to access log entries via JSON
-* filters to customize logging
+* Filters to customize logging
 * Custom endpoint logging
 * ElasticPress logging
 
