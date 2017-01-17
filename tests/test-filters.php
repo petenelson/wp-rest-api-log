@@ -22,12 +22,12 @@ class WP_REST_API_Log_Test_Filters extends WP_UnitTestCase {
 		$this->assertEquals( '^/wp/.*/?$', $route_regex );
 
 		$route_regex = WP_REST_API_Log_Filters::route_to_regex( '/wp/v2/*' );
-		$this->assertEquals( '^/wp/v2/.*', $route_regex );
+		$this->assertEquals( '^/wp/v2/.*/?$', $route_regex );
 
 	}
 
 	public function test_should_log_route() {
-		
+
 	}
 
 }
