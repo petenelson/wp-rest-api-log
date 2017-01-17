@@ -24,6 +24,14 @@ if ( ! defined( 'WP_REST_API_LOG_PATH' ) ) {
 	define( 'WP_REST_API_LOG_PATH', trailingslashit( plugin_dir_path( __FILE__ ) ) );
 }
 
+if ( ! defined( 'WP_REST_API_LOG_FILE' ) ) {
+	define( 'WP_REST_API_LOG_FILE', __FILE__ );
+}
+
+if ( ! defined( 'WP_REST_API_LOG_BASENAME' ) ) {
+	define( 'WP_REST_API_LOG_BASENAME', plugin_basename( WP_REST_API_LOG_FILE ) );
+}
+
 $plugin_class_file = 'wp-rest-api-log';
 
 $includes = array(
@@ -40,6 +48,7 @@ $includes = array(
 	'includes/class-' . $plugin_class_file . '-delete-response.php',
 	'includes/class-' . $plugin_class_file . '-routes-response.php',
 	'includes/class-' . $plugin_class_file . '-elasticpress.php',
+	'includes/class-' . $plugin_class_file . '-filters.php',
 	'includes/class-' . $plugin_class_file . '.php',
 	'includes/settings/class-' . $plugin_class_file . '-settings-base.php',
 	'includes/settings/class-' . $plugin_class_file . '-settings-general.php',
@@ -59,6 +68,7 @@ $classes = array(
 	$class_base . '_Post_Type',
 	$class_base . '_i18n',
 	$class_base . '_Controller',
+	$class_base . '_Filters',
 	$class_base . '',
 	$class_base . '_Admin',
 	$class_base . '_Admin_List_Table',
