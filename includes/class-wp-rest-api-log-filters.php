@@ -14,19 +14,29 @@ class WP_REST_API_Log_Filters {
 	public static function route_to_regex( $route_filter ) {
 
 		if ( ! empty( $route_filter ) ) {
-			// Replace wildcard characters with regex.
-			$route_filter = str_replace( '*', '.*', $route_filter );
 
-			// Add a trailing slash if it doesn't end with one.
-			if ( '/' !== substr( $route_filter, strlen( $route_filter ) - 1 ) ) {
-				$route_filter .= '/';
+			// If it starts with a carat, treat it as regex and
+			// make no changes.
+			if ( '^' === substr( $route_filter, 0, 1 ) ) {
+				return $route_filter;
+			} else {
+
+				// Replace wildcard with regex wildcard.
+				$route_filter = str_replace( '*', '.*', $route_filter );
+
+				// Add the start of the match.
+				$route_filter = '^' . $route_filter;
+
+				// Add a trailing slash.
+				$route_filter = trailingslashit( $route_filter );
+
+				// Add a flag for zero or one trailing slashes.
+				$route_filter .= '?';
+
+				// Add the end of the match.
+				$route_filter .= '$';
 			}
 
-			// Add a zero or one match for the trailing slash.
-			$route_filter .= '?';
-
-			// Add regex start and end params.
-			$route_filter = '^' . $route_filter . '$';
 		}
 
 		return $route_filter;
