@@ -4,6 +4,19 @@ if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
 
 class WP_REST_API_Log_Filters {
 
+	/**
+	 * Returns a list of filtering modes.
+	 *
+	 * @return array
+	 */
+	static public function filter_modes() {
+		return array(
+			''                   => __( 'All', 'wp-rest-api-log' ),
+			'log_matches'        => __( 'Only Matching Filters', 'wp-rest-api-log' ),
+			'exclude_matches'    => __( 'Exclude Matching Filters', 'wp-rest-api-log' ),
+			);
+	}
+
 
 	/**
 	 * Converts a route filter into regex pattern.
@@ -40,5 +53,13 @@ class WP_REST_API_Log_Filters {
 		}
 
 		return $route_filter;
+	}
+
+	static public function can_log_route( $route ) {
+
+		// Get the filter mode.
+
+		// Get the route filters.
+
 	}
 }

@@ -182,24 +182,35 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Base' ) ) {
 
 		static public function settings_textarea( $args ) {
 
-			extract( wp_parse_args( $args,
+			$args = wp_parse_args( $args,
 				array(
 					'name' => '',
 					'key' => '',
 					'rows' => 10,
 					'cols' => 40,
 					'after' => '',
-				)
-			) );
+					)
+				);
+
+			$name     = $args['name'];
+			$key      = $args['key'];
+			$rows     = $args['rows'];
+			$cols     = $args['cols'];
+			$after    = $args['after'];
 
 
 			$option = get_option( $key );
 			$value = isset( $option[$name] ) ? esc_attr( $option[$name] ) : '';
 
-			echo "<div><textarea id='{$name}' name='{$key}[{$name}]' rows='{$rows}' cols='{$cols}'>" . $value . "</textarea></div>";
+			printf( '<div><textarea id="%1$s" name="%2$s" rows="%3$s" cols="%4$s">%5$s</textarea></div>',
+				esc_attr( $name ),
+				esc_attr( "{$key}[{$name}]" ),
+				esc_attr( $rows ),
+				esc_attr( $cols ),
+				$value
+				);
 
 			self::output_after( $after );
-
 		}
 
 

@@ -33,7 +33,16 @@ class WP_REST_API_Log_Test_Filters extends WP_UnitTestCase {
 		$this->assertEquals( '^..*/wp/v2/$/?$', $route_regex );
 	}
 
+	public function test_filter_modes() {
+		$modes = WP_REST_API_Log_Filters::filter_modes();
+		$this->assertArrayHasKey( '',                $modes );
+		$this->assertArrayHasKey( 'log_matches',     $modes );
+		$this->assertArrayHasKey( 'exclude_matches', $modes );
+	}
+
 	public function test_should_log_route() {
+
+
 
 	}
 

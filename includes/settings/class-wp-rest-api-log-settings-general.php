@@ -40,22 +40,22 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 			add_settings_field( 'logging-enabled', __( 'Enabled', 'wp-rest-api-log' ), array( __CLASS__, 'settings_yes_no' ), $key, $section,
 				array( 'key' => $key, 'name' => 'logging-enabled', 'after' => '' ) );
 
-			add_settings_field( 'purge-days', __( 'Days to Retain Old Entries', 'rest-api-toolbox' ), array( __CLASS__, 'settings_input' ), $key, $section,
+			add_settings_field( 'purge-days', __( 'Days to Retain Old Entries', 'wp-rest-api-log' ), array( __CLASS__, 'settings_input' ), $key, $section,
 				array(
 					'key' => $key,
 					'name' => 'purge-days',
-					'after' => __( 'Entries older than this will be deleted, leave blank to keep all entries', 'rest-api-toolbox' ),
+					'after' => __( 'Entries older than this will be deleted, leave blank to keep all entries', 'wp-rest-api-log' ),
 					'size' => 3,
 					'maxlength' => 3,
 					)
 				);
 
-			add_settings_field( 'ip-address-display', __( 'IP Address Display', 'rest-api-toolbox' ), array( __CLASS__, 'settings_check_radio_list' ), $key, $section,
+			add_settings_field( 'ip-address-display', __( 'IP Address Display', 'wp-rest-api-log' ), array( __CLASS__, 'settings_check_radio_list' ), $key, $section,
 				array(
 					'key' => $key,
 					'name' => 'ip-address-display',
 					'type' => 'radio',
-					'after' => __( 'Sets the IP address displayed in the list of log entries.', 'rest-api-toolbox' ),
+					'after' => __( 'Sets the IP address displayed in the list of log entries.', 'wp-rest-api-log' ),
 					'items' => array(
 						'ip_address'           => __( 'IP Address', 'wp-rest-api-log' ),
 						'http_x_forwarded_for' => __( 'HTTP X Forwarded For', 'wp-rest-api-log' ),
