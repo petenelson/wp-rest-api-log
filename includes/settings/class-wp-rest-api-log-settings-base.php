@@ -243,7 +243,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Base' ) ) {
 
 		static public function output_after( $after ) {
 			if ( ! empty( $after ) ) {
-				echo '<p class="description">' . wp_kses_post( $after ) . '</p>';
+				echo wp_kses_post( $after );
 			}
 		}
 

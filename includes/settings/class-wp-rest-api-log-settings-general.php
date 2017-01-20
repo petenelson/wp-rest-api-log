@@ -44,7 +44,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 				array(
 					'key' => $key,
 					'name' => 'purge-days',
-					'after' => __( 'Entries older than this will be deleted, leave blank to keep all entries', 'wp-rest-api-log' ),
+					'after' => '<p class="description">' . __( 'Entries older than this will be deleted, leave blank to keep all entries', 'wp-rest-api-log' ) . '</p>',
 					'size' => 3,
 					'maxlength' => 3,
 					)
@@ -55,7 +55,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 					'key' => $key,
 					'name' => 'ip-address-display',
 					'type' => 'radio',
-					'after' => __( 'Sets the IP address displayed in the list of log entries.', 'wp-rest-api-log' ),
+					'after' => '<p class="description">' . __( 'Sets the IP address displayed in the list of log entries.', 'wp-rest-api-log' ) . '</p>',
 					'items' => array(
 						'ip_address'           => __( 'IP Address', 'wp-rest-api-log' ),
 						'http_x_forwarded_for' => __( 'HTTP X Forwarded For', 'wp-rest-api-log' ),

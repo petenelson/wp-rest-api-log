@@ -46,7 +46,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Routes' ) ) {
 				array(
 					'key' => $key,
 					'name' => 'ignore-core-oembed',
-					'after' => 'Built-in /oembed/1.0/embed route'
+					'after' => '<p class="description">Built-in /oembed/1.0/embed route</p>'
 					)
 				);
 
@@ -71,7 +71,15 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Routes' ) ) {
 				array(
 					'key' => $key,
 					'name' => 'route-filters',
-					'after' => 'One route per line, examples<ul><li>Exact Match: /wp/v2/posts</li><li>Wildcard Match: /wp/v2/*</li><li>Regex: ^/wp/v2/.*$</li></ul>Regex matches must start with ^'
+					'after' => '
+						<p class="description">One route per line, examples</p>
+						<ul>
+							<li>Exact Match: /wp/v2/posts</li>
+							<li>Wildcard Match: /wp/v2/*</li>
+							<li>Regex: ^/wp/v2/.*$</li>
+						</ul>
+						<p class="description">Regex matches must start with ^</p>
+					',
 					)
 				);
 		}
