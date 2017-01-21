@@ -12,28 +12,19 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 *
 		 * @return void
 		 */
-		public function plugins_loaded() {
+		static public function plugins_loaded() {
 
-			// filter that is called by the REST API right before it sends a response
-			add_filter( 'rest_pre_serve_request', array( $this, 'log_rest_api_response' ), 9999, 4 );
+			// Filter that is called by the REST API right before it sends a response
+			add_filter( 'rest_pre_serve_request', array( __CLASS__, 'log_rest_api_response' ), 9999, 4 );
 
-			// an example of disabling logging for specific requests
-			add_filter( 'wp-rest-api-log-bypass-insert', function( $bypass_insert, $result, $request, $rest_server ) {
+			// Disabling logging for specific requests.
+			add_filter( 'wp-rest-api-log-bypass-insert', array( __CLASS__, 'bypass_common_routes' ), 10, 4 );
 
-				$ignore_routes = array(
-					'/wp-rest-api-log',
-					'/oembed/1.0/embed',
-					);
+			// Create cron job.
+			add_action( 'admin_init', array( __CLASS__, 'create_purge_cron' ) );
 
-				foreach ( $ignore_routes as $route ) {
-					if ( stripos( $request->get_route(), $route ) !== false ) {
-						return true;
-					}
-				}
-
-				return $bypass_insert;
-
-			}, 10, 4 );
+			// Handler for cron job.
+			add_action( 'wp-rest-api-log-purge-old-records', array( __CLASS__, 'purge_old_records' ) );
 
 
 			// for local development
@@ -50,9 +41,6 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 			// } );
 
-			add_action( 'admin_init', array( $this, 'create_purge_cron' ) );
-			add_action( 'wp-rest-api-log-purge-old-records', array( $this, 'purge_old_records' ) );
-
 		}
 
 
@@ -65,7 +53,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 * @param  object $rest_server REST API server.
 		 * @return bool   $served
 		 */
-		public function log_rest_api_response( $served, $result, $request, $rest_server ) {
+		static public function log_rest_api_response( $served, $result, $request, $rest_server ) {
 
 			// don't log anything if logging is not enabled
 			$logging_enabled = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-setting-is-enabled',
@@ -79,16 +67,29 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			}
 
 
-			// allow specific requests to not be logged
+			// Allow specific requests to not be logged
 			$bypass_insert = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-bypass-insert', false, $result, $request, $rest_server );
 			if ( $bypass_insert ) {
+				return $served;
+			}
+
+			// Determine if this route should be logged based on route filters.
+			$route = $request->get_route();
+			$can_log_route = WP_REST_API_Log_Filters::can_log_route( $route );
+
+			// Allow this to be filtered.
+			$can_log_route = apply_filters( 'wp-rest-api-log-can-log-route', $can_log_route, $route, $request, $result, $rest_server );
+
+
+			// Exit out if we can't log this route.
+			if ( ! $can_log_route ) {
 				return $served;
 			}
 
 			$args = array(
 				'ip_address'            => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_SANITIZE_STRING ),
 				'http_x_forwarded_for'  => filter_input( INPUT_SERVER, 'HTTP_X_FORWARDED_FOR', FILTER_SANITIZE_STRING ),
-				'route'                 => $request->get_route(),
+				'route'                 => $route,
 				'method'                => $request->get_method(),
 				'status'                => $result->get_status(),
 				'request'               => array(
@@ -99,7 +100,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 					),
 				'response'              => array(
 					'body'                 => $result,
-					'headers'              => $this->get_response_headers( $result ),
+					'headers'              => self::get_response_headers( $result ),
 					),
 				);
 
@@ -110,7 +111,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		}
 
 
-		private function get_response_headers( $result ) {
+		static public function get_response_headers( $result ) {
 			// headers_list returns an array of headers like this: Content-Type: application/json;
 			// we want a key/value array
 			if ( function_exists( 'headers_list' ) ) {
@@ -134,13 +135,13 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			}
 		}
 
-		public function create_purge_cron() {
+		static public function create_purge_cron() {
 			if ( ! wp_next_scheduled( 'wp-rest-api-log-purge-old-records' ) ) {
 				wp_schedule_event( time() + 60, 'hourly', 'wp-rest-api-log-purge-old-records' );
 			}
 		}
 
-		public function purge_old_records( $days_old = false, $dry_run = false ) {
+		static public function purge_old_records( $days_old = false, $dry_run = false ) {
 
 			if ( empty( $days_old ) ) {
 				$days_old = WP_REST_API_Log_Settings_General::setting_get( 'general', 'purge-days' );
@@ -172,6 +173,28 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			}
 
 			return $number_deleted;
+
+		}
+
+		static public function bypass_common_routes( $bypass_insert, $result, $request, $rest_server ) {
+
+			// Ignore our own plugin.
+			$ignore_routes = array(
+				'/wp-rest-api-log',
+				);
+
+			// See if the oembed route is ignored.
+			if ( '1' === apply_filters( 'wp-rest-api-log-setting-get', 'routes', 'ignore-core-oembed' ) ) {
+				$ignore_routes[] = '/oembed/1.0/embed';
+			}
+
+			foreach ( $ignore_routes as $route ) {
+				if ( stripos( $request->get_route(), $route ) !== false ) {
+					return true;
+				}
+			}
+
+			return $bypass_insert;
 
 		}
 

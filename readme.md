@@ -44,6 +44,9 @@ Roadmap
 
 ## Changelog ##
 
+### v1.4.0 January 20, 2017 ###
+* Added the ability to filter routes for logging, either include or exclude specific routes.
+
 ### v1.3.0 December 5, 2016 ###
 * Added support for logging HTTP_X_FORWARDED_FOR, useful for servers behind a proxy or load balancer.
 * Changed plugin name to REST API Log
@@ -80,6 +83,9 @@ Roadmap
 
 
 ## Upgrade Notice ##
+
+### v1.4.0 January 20, 2017 ###
+* Added the ability to filter routes for logging, either include or exclude specific routes.
 
 ### v1.3.0 December 5, 2016 ###
 * Added support for logging HTTP_X_FORWARDED_FOR, useful for servers behind a proxy or load balancer.

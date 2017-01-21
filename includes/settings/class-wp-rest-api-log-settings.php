@@ -6,7 +6,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 
 	class WP_REST_API_Log_Settings extends WP_REST_API_Log_Settings_Base {
 
-
+		/**
+		 * Wire up WordPress hooks and filters.
+		 *
+		 * @return void
+		 */
 		static public function plugins_loaded() {
 			// admin menus
 			add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
@@ -15,10 +19,14 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 			// filters to get plugin settings
 			add_filter( 'wp-rest-api-log-setting-is-enabled', array( __CLASS__, 'filter_setting_is_enabled' ), 10, 3 );
 			add_filter( 'wp-rest-api-log-setting-get', array( __CLASS__, 'setting_get' ), 10, 3 );
-
 		}
 
 
+		/**
+		 * Displays an admin notice if the plugin was just activated.
+		 *
+		 * @return void
+		 */
 		static public function activation_admin_notice() {
 			if ( '1' === get_option( 'wp-rest-api-log-plugin-activated' ) ) {
 				?>
@@ -37,20 +45,38 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 			// placeholder in case we need deactivation code
 		}
 
-
-
+		/**
+		 * Creates default settings for the plugin.
+		 *
+		 * @return void
+		 */
 		static public function create_default_settings() {
 			// create default settings
 			add_option( WP_REST_API_Log_Settings_General::$settings_key, WP_REST_API_Log_Settings_General::get_default_settings(), '', $autoload = 'no' );
 			add_option( WP_REST_API_Log_Settings_Routes::$settings_key,  WP_REST_API_Log_Settings_Routes::get_default_settings(),  '', $autoload = 'no' );
 		}
 
-
+		/**
+		 * Registers the REST API Log admin menu,
+		 *
+		 * @return void
+		 */
 		static public function admin_menu() {
-			add_options_page( 'REST API Log ' . __( 'Settings' ), __( 'REST API Log', 'wp-rest-api-log' ), 'manage_options', self::$settings_page, array( __CLASS__, 'options_page' ), 30 );
+			add_options_page(
+				__( 'REST API Log Settings', 'wp-rest-api-log' ),
+				__( 'REST API Log', 'wp-rest-api-log' ),
+				'manage_options',
+				self::$settings_page,
+				array( __CLASS__, 'options_page' ),
+				30
+				);
 		}
 
-
+		/**
+		 * Displays the settings page for the plugin.
+		 *
+		 * @return void
+		 */
 		static public function options_page() {
 
 			$tab = self::current_tab(); ?>
