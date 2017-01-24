@@ -53,12 +53,14 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Routes' ) ) {
 			add_settings_field(
 				'route-log-matching-mode',
 				__( 'Route Logging Mode', 'wp-rest-api-log' ),
-				array( __CLASS__, 'log_matching_mode_dropdown' ),
+				array( __CLASS__, 'settings_check_radio_list' ),
 				$key,
 				$section,
 				array(
 					'key' => $key,
 					'name' => 'route-log-matching-mode',
+					'type' => 'radio',
+					'items' => WP_REST_API_Log_Filters::filter_modes(),
 					)
 				);
 
@@ -83,37 +85,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Routes' ) ) {
 					)
 				);
 		}
-
-		/**
-		 * Callback for outputting the log matching mode.
-		 *
-		 * @param  array $args
-		 * @return void
-		 */
-		static public function log_matching_mode_dropdown( $args ) {
-
-			$args = wp_parse_args( $args, array(
-				'key'  => '',
-				'name' => '',
-				)
-			);
-
-			$option = get_option( $args['key'] );
-			$mode = isset( $option[ $args['name'] ] ) ? $option[ $args['name'] ] : '';
-
-			// Get the list of filter modes.
-			$filter_modes = WP_REST_API_Log_Filters::filter_modes();
-
-			?>
-				<select name="<?php echo esc_attr( "{$args['key']}[{$args['name']}]"); ?>">
-					<?php foreach( $filter_modes as $value => $name ) : ?>
-						<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $value, $mode ); ?>><?php echo esc_html( $name ); ?></option>
-					<?php endforeach; ?>
-				</select>
-			<?php
-
-		}
-
 
 		static public function sanitize_settings( $settings ) {
 
