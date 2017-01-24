@@ -8,27 +8,46 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Routes' ) ) {
 
 		static $settings_key  = 'wp-rest-api-log-settings-routes';
 
-
+		/**
+		 * Hooks up WorPress actions and filters.
+		 *
+		 * @return void
+		 */
 		static public function plugins_loaded() {
-			add_action( 'admin_init', array( __CLASS__, 'register_general_settings' ) );
+			add_action( 'admin_init', array( __CLASS__, 'register_routes_settings' ) );
 			add_filter( 'wp-rest-api-log-settings-tabs', array( __CLASS__, 'add_tab') );
 		}
 
-
+		/**
+		 * Adds a Routes tab.
+		 *
+		 * @param array $tabs List of tabs.
+		 * @return array
+		 */
 		static public function add_tab( $tabs ) {
 			$tabs[ self::$settings_key ] = __( 'Routes', 'wp-rest-api-log' );
 			return $tabs;
 		}
 
-
+		/**
+		 * Gets the default Routes settings.
+		 *
+		 * @return array
+		 */
 		static public function get_default_settings() {
 			return array(
-				'ignore-core-oembed'   => '1',
+				'ignore-core-oembed'         => '1',
+				'route-log-matching-mode'    => '',
+				'route-filters'              => '',
 			);
 		}
 
-
-		static public function register_general_settings() {
+		/**
+		 * Registers settings sections and fields for the Routes tab.
+		 *
+		 * @return void
+		 */
+		static public function register_routes_settings() {
 			$key = self::$settings_key;
 
 			register_setting( $key, $key, array( __CLASS__, 'sanitize_settings') );
@@ -46,7 +65,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Routes' ) ) {
 				array(
 					'key' => $key,
 					'name' => 'ignore-core-oembed',
-					'after' => '<p class="description">Built-in /oembed/1.0/embed route</p>'
+					'after' => '<p class="description">' . __( 'Built-in /oembed/1.0/embed route', 'wp-rest-api-log' ) . '</p>',
 					)
 				);
 
@@ -61,6 +80,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Routes' ) ) {
 					'name' => 'route-log-matching-mode',
 					'type' => 'radio',
 					'items' => WP_REST_API_Log_Filters::filter_modes(),
+					'default' => array( '' ),
 					)
 				);
 
@@ -74,19 +94,36 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Routes' ) ) {
 					'key' => $key,
 					'name' => 'route-filters',
 					'after' => '
-						<p class="description">One route per line, examples</p>
+						<p class="description">' . __( 'One route per line, examples', 'wp-rest-api-log' )  . '</p>
 						<ul>
-							<li>Exact Match: /wp/v2/posts</li>
-							<li>Wildcard Match: /wp/v2/*</li>
-							<li>Regex: ^/wp/v2/.*$</li>
+							<li>' . __( 'Exact Match', 'wp-rest-api-log' ) . ': /wp/v2/posts</li>
+							<li>' . __( 'Wildcard Match', 'wp-rest-api-log' ) . ': /wp/v2/*</li>
+							<li>' . __( 'Regex', 'wp-rest-api-log' ) . ': ^/wp/v2/.*$</li>
 						</ul>
-						<p class="description">Regex matches must start with ^</p>
-					',
+						<p class="description">' . __( 'Regex matches must start with ^', 'wp-rest-api-log' ) . '</p>',
 					)
 				);
 		}
 
+		/**
+		 * Sanitzes the route settings.
+		 *
+		 * @param  array $settings List of settings.
+		 * @return array
+		 */
 		static public function sanitize_settings( $settings ) {
+
+			// Sanitize string fields.
+			$string_fields = array(
+				'ignore-core-oembed',
+				'route-log-matching-mode',
+				);
+
+			foreach( $string_fields as $field ) {
+				if ( isset( $settings[ $field ] ) ) {
+					$settings[ $field ] = filter_var( $settings[ $field ], FILTER_SANITIZE_STRING );
+				}
+			}
 
 			return $settings;
 		}
