@@ -28,7 +28,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 			add_action( 'restrict_manage_posts',                     array( $this, 'add_method_dropdown' ) );
 			add_action( 'restrict_manage_posts',                     array( $this, 'add_status_dropdown' ) );
 			add_action( 'restrict_manage_posts',                     array( $this, 'add_source_dropdown' ) );
-
 		}
 
 

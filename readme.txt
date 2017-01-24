@@ -1,10 +1,10 @@
 === REST API Log ===
 Contributors: gungeekatx
-Tags: wp rest api, rest api, wp api, api, json, log, logging
+Tags: wp rest api, rest api, wp api, api, json, json api, log, logging, elasticpress, elasticsearch
 Donate link: https://github.com/petenelson/wp-rest-api-log
 Requires at least: 4.4
 Tested up to: 4.7
-Stable tag: 1.3.0
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -39,6 +39,9 @@ Roadmap
 
 
 == Changelog ==
+
+= v1.4.0 January 23, 2017 =
+* Added the ability to filter routes for logging, either include or exclude specific routes.
 
 = v1.3.0 December 5, 2016 =
 * Added support for logging HTTP_X_FORWARDED_FOR, useful for servers behind a proxy or load balancer.
@@ -76,6 +79,9 @@ Roadmap
 
 
 == Upgrade Notice ==
+
+= v1.4.0 January 23, 2017 =
+* Added the ability to filter routes for logging, either include or exclude specific routes.
 
 = v1.3.0 December 5, 2016 =
 * Added support for logging HTTP_X_FORWARDED_FOR, useful for servers behind a proxy or load balancer.

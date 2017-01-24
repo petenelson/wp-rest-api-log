@@ -3,7 +3,7 @@
  * Plugin Name: REST API Log
  * Description: Logs requests and responses for the REST API
  * Author: Pete Nelson
- * Version: 1.3.0
+ * Version: 1.4.0
  * Plugin URI: https://github.com/petenelson/wp-rest-api-log
  * Text Domain: wp-rest-api-log
  * Domain Path: /languages
@@ -24,6 +24,14 @@ if ( ! defined( 'WP_REST_API_LOG_PATH' ) ) {
 	define( 'WP_REST_API_LOG_PATH', trailingslashit( plugin_dir_path( __FILE__ ) ) );
 }
 
+if ( ! defined( 'WP_REST_API_LOG_FILE' ) ) {
+	define( 'WP_REST_API_LOG_FILE', __FILE__ );
+}
+
+if ( ! defined( 'WP_REST_API_LOG_BASENAME' ) ) {
+	define( 'WP_REST_API_LOG_BASENAME', plugin_basename( WP_REST_API_LOG_FILE ) );
+}
+
 $plugin_class_file = 'wp-rest-api-log';
 
 $includes = array(
@@ -40,6 +48,7 @@ $includes = array(
 	'includes/class-' . $plugin_class_file . '-delete-response.php',
 	'includes/class-' . $plugin_class_file . '-routes-response.php',
 	'includes/class-' . $plugin_class_file . '-elasticpress.php',
+	'includes/class-' . $plugin_class_file . '-filters.php',
 	'includes/class-' . $plugin_class_file . '.php',
 	'includes/settings/class-' . $plugin_class_file . '-settings-base.php',
 	'includes/settings/class-' . $plugin_class_file . '-settings-general.php',
@@ -59,6 +68,7 @@ $classes = array(
 	$class_base . '_Post_Type',
 	$class_base . '_i18n',
 	$class_base . '_Controller',
+	$class_base . '_Filters',
 	$class_base . '',
 	$class_base . '_Admin',
 	$class_base . '_Admin_List_Table',
@@ -89,13 +99,17 @@ foreach ( $classes as $class ) {
 	}
 }
 
-WP_REST_API_Log_ElasticPress::plugins_loaded();
-
+// Wire up hooks and filters in static classes.
+WP_REST_API_Log_i18n::plugins_loaded();
+WP_REST_API_Log::plugins_loaded();
 WP_REST_API_Log_Settings::plugins_loaded();
 WP_REST_API_Log_Settings_General::plugins_loaded();
 WP_REST_API_Log_Settings_Routes::plugins_loaded();
 WP_REST_API_Log_Settings_ElasticPress::plugins_loaded();
 WP_REST_API_Log_Settings_Help::plugins_loaded();
+WP_REST_API_Log_Post_Type::plugins_loaded();
+WP_REST_API_Log_Controller::plugins_loaded();
+WP_REST_API_Log_ElasticPress::plugins_loaded();
 
 /* Activation hook */
 register_activation_hook( __FILE__, function() {
