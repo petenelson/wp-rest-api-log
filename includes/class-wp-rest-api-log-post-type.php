@@ -2,26 +2,25 @@
 
 if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
 
-if ( ! class_exists( 'WP_REST_API_Log_Post_type' ) ) {
+if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 
-	class WP_REST_API_Log_Post_type {
+	class WP_REST_API_Log_Post_Type {
 
-		public function plugins_loaded() {
-			add_action( 'init', array( $this, 'register_custom_post_types' ) );
-			add_action( 'init', array( $this, 'register_custom_taxonomies' ) );
+		static public function plugins_loaded() {
+			add_action( 'init', array( __CLASS__, 'register_custom_post_types' ) );
+			add_action( 'init', array( __CLASS__, 'register_custom_taxonomies' ) );
 
 		}
 
-		public function register_custom_post_types() {
+		static public function register_custom_post_types() {
 
-			$args = $this->get_post_type_args(); 
+			$args = self::get_post_type_args();
 
 			register_post_type( WP_REST_API_Log_DB::POST_TYPE, $args );
-
 		}
 
 
-		public function get_post_type_labels() {
+		static public function get_post_type_labels() {
 
 			$labels = array(
 				'name'               => esc_html__( 'REST API Log Entries', 'ms-research' ),
@@ -41,10 +40,10 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_type' ) ) {
 		}
 
 
-		public function get_post_type_args() {
+		static public function get_post_type_args() {
 
 			$args = array(
-				'labels'              => $this->get_post_type_labels(),
+				'labels'              => self::get_post_type_labels(),
 				'show_in_rest'        => true,
 				'rest_base'           => WP_REST_API_Log_DB::POST_TYPE, // allows the CPT to show up in the native API
 				'hierarchical'        => false,
@@ -75,7 +74,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_type' ) ) {
 		}
 
 
-		public function register_custom_taxonomies() {
+		static public function register_custom_taxonomies() {
 
 			// HTTP Method
 
@@ -112,12 +111,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_type' ) ) {
 			$args['labels']['singular_name']  = __( 'Log Sources', 'wp-rest-api-log' );
 
 			register_taxonomy( WP_REST_API_Log_DB::TAXONOMY_SOURCE, array( WP_REST_API_Log_DB::POST_TYPE ), $args );
-
-			// namespace?
-
 		}
-
-
 	}
-
 }

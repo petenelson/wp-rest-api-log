@@ -98,7 +98,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Routes' ) ) {
 						<ul>
 							<li>' . __( 'Exact Match', 'wp-rest-api-log' ) . ': /wp/v2/posts</li>
 							<li>' . __( 'Wildcard Match', 'wp-rest-api-log' ) . ': /wp/v2/*</li>
-							<li>' . __( 'Regex', 'wp-rest-api-log' ) . ': ^/wp/v2/.*$</li>
+							<li>' . __( 'Regex', 'wp-rest-api-log' ) . ': ^\/wp\/v2\/.*$</li>
 						</ul>
 						<p class="description">' . __( 'Regex matches must start with ^', 'wp-rest-api-log' ) . '</p>',
 					)
