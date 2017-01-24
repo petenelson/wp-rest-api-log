@@ -10,12 +10,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 		const VERSION          = '2017-01-16-01';
 		const TEXT_DOMAIN      = 'wp-rest-api-log';
 
-
-		public function plugins_loaded() {
-
-		}
-
-
 		static public function current_milliseconds() {
 			return self::microtime_to_milliseconds( microtime() );
 		}

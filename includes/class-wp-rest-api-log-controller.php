@@ -7,17 +7,17 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 	class WP_REST_API_Log_Controller {
 
 
-		public function plugins_loaded() {
-			add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
+		static function plugins_loaded() {
+			add_action( 'rest_api_init', array( __CLASS__, 'register_rest_routes' ) );
 		}
 
 
-		public function register_rest_routes() {
+		static public function register_rest_routes() {
 
 			register_rest_route( WP_REST_API_Log_Common::PLUGIN_NAME, '/entries', array(
 				'methods'             => array( WP_REST_Server::READABLE ),
-				'callback'            => array( $this, 'get_items' ),
-				'permission_callback' => array( $this, 'get_permissions_check' ),
+				'callback'            => array( __CLASS__, 'get_items' ),
+				'permission_callback' => array( __CLASS__, 'get_permissions_check' ),
 				'args'                => array(
 					'from'            => array(
 						'default'           => '',
@@ -66,12 +66,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 			register_rest_route( WP_REST_API_Log_Common::PLUGIN_NAME, '/entry/(?P<id>[\d]+)', array(
 				'methods'             => array( WP_REST_Server::READABLE ),
-				'callback'            => array( $this, 'get_item' ),
-				'permission_callback' => array( $this, 'get_permissions_check' ),
+				'callback'            => array( __CLASS__, 'get_item' ),
+				'permission_callback' => array( __CLASS__, 'get_permissions_check' ),
 				'args'                => array(
 					'id'                    => array(
 						'sanitize_callback'    => 'absint',
-						'validate_callback'    => array( $this, 'validate_entry_id' ),
+						'validate_callback'    => array( __CLASS__, 'validate_entry_id' ),
 						'default'              => 0,
 					),
 				),
@@ -80,8 +80,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 			register_rest_route( WP_REST_API_Log_Common::PLUGIN_NAME, '/entry', array(
 				'methods'             => array( WP_REST_Server::DELETABLE ),
-				'callback'            => array( $this, 'delete_items' ),
-				'permission_callback' => array( $this, 'delete_items_permissions_check' ),
+				'callback'            => array( __CLASS__, 'delete_items' ),
+				'permission_callback' => array( __CLASS__, 'delete_items_permissions_check' ),
 				'args'                => array( // TODO refator delete, this won't work with $_REQUESTs
 					'older-than-seconds'       => array(
 						'sanitize_callback'    => 'absint',  // TODO add validate callback
@@ -93,14 +93,14 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 			register_rest_route( WP_REST_API_Log_Common::PLUGIN_NAME, '/routes', array(
 				'methods'             => array( WP_REST_Server::READABLE ),
-				'callback'            => array( $this, 'get_routes' ),
-				'permission_callback' => array( $this, 'get_permissions_check' ),
+				'callback'            => array( __CLASS__, 'get_routes' ),
+				'permission_callback' => array( __CLASS__, 'get_permissions_check' ),
 			) );
 
 		}
 
 
-		public function get_items( WP_REST_Request $request ) {
+		static public function get_items( WP_REST_Request $request ) {
 
 			$args = array(
 				'id'                  => $request['id'],
@@ -125,7 +125,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		}
 
 
-		public function get_item( WP_REST_Request $request ) {
+		static public function get_item( WP_REST_Request $request ) {
 
 			$post  = get_post( $request['id'] );
 			$entry = new WP_REST_API_Log_Entry( $args['id'] );
@@ -139,7 +139,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		}
 
 
-		public function validate_entry_id( $id ) {
+		static public function validate_entry_id( $id ) {
 			if ( $id < 1 ) {
 				return new WP_Error( 'invalid_entry_id', sprintf( __( 'Invalid REST API Log ID %d.', 'wp-rest-api-log' ), $args['id'] ), array( 'status' => 404 ) );
 			} else {
@@ -147,7 +147,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 			}
 		}
 
-		public function get_routes( WP_REST_Request $request ) {
+		static public function get_routes( WP_REST_Request $request ) {
 
 			global $wpdb;
 
@@ -161,7 +161,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		}
 
 
-		public function delete_items( WP_REST_Request $request ) {
+		static public function delete_items( WP_REST_Request $request ) {
 			// TODO refactor
 			$args = array(
 				'older_than_seconds'  => $request['older-than-seconds'],
@@ -172,12 +172,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		}
 
 
-		public function get_permissions_check() {
+		static public function get_permissions_check() {
 			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-can-view-entries', current_user_can( 'read_' . WP_REST_API_Log_DB::POST_TYPE ) );
 		}
 
 
-		public function delete_items_permissions_check() {
+		static public function delete_items_permissions_check() {
 			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-can-delete-entries', current_user_can( 'delete_' . WP_REST_API_Log_DB::POST_TYPE ) );
 		}
 

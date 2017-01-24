@@ -23,6 +23,8 @@ engines:
         enabled: false
       Controversial/CamelCaseMethodName:
         enabled: false
+      Controversial/CamelCasePropertyName:
+        enabled: false
       CleanCode/ElseExpression:
         enabled: false
       CleanCode/StaticAccess:

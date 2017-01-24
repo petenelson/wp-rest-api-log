@@ -100,12 +100,15 @@ foreach ( $classes as $class ) {
 }
 
 // Wire up hooks and filters in static classes.
+WP_REST_API_Log_i18n::plugins_loaded();
 WP_REST_API_Log::plugins_loaded();
 WP_REST_API_Log_Settings::plugins_loaded();
 WP_REST_API_Log_Settings_General::plugins_loaded();
 WP_REST_API_Log_Settings_Routes::plugins_loaded();
 WP_REST_API_Log_Settings_ElasticPress::plugins_loaded();
 WP_REST_API_Log_Settings_Help::plugins_loaded();
+WP_REST_API_Log_Post_Type::plugins_loaded();
+WP_REST_API_Log_Controller::plugins_loaded();
 WP_REST_API_Log_ElasticPress::plugins_loaded();
 
 /* Activation hook */
