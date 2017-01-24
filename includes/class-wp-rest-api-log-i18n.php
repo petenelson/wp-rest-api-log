@@ -7,7 +7,7 @@ if ( ! class_exists( 'WP_REST_API_Log_i18n' ) ) {
 	class WP_REST_API_Log_i18n {
 
 
-		public function plugins_loaded() {
+		static public function plugins_loaded() {
 
 			load_plugin_textdomain(
 				'wp-rest-api-log',
