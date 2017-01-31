@@ -89,6 +89,10 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 						echo esc_html( number_format( strlen( $entry->response->body ) ) );
 						break;
 
+					case 'user':
+						echo esc_html( $entry->user );
+						break;
+
 					case 'ip-address':
 						$ip_address_display = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-setting-get',
 							'general',

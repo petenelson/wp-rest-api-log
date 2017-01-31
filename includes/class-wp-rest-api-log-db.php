@@ -12,6 +12,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		const TAXONOMY_SOURCE  = 'wp-rest-api-log-source';
 
 		const POST_META_IP_ADDRESS             = '_ip-address';
+		const POST_META_REQUEST_USER           = '_request_user';
 		const POST_META_HTTP_X_FORWARDED_FOR   = '_http_x_forwarded_for';
 		const POST_META_MILLISECONDS           = '_milliseconds';
 		const POST_META_REQUEST_BODY           = '_request_body';
@@ -43,9 +44,12 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 */
 		public function insert( $args ) {
 
+			$current_user = wp_get_current_user();
+
 			$args = wp_parse_args( $args, array(
 				'time'                  => current_time( 'mysql' ),
 				'ip_address'            => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_SANITIZE_STRING ),
+				'user'                  => $current_user->user_login,
 				'http_x_forwarded_for'  => filter_input( INPUT_SERVER, 'HTTP_X_FORWARDED_FOR', FILTER_SANITIZE_STRING ),
 				'route'                 => '',
 				'source'                => 'WP REST API',
@@ -133,6 +137,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			$meta = array(
 				self::POST_META_IP_ADDRESS             => $args['ip_address'],
+				self::POST_META_REQUEST_USER           => $args['user'],
 				self::POST_META_HTTP_X_FORWARDED_FOR   => $args['http_x_forwarded_for'],
 				self::POST_META_MILLISECONDS           => $args['milliseconds'],
 				self::POST_META_REQUEST_BODY           => $args['request']['body'],
