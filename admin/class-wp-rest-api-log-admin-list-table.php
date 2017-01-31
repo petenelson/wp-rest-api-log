@@ -60,6 +60,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 				'elapsed'    => __( 'Elapsed Time', 'wp-rest-api-log' ),
 				'length'     => __( 'Response Length', 'wp-rest-api-log' ),
 				'ip-address' => __( 'IP Address', 'wp-rest-api-log' ),
+				'user'       => __( 'User', 'wp-rest-api-log' ),
 				);
 
 
