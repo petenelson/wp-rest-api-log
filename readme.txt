@@ -27,7 +27,6 @@ Find us on [GitHub](https://github.com/petenelson/wp-rest-api-log)!
 Roadmap
 
 * Better search capabilities for log entries via the REST API endpoint
-* WooCommerce REST API Logging
 
 
 == Installation ==
@@ -41,7 +40,7 @@ Roadmap
 == Changelog ==
 
 = v1.5.0 February 2, 2017 =
-* Added logging for the user making the request (props drsdre for the pull request)
+* Added logging for the user making the request (props [drsdre](https://github.com/drsdre) for the pull request)
 * Updated term fetching when viewing log entries for fewer database queries and better performance.
 
 = v1.4.0 January 23, 2017 =
@@ -85,7 +84,8 @@ Roadmap
 == Upgrade Notice ==
 
 = v1.5.0 February 2, 2017 =
-* Added logging for the user making the request (props drsdre for the pull request)
+* Added logging for the user making the request (props [drsdre](https://github.com/drsdre) for the pull request)
+* Updated term fetching when viewing log entries for fewer database queries and better performance.
 
 = v1.4.0 January 23, 2017 =
 * Added the ability to filter routes for logging, either include or exclude specific routes.
@@ -110,4 +110,5 @@ You can go into Settings > ElasticPress to enable logging for requests & respons
 
 == Screenshots ==
 
-1. Sample admin screen
+1. Sample list of log entries
+2. Sample log entry details
