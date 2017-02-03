@@ -62,8 +62,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			wp_register_script( 'wp-rest-api-log-admin-highlight-js',   '//cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/highlight.min.js' );
 			wp_register_style(  'wp-rest-api-log-admin-highlight-js',  '//cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/styles/' . $highlight_style . '.min.css' );
 
-			wp_register_script( 'wp-rest-api-log-admin', plugin_dir_url( __FILE__ ) . 'js/wp-rest-api-log-admin' . $min . '.js', 'jquery', WP_REST_API_Log_Common::VERSION );
-			wp_register_style(  'wp-rest-api-log-admin', plugin_dir_url( __FILE__ ) . 'css/wp-rest-api-log-admin' . $min . '.css', '', WP_REST_API_Log_Common::VERSION );
+			wp_register_script( 'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'admin/js/wp-rest-api-log-admin' . $min . '.js', 'jquery', WP_REST_API_Log_Common::VERSION );
+			wp_register_style(  'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'admin/css/wp-rest-api-log-admin' . $min . '.css', '', WP_REST_API_Log_Common::VERSION );
 
 			// http://trentrichardson.com/examples/timepicker/
 			//wp_enqueue_script( 'jquery-ui-timepicker', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.js' );

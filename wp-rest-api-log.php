@@ -24,6 +24,10 @@ if ( ! defined( 'WP_REST_API_LOG_PATH' ) ) {
 	define( 'WP_REST_API_LOG_PATH', trailingslashit( plugin_dir_path( __FILE__ ) ) );
 }
 
+if ( ! defined( 'WP_REST_API_LOG_URL' ) ) {
+	define( 'WP_REST_API_LOG_URL', trailingslashit( plugin_dir_url( __FILE__ ) ) );
+}
+
 if ( ! defined( 'WP_REST_API_LOG_FILE' ) ) {
 	define( 'WP_REST_API_LOG_FILE', __FILE__ );
 }
