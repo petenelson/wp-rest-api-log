@@ -46,6 +46,7 @@ Roadmap
 
 ### v1.5.0 February 2, 2017 ###
 * Added logging for the user making the request (props drsdre for the pull request)
+* Updated term fetching when viewing log entries for fewer database queries and better performance.
 
 ### v1.4.0 January 23, 2017 ###
 * Added the ability to filter routes for logging, either include or exclude specific routes.
