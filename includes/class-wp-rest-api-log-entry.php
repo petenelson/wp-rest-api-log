@@ -40,6 +40,12 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		public $ip_address;
 
 		/**
+		 * User of the request (from postmeta)
+		 * @var string
+		 */
+		public $user;
+
+		/**
 		 * HTTP_X_FORWARDED_FOR address of the request (from postmeta)
 		 * @var string
 		 */
@@ -126,6 +132,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			$post_id = $this->_post->ID;
 
 			$this->ip_address             = get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_IP_ADDRESS, true );
+			$this->user                   = get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_REQUEST_USER, true );
 			$this->http_x_forwarded_for   = get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_HTTP_X_FORWARDED_FOR, true );
 			$this->milliseconds           = absint( get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_MILLISECONDS, true ) );
 
