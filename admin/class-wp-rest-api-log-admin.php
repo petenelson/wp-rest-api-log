@@ -8,8 +8,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 
 		public function plugins_loaded() {
-			add_filter( 'post_type_link',     array( $this, 'entry_permalink' ), 10, 2 );
-			add_filter( 'get_edit_post_link', array( $this, 'entry_permalink' ), 10, 2 );
+			add_filter( 'post_type_link',     array( __CLASS__, 'entry_permalink' ), 10, 2 );
+			add_filter( 'get_edit_post_link', array( __CLASS__, 'entry_permalink' ), 10, 2 );
 
 			add_action( 'admin_init', array( $this, 'register_scripts' ) );
 
@@ -74,7 +74,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 		public function display_log_entry() {
 
-			include_once apply_filters( 'wp-rest-api-log-admin-view-entry-template', plugin_dir_path( __FILE__ ) .'partials/wp-rest-api-log-view-entry.php' );
+			include_once apply_filters( 'wp-rest-api-log-admin-view-entry-template', WP_REST_API_LOG_PATH . 'admin/partials/wp-rest-api-log-view-entry.php' );
 
 			wp_enqueue_script( 'wp-rest-api-log-admin-highlight-js' );
 			wp_enqueue_style(  'wp-rest-api-log-admin-highlight-js' );
@@ -82,8 +82,14 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 		}
 
-
-		public function entry_permalink( $permalink, $post ) {
+		/**
+		 * Creates a permalink for a log enty.
+		 *
+		 * @param  string      $permalink Default permalink.
+		 * @param  int|WP_Post $post      Post ID or object.
+		 * @return string
+		 */
+		static public function entry_permalink( $permalink, $post ) {
 			$post = get_post( $post );
 			if ( WP_REST_API_Log_DB::POST_TYPE === $post->post_type ) {
 				$permalink = add_query_arg( array(
