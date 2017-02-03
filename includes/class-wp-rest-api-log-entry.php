@@ -40,6 +40,12 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		public $ip_address;
 
 		/**
+		 * User of the request (from postmeta)
+		 * @var string
+		 */
+		public $user;
+
+		/**
 		 * HTTP_X_FORWARDED_FOR address of the request (from postmeta)
 		 * @var string
 		 */
@@ -126,6 +132,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			$post_id = $this->_post->ID;
 
 			$this->ip_address             = get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_IP_ADDRESS, true );
+			$this->user                   = get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_REQUEST_USER, true );
 			$this->http_x_forwarded_for   = get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_HTTP_X_FORWARDED_FOR, true );
 			$this->milliseconds           = absint( get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_MILLISECONDS, true ) );
 
@@ -140,9 +147,20 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 		}
 
-		public function get_first_term_name( $post_id, $taxonomy ) {
-			$terms = wp_get_post_terms( $post_id, $taxonomy, array( 'fields' => 'names' ) );
-			return ! empty( $terms ) ? $terms[0] : '';
+		/**
+		 * Gets the first term name for the supplied post and taxonomy.
+		 *
+		 * @param  int|WP_Post $post     Post ID or object.
+		 * @param  string      $taxonomy Taxonomy slug.
+		 * @return string
+		 */
+		public function get_first_term_name( $post, $taxonomy ) {
+
+			// Uses get_the_terms() since wp_get_object_terms() does not
+			// do any caching.
+			$terms = get_the_terms( $post, $taxonomy );
+
+			return ! empty( $terms ) && is_array( $terms ) ? $terms[0]->name : '';
 		}
 
 

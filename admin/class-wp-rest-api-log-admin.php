@@ -7,24 +7,19 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 	class WP_REST_API_Log_Admin {
 
 
-		public function plugins_loaded() {
-			add_filter( 'post_type_link',     array( $this, 'entry_permalink' ), 10, 2 );
-			add_filter( 'get_edit_post_link', array( $this, 'entry_permalink' ), 10, 2 );
-
-			add_action( 'admin_init', array( $this, 'register_scripts' ) );
-
-			add_action( 'admin_menu', array( $this, 'admin_menu' ) );
-
-			add_filter( 'wp_link_query_args', array( $this, 'wp_link_query_args' ) );
-
-			add_filter( 'admin_title', 'WP_REST_API_Log_Admin::admin_title', 10, 2 );
-
-			add_filter( 'user_has_cap', 'WP_REST_API_Log_Admin::add_admin_caps', 10, 3 );
-
+		static public function plugins_loaded() {
+			add_filter( 'post_type_link',     array( __CLASS__, 'entry_permalink' ), 10, 2 );
+			add_filter( 'get_edit_post_link', array( __CLASS__, 'entry_permalink' ), 10, 2 );
+			add_action( 'admin_init', array( __CLASS__, 'register_scripts' ) );
+			add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
+			add_filter( 'wp_link_query_args', array( __CLASS__, 'wp_link_query_args' ) );
+			add_filter( 'admin_title', array( __CLASS__, 'admin_title' ), 10, 2 );
+			add_filter( 'user_has_cap', array( __CLASS__, 'add_admin_caps' ), 10, 3 );
+			add_filter( 'plugin_action_links_' . WP_REST_API_LOG_BASENAME, array( __CLASS__, 'plugin_action_links' ), 10, 4 );
 		}
 
 
-		public function admin_menu() {
+		static public function admin_menu() {
 
 			add_submenu_page(
 				null,
@@ -32,7 +27,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 				'',
 				'read_' . WP_REST_API_Log_DB::POST_TYPE,
 				WP_REST_API_Log_Common::PLUGIN_NAME . '-view-entry',
-				array( $this, 'display_log_entry')
+				array( __CLASS__, 'display_log_entry')
 			);
 
 			global $submenu;
@@ -50,19 +45,19 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		}
 
 
-		public function register_scripts() {
+		static public function register_scripts() {
 
 			$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.min' : '';
 
 			// https://highlightjs.org/
-			$highlight_version = apply_filters( 'wp-rest-api-log-admin-highlight-js-version', '9.7.0' );
+			$highlight_version = apply_filters( 'wp-rest-api-log-admin-highlight-js-version', '9.9.0' );
 			$highlight_style   = apply_filters( 'wp-rest-api-log-admin-highlight-js-version', 'github' );
 
 			wp_register_script( 'wp-rest-api-log-admin-highlight-js',   '//cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/highlight.min.js' );
 			wp_register_style(  'wp-rest-api-log-admin-highlight-js',  '//cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/styles/' . $highlight_style . '.min.css' );
 
-			wp_register_script( 'wp-rest-api-log-admin', plugin_dir_url( __FILE__ ) . 'js/wp-rest-api-log-admin' . $min . '.js', 'jquery', WP_REST_API_Log_Common::VERSION );
-			wp_register_style(  'wp-rest-api-log-admin', plugin_dir_url( __FILE__ ) . 'css/wp-rest-api-log-admin' . $min . '.css', '', WP_REST_API_Log_Common::VERSION );
+			wp_register_script( 'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'admin/js/wp-rest-api-log-admin' . $min . '.js', 'jquery', WP_REST_API_Log_Common::VERSION );
+			wp_register_style(  'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'admin/css/wp-rest-api-log-admin' . $min . '.css', '', WP_REST_API_Log_Common::VERSION );
 
 			// http://trentrichardson.com/examples/timepicker/
 			//wp_enqueue_script( 'jquery-ui-timepicker', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.js' );
@@ -71,18 +66,23 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		}
 
 
-		public function display_log_entry() {
+		static public function display_log_entry() {
 
-			include_once apply_filters( 'wp-rest-api-log-admin-view-entry-template', plugin_dir_path( __FILE__ ) .'partials/wp-rest-api-log-view-entry.php' );
+			include_once apply_filters( 'wp-rest-api-log-admin-view-entry-template', WP_REST_API_LOG_PATH . 'admin/partials/wp-rest-api-log-view-entry.php' );
 
 			wp_enqueue_script( 'wp-rest-api-log-admin-highlight-js' );
 			wp_enqueue_style(  'wp-rest-api-log-admin-highlight-js' );
 			wp_enqueue_script( 'wp-rest-api-log-admin' );
-
 		}
 
-
-		public function entry_permalink( $permalink, $post ) {
+		/**
+		 * Creates a permalink for a log enty.
+		 *
+		 * @param  string      $permalink Default permalink.
+		 * @param  int|WP_Post $post      Post ID or object.
+		 * @return string
+		 */
+		static public function entry_permalink( $permalink, $post ) {
 			$post = get_post( $post );
 			if ( WP_REST_API_Log_DB::POST_TYPE === $post->post_type ) {
 				$permalink = add_query_arg( array(
@@ -105,7 +105,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 * @param  array $query query args
 		 * @return array
 		 */
-		public function wp_link_query_args( $query ) {
+		static public function wp_link_query_args( $query ) {
 
 			if ( isset( $query['post_type' ] ) && is_array( $query['post_type'] ) ) {
 				for ( $i = count( $query['post_type'] )-1; $i >= 0; $i-- ) {
@@ -167,7 +167,43 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			return $allcaps;
 		}
 
+		/**
+		 * Adds additional links to the row on the plugins page.
+		 *
+		 * @param array  $actions     An array of plugin action links.
+		 * @param string $plugin_file Path to the plugin file relative to the plugins directory.
+		 * @param array  $plugin_data An array of plugin data.
+		 * @param string $context     The plugin context. Defaults are 'All', 'Active',
+		 *                            'Inactive', 'Recently Activated', 'Upgrade',
+		 *                            'Must-Use', 'Drop-ins', 'Search'.
+		 */
+		static public function plugin_action_links( $actions, $plugin_file, $plugin_data, $context ) {
 
+			if ( is_plugin_active( $plugin_file ) && current_user_can( 'manage_options' ) ) {
+
+				// Build the URL for the settings page.
+				$url = add_query_arg(
+					'page',
+					rawurlencode( WP_REST_API_Log_Settings::$settings_page ),
+					admin_url( 'admin.php' )
+					);
+
+				// Add the anchor tag to the list of plugin links.
+				$new_actions = array(
+					'settings' => sprintf( '<a href="%1$s">%2$s</a>',
+						esc_url( $url ),
+						esc_html__( 'Settings' )
+						),
+					'log' => sprintf( '<a href="%1$s">%2$s</a>',
+						esc_url( admin_url( 'edit.php?post_type=wp-rest-api-log' ) ),
+						esc_html__( 'Log' )
+						)
+					);
+
+				$actions = array_merge( $new_actions, $actions );
+			}
+
+			return $actions;
+		}
 	}
-
 }

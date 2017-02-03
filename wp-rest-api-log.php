@@ -3,7 +3,7 @@
  * Plugin Name: REST API Log
  * Description: Logs requests and responses for the REST API
  * Author: Pete Nelson
- * Version: 1.4.0
+ * Version: 1.5.0
  * Plugin URI: https://github.com/petenelson/wp-rest-api-log
  * Text Domain: wp-rest-api-log
  * Domain Path: /languages
@@ -22,6 +22,10 @@ if ( ! defined( 'WP_REST_API_LOG_ROOT' ) ) {
 
 if ( ! defined( 'WP_REST_API_LOG_PATH' ) ) {
 	define( 'WP_REST_API_LOG_PATH', trailingslashit( plugin_dir_path( __FILE__ ) ) );
+}
+
+if ( ! defined( 'WP_REST_API_LOG_URL' ) ) {
+	define( 'WP_REST_API_LOG_URL', trailingslashit( plugin_dir_url( __FILE__ ) ) );
 }
 
 if ( ! defined( 'WP_REST_API_LOG_FILE' ) ) {
@@ -110,6 +114,7 @@ WP_REST_API_Log_Settings_Help::plugins_loaded();
 WP_REST_API_Log_Post_Type::plugins_loaded();
 WP_REST_API_Log_Controller::plugins_loaded();
 WP_REST_API_Log_ElasticPress::plugins_loaded();
+WP_REST_API_Log_Admin::plugins_loaded();
 
 /* Activation hook */
 register_activation_hook( __FILE__, function() {

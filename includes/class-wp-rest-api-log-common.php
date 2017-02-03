@@ -7,7 +7,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 	class WP_REST_API_Log_Common {
 
 		const PLUGIN_NAME      = 'wp-rest-api-log';
-		const VERSION          = '2017-01-16-01';
+		const VERSION          = '2017-02-02-01';
 		const TEXT_DOMAIN      = 'wp-rest-api-log';
 
 		static public function current_milliseconds() {
@@ -30,6 +30,15 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 		}
 
 
+		/**
+		 * Outputs a taxonomy dropdown.
+		 *
+		 * @param  string $label            Label for the select element.
+		 * @param  string $all_items_prompt Prompt for "All Items".
+		 * @param  string $taxonomy         Taxonomy slug.
+		 * @param  string $selected_slug    Selected term slug.
+		 * @return void.
+		 */
 		static public function taxonomy_dropdown( $label, $all_items_prompt, $taxonomy, $selected_slug ) {
 			$terms = get_terms( $taxonomy );
 

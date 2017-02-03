@@ -74,6 +74,7 @@ $classes = apply_filters( 'wp-rest-api-log-entry-display-classes', array( 'wrap'
 					<li><?php esc_html_e( 'Status', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->status ); ?></li>
 					<li><?php esc_html_e( 'Elapsed Time', 'wp-rest-api-log' ); ?>: <?php echo esc_html( number_format( $entry->milliseconds ) ); ?>ms</li>
 					<li><?php esc_html_e( 'Response Length', 'wp-rest-api-log' ); ?>: <?php echo esc_html( number_format( strlen( $entry->response->body ) ) ); ?></li>
+					<li><?php esc_html_e( 'User', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->user ); ?></li>
 					<li><?php esc_html_e( 'IP Address', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->ip_address ); ?></li>
 					<?php if ( ! empty( $entry->http_x_forwarded_for ) ) : ?>
 						<li><?php esc_html_e( 'HTTP X Forwarded For', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->http_x_forwarded_for ); ?></li>

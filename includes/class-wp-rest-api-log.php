@@ -86,8 +86,11 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 				return $served;
 			}
 
+			$current_user = wp_get_current_user();
+
 			$args = array(
 				'ip_address'            => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_SANITIZE_STRING ),
+				'user'                  => $current_user->user_login,
 				'http_x_forwarded_for'  => filter_input( INPUT_SERVER, 'HTTP_X_FORWARDED_FOR', FILTER_SANITIZE_STRING ),
 				'route'                 => $route,
 				'method'                => $request->get_method(),

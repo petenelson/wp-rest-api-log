@@ -4,7 +4,7 @@
 **Donate link:** https://github.com/petenelson/wp-rest-api-log  
 **Requires at least:** 4.4  
 **Tested up to:** 4.7  
-**Stable tag:** 1.4.0  
+**Stable tag:** 1.5.0  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -31,7 +31,6 @@ Find us on [GitHub](https://github.com/petenelson/wp-rest-api-log)!
 Roadmap
 
 * Better search capabilities for log entries via the REST API endpoint
-* WooCommerce REST API Logging
 
 
 ## Installation ##
@@ -43,6 +42,12 @@ Roadmap
 
 
 ## Changelog ##
+
+### v1.5.0 February 2, 2017 ###
+* Added logging for the user making the request (props [drsdre](https://github.com/drsdre) for the pull request).
+* Added Settings and Log links from the Plugins page.
+* Updated term fetching when viewing log entries for fewer database queries and better performance.
+* Updated highlight.js to 9.9.0
 
 ### v1.4.0 January 23, 2017 ###
 * Added the ability to filter routes for logging, either include or exclude specific routes.
@@ -84,6 +89,12 @@ Roadmap
 
 ## Upgrade Notice ##
 
+### v1.5.0 February 2, 2017 ###
+* Added logging for the user making the request (props [drsdre](https://github.com/drsdre) for the pull request).
+* Added Settings and Log links from the Plugins page.
+* Updated term fetching when viewing log entries for fewer database queries and better performance.
+* Updated highlight.js to 9.9.0
+
 ### v1.4.0 January 23, 2017 ###
 * Added the ability to filter routes for logging, either include or exclude specific routes.
 
@@ -107,6 +118,9 @@ You can go into Settings > ElasticPress to enable logging for requests & respons
 
 ## Screenshots ##
 
-### 1. Sample admin screen ###
-![Sample admin screen](https://raw.githubusercontent.com/petenelson/wp-rest-api-log/master/assets/screenshot-1.png)
+### 1. Sample list of log entries ###
+![Sample list of log entries](https://raw.githubusercontent.com/petenelson/wp-rest-api-log/master/assets/screenshot-1.png)
+
+### 2. Sample log entry details ###
+![Sample log entry details](https://raw.githubusercontent.com/petenelson/wp-rest-api-log/master/assets/screenshot-2.png)
 
