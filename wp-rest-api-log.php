@@ -114,6 +114,7 @@ WP_REST_API_Log_Settings_Help::plugins_loaded();
 WP_REST_API_Log_Post_Type::plugins_loaded();
 WP_REST_API_Log_Controller::plugins_loaded();
 WP_REST_API_Log_ElasticPress::plugins_loaded();
+WP_REST_API_Log_Admin::plugins_loaded();
 
 /* Activation hook */
 register_activation_hook( __FILE__, function() {

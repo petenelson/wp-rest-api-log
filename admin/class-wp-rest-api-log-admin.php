@@ -7,25 +7,19 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 	class WP_REST_API_Log_Admin {
 
 
-		public function plugins_loaded() {
+		static public function plugins_loaded() {
 			add_filter( 'post_type_link',     array( __CLASS__, 'entry_permalink' ), 10, 2 );
 			add_filter( 'get_edit_post_link', array( __CLASS__, 'entry_permalink' ), 10, 2 );
-
-			add_action( 'admin_init', array( $this, 'register_scripts' ) );
-
-			add_action( 'admin_menu', array( $this, 'admin_menu' ) );
-
+			add_action( 'admin_init', array( __CLASS__, 'register_scripts' ) );
+			add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
 			add_filter( 'wp_link_query_args', array( __CLASS__, 'wp_link_query_args' ) );
-
-			add_filter( 'admin_title', 'WP_REST_API_Log_Admin::admin_title', 10, 2 );
-
-			add_filter( 'user_has_cap', 'WP_REST_API_Log_Admin::add_admin_caps', 10, 3 );
-
+			add_filter( 'admin_title', array( __CLASS__, 'admin_title' ), 10, 2 );
+			add_filter( 'user_has_cap', array( __CLASS__, 'add_admin_caps' ), 10, 3 );
 			add_filter( 'plugin_action_links_' . WP_REST_API_LOG_BASENAME, array( __CLASS__, 'plugin_action_links' ), 10, 4 );
 		}
 
 
-		public function admin_menu() {
+		static public function admin_menu() {
 
 			add_submenu_page(
 				null,
@@ -33,7 +27,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 				'',
 				'read_' . WP_REST_API_Log_DB::POST_TYPE,
 				WP_REST_API_Log_Common::PLUGIN_NAME . '-view-entry',
-				array( $this, 'display_log_entry')
+				array( __CLASS__, 'display_log_entry')
 			);
 
 			global $submenu;
@@ -51,7 +45,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		}
 
 
-		public function register_scripts() {
+		static public function register_scripts() {
 
 			$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.min' : '';
 
@@ -72,14 +66,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		}
 
 
-		public function display_log_entry() {
+		static public function display_log_entry() {
 
 			include_once apply_filters( 'wp-rest-api-log-admin-view-entry-template', WP_REST_API_LOG_PATH . 'admin/partials/wp-rest-api-log-view-entry.php' );
 
 			wp_enqueue_script( 'wp-rest-api-log-admin-highlight-js' );
 			wp_enqueue_style(  'wp-rest-api-log-admin-highlight-js' );
 			wp_enqueue_script( 'wp-rest-api-log-admin' );
-
 		}
 
 		/**
