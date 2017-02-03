@@ -15,7 +15,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 			add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 
-			add_filter( 'wp_link_query_args', array( $this, 'wp_link_query_args' ) );
+			add_filter( 'wp_link_query_args', array( __CLASS__, 'wp_link_query_args' ) );
 
 			add_filter( 'admin_title', 'WP_REST_API_Log_Admin::admin_title', 10, 2 );
 
@@ -106,7 +106,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 * @param  array $query query args
 		 * @return array
 		 */
-		public function wp_link_query_args( $query ) {
+		static public function wp_link_query_args( $query ) {
 
 			if ( isset( $query['post_type' ] ) && is_array( $query['post_type'] ) ) {
 				for ( $i = count( $query['post_type'] )-1; $i >= 0; $i-- ) {
@@ -194,6 +194,10 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 					'settings' => sprintf( '<a href="%1$s">%2$s</a>',
 						esc_url( $url ),
 						esc_html__( 'Settings' )
+						),
+					'log' => sprintf( '<a href="%1$s">%2$s</a>',
+						esc_url( admin_url( 'edit.php?post_type=wp-rest-api-log' ) ),
+						esc_html__( 'Log' )
 						)
 					);
 
