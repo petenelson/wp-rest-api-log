@@ -147,9 +147,20 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 		}
 
-		public function get_first_term_name( $post_id, $taxonomy ) {
-			$terms = wp_get_post_terms( $post_id, $taxonomy, array( 'fields' => 'names' ) );
-			return ! empty( $terms ) ? $terms[0] : '';
+		/**
+		 * Gets the first term name for the supplied post and taxonomy.
+		 *
+		 * @param  int|WP_Post $post     Post ID or object.
+		 * @param  string      $taxonomy Taxonomy slug.
+		 * @return string
+		 */
+		public function get_first_term_name( $post, $taxonomy ) {
+
+			// Uses get_the_terms() since wp_get_object_terms() does not
+			// do any caching.
+			$terms = get_the_terms( $post, $taxonomy );
+
+			return ! empty( $terms ) && is_array( $terms ) ? $terms[0]->name : '';
 		}
 
 
