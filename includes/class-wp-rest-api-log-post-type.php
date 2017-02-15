@@ -86,7 +86,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 			$args = array(
 				'labels'            => $labels,
 				'public'            => true,
-				'show_in_nav_menus' => true,
+				'show_in_nav_menus' => false,
 				'show_admin_column' => false,
 				'hierarchical'      => false,
 				'show_tagcloud'     => true,
