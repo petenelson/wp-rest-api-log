@@ -51,7 +51,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 				'show_ui'             => true,
 				'show_in_menu'        => 'tools.php',
 				'show_in_admin_bar'   => false,
-				'show_in_nav_menus'   => true,
+				'show_in_nav_menus'   => false,
 				'publicly_queryable'  => true,
 				'exclude_from_search' => true,
 				'has_archive'         => false,
