@@ -4,7 +4,7 @@
 **Donate link:** https://github.com/petenelson/wp-rest-api-log  
 **Requires at least:** 4.4  
 **Tested up to:** 4.7  
-**Stable tag:** 1.5.0  
+**Stable tag:** 1.5.1  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -42,6 +42,9 @@ Roadmap
 
 
 ## Changelog ##
+
+### v1.5.1 February 15, 2017 ###
+* Removed hidden custom taxonomies from the navigation menu admin (props [phh](https://github.com/phh) for the pull request).
 
 ### v1.5.0 February 2, 2017 ###
 * Added logging for the user making the request (props [drsdre](https://github.com/drsdre) for the pull request).
@@ -88,6 +91,9 @@ Roadmap
 
 
 ## Upgrade Notice ##
+
+### v1.5.1 February 15, 2017 ###
+* Removed hidden custom taxonomies from the navigation menu admin (props [phh](https://github.com/phh) for the pull request).
 
 ### v1.5.0 February 2, 2017 ###
 * Added logging for the user making the request (props [drsdre](https://github.com/drsdre) for the pull request).
