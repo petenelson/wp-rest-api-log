@@ -64,7 +64,7 @@ if ( ! class_exists( 'WP_REST_API_Log_ElasticPress' ) ) {
 				}
 
 				// don't log the plugins list
-				if ( false !== strpos( $query['url'], '_nodes?plugin=true' ) ) {
+				if ( false !== strpos( $query['url'], '_nodes/plugins' ) ) {
 					$log_query = false;
 				}
 			}
