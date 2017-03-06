@@ -40,11 +40,26 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 			add_settings_field( 'logging-enabled', __( 'Enabled', 'wp-rest-api-log' ), array( __CLASS__, 'settings_yes_no' ), $key, $section,
 				array( 'key' => $key, 'name' => 'logging-enabled', 'after' => '' ) );
 
+			$total_count =  absint( count( WP_REST_API_Log_DB::get_all_log_ids() ) );
+
+			// HTML for the purge button.
+			if ( 0 === $total_count ) {
+				$purge_button_html = '';
+			} else {
+				$purge_button_html = '<p><a class="button wp-rest-api-log-purge-all" href="#purge-log" class="button">'
+					. esc_html( sprintf( __( 'Purge All %1$s Entries Now', 'wp-rest-api-log' ), number_format( $total_count ) ) )
+					. '</a></p><span class="spinner hidden wp-rest-api-log-purge-all-spinner"></span>';
+			}
+
 			add_settings_field( 'purge-days', __( 'Days to Retain Old Entries', 'wp-rest-api-log' ), array( __CLASS__, 'settings_input' ), $key, $section,
 				array(
 					'key' => $key,
 					'name' => 'purge-days',
-					'after' => '<p class="description">' . __( 'Entries older than this will be deleted, leave blank to keep all entries', 'wp-rest-api-log' ) . '</p>',
+					'after' => '<p class="description">' . wp_kses_post(
+						sprintf( __( 'Entries older than this will be automatically cleaned up, leave blank to keep all entries. %1$s', 'wp-rest-api-log' ),
+							$purge_button_html
+							)
+						) . '</p>',
 					'size' => 3,
 					'maxlength' => 3,
 					)
@@ -77,8 +92,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 
 			return $settings;
 		}
-
-
 	}
 
 }

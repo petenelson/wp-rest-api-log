@@ -90,13 +90,18 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				),
 			) );
 
+			// Route to delete all log entries.
+			register_rest_route( WP_REST_API_Log_Common::PLUGIN_NAME, '/entries', array(
+				'methods'             => array( WP_REST_Server::DELETABLE ),
+				'callback'            => array( __CLASS__, 'purge_log' ),
+				'permission_callback' => array( __CLASS__, 'delete_items_permissions_check' ),
+			) );
 
 			register_rest_route( WP_REST_API_Log_Common::PLUGIN_NAME, '/routes', array(
 				'methods'             => array( WP_REST_Server::READABLE ),
 				'callback'            => array( __CLASS__, 'get_routes' ),
 				'permission_callback' => array( __CLASS__, 'get_permissions_check' ),
 			) );
-
 		}
 
 
@@ -181,6 +186,15 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-can-delete-entries', current_user_can( 'delete_' . WP_REST_API_Log_DB::POST_TYPE ) );
 		}
 
+		/**
+		 * Handler to purge all log entries.
+		 *
+		 * @return WP_REST_Response
+		 */
+		static public function purge_log() {
+			WP_REST_API_Log_DB::purge_all_log_entries();
+			return rest_ensure_response( array( 'success' => true ) );
+		}
 	}
 
 }
