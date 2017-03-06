@@ -67,6 +67,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 					)
 				);
 
+			// Ensure admin URLs in SSL get pointed to SSL on the frontend.
+			if ( is_ssl() ) {
+				foreach( $data['endpoints'] as &$endpoint ) {
+					$endpoint = set_url_scheme( $endpoint, 'https' );
+				}
+			}
+
 			wp_localize_script( 'wp-rest-api-log-admin', 'WP_REST_API_Log_Admin_Data', $data );
 
 
