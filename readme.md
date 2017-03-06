@@ -43,6 +43,10 @@ Roadmap
 
 ## Changelog ##
 
+### v1.6.0 ???, 2017 ###
+* Added button on settings page to Purge All Log Entries.
+* Tweaked some of the ElasticPress routes that skip logging.
+
 ### v1.5.2 February 21, 2017 ###
 * Fixed a bug with ElasticPress logging getting stuck in a loop regarding the _nodes/plugins URL.
 

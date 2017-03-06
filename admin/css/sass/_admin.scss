@@ -1,7 +1,13 @@
 .post-type-wp-rest-api-log {
-
-	.add-new-h2 {
-		display: none;
+	.wrap {
+		.page-title-action {
+			display: none;
+		}
 	}
+}
 
+.settings_page_wp-rest-api-log-settings {
+	.wp-rest-api-log-purge-all-spinner {
+		float: left;
+	}
 }

@@ -16,6 +16,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			add_filter( 'admin_title', array( __CLASS__, 'admin_title' ), 10, 2 );
 			add_filter( 'user_has_cap', array( __CLASS__, 'add_admin_caps' ), 10, 3 );
 			add_filter( 'plugin_action_links_' . WP_REST_API_LOG_BASENAME, array( __CLASS__, 'plugin_action_links' ), 10, 4 );
+			add_action( 'current_screen', array( __CLASS__, 'maybe_enqueue_scripts' ) );
 		}
 
 
@@ -59,6 +60,16 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			wp_register_script( 'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'admin/js/wp-rest-api-log-admin' . $min . '.js', 'jquery', WP_REST_API_Log_Common::VERSION );
 			wp_register_style(  'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'admin/css/wp-rest-api-log-admin' . $min . '.css', '', WP_REST_API_Log_Common::VERSION );
 
+			$data = array(
+				'nonce'  => wp_create_nonce( 'wp_rest' ),
+				'endpoints' => array(
+					'purge_entries' => rest_url( WP_REST_API_Log_Common::PLUGIN_NAME . '/entries' ),
+					)
+				);
+
+			wp_localize_script( 'wp-rest-api-log-admin', 'WP_REST_API_Log_Admin_Data', $data );
+
+
 			// http://trentrichardson.com/examples/timepicker/
 			//wp_enqueue_script( 'jquery-ui-timepicker', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.js' );
 			//wp_enqueue_style( 'jquery-ui-timepicker', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.css' );
@@ -70,9 +81,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 			include_once apply_filters( 'wp-rest-api-log-admin-view-entry-template', WP_REST_API_LOG_PATH . 'admin/partials/wp-rest-api-log-view-entry.php' );
 
-			wp_enqueue_script( 'wp-rest-api-log-admin-highlight-js' );
-			wp_enqueue_style(  'wp-rest-api-log-admin-highlight-js' );
-			wp_enqueue_script( 'wp-rest-api-log-admin' );
+			self::enqueue_scripts();
 		}
 
 		/**
@@ -204,6 +213,37 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			}
 
 			return $actions;
+		}
+
+		/**
+		 * Enqueues scripts based on current screent.
+		 *
+		 * @return void
+		 */
+		static public function maybe_enqueue_scripts() {
+			$screen = get_current_screen();
+
+			$screen_ids = array(
+				'settings_page_wp-rest-api-log-settings',
+				'edit-wp-rest-api-log',
+				);
+
+			if ( in_array( $screen->id, $screen_ids ) ) {
+				self::enqueue_scripts();
+			}
+		}
+
+		/**
+		 * Enqueues admin scripts and styles.
+		 *
+		 * @return void
+		 */
+		static public function enqueue_scripts() {
+			wp_enqueue_script( 'wp-rest-api-log-admin-highlight-js' );
+			wp_enqueue_style(  'wp-rest-api-log-admin-highlight-js' );
+
+			wp_enqueue_script( 'wp-rest-api-log-admin' );
+			wp_enqueue_style(  'wp-rest-api-log-admin' );
 		}
 	}
 }
