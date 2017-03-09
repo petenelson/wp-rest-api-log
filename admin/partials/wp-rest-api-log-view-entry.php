@@ -54,6 +54,22 @@ $json_display_options = apply_filters( 'wp-rest-api-log-json-display-options', $
 
 $classes = apply_filters( 'wp-rest-api-log-entry-display-classes', array( 'wrap', 'wp-rest-api-log-entry' ), $entry );
 
+$download_routes = WP_REST_API_Log_Controller::get_download_routes();
+$download_urls = array();
+
+foreach( $download_routes as $rr => $properties ) {
+	$download_urls[ $rr ] = array();
+
+	foreach( $properties as $property ) {
+		$url = rest_url( "/wp-rest-api-log/entry/{$entry->ID}/{$rr}/{$property}/download" );
+		if ( is_ssl() ) {
+			$url = set_url_scheme( $property, 'https' );
+		}
+
+		$download_urls[ $rr ][ $property ] = $url;
+	}
+}
+
 ?>
 <div class="<?php echo implode( ' ', array_map( 'esc_attr',  $classes ) ); ?>" id="wp-rest-api-log-entry">
 
@@ -87,21 +103,36 @@ $classes = apply_filters( 'wp-rest-api-log-entry-display-classes', array( 'wrap'
 
 		<div class="postbox request-headers">
 			<h3 class="hndle"><span><?php esc_html_e( 'Request Headers', 'wp-rest-api-log' ); ?></span></h3>
-			<div class="inside"><pre><code class="json"><?php echo wp_json_encode( $entry->request->headers, $json_display_options['request']['headers'] ); ?></code></pre></div>
+			<div class="inside">
+				<pre><code class="json"><?php echo wp_json_encode( $entry->request->headers, $json_display_options['request']['headers'] ); ?></code></pre>
+				<p>
+					<a href="<?php echo esc_url( $download_urls['request']['headers'] ); ?>"><?php esc_attr_e( 'Download' ); ?></a>
+				</p>
+			</div>
 		</div>
 
 		<?php do_action( 'wp-rest-api-log-display-entry-before-request-querystring', $entry ); ?>
 
 		<div class="postbox querystring-parameters">
 			<h3 class="hndle"><span><?php esc_html_e( 'Query Parameters', 'wp-rest-api-log' ); ?></span></h3>
-			<div class="inside"><pre><code class="json"><?php echo wp_json_encode( $entry->request->query_params, $json_display_options['request']['query_params'] ); ?></code></pre></div>
+			<div class="inside">
+				<pre><code class="json"><?php echo wp_json_encode( $entry->request->query_params, $json_display_options['request']['query_params'] ); ?></code></pre>
+				<p>
+					<a href="<?php echo esc_url( $download_urls['request']['query_params'] ); ?>"><?php esc_attr_e( 'Download' ); ?></a>
+				</p>
+			</div>
 		</div>
 
 		<?php do_action( 'wp-rest-api-log-display-entry-before-request-body', $entry ); ?>
 
 		<div class="postbox body-parameters">
 			<h3 class="hndle"><span><?php esc_html_e( 'Body Parameters', 'wp-rest-api-log' ); ?></span></h3>
-			<div class="inside"><pre><code class="json"><?php echo wp_json_encode( $entry->request->body_params, $json_display_options['request']['body_params'] ); ?></code></pre></div>
+			<div class="inside">
+				<pre><code class="json"><?php echo wp_json_encode( $entry->request->body_params, $json_display_options['request']['body_params'] ); ?></code></pre>
+				<p>
+					<a href="<?php echo esc_url( $download_urls['request']['body_params'] ); ?>"><?php esc_attr_e( 'Download' ); ?></a>
+				</p>
+			</div>
 		</div>
 
 
@@ -116,6 +147,9 @@ $classes = apply_filters( 'wp-rest-api-log-entry-display-classes', array( 'wrap'
 				<?php if ( ! empty( $body_content ) ) : ?>
 					<div class="inside"><pre><code><?php echo esc_html( $body_content ); ?></code></pre></div>
 				<?php endif; ?>
+				<p>
+					<a href="<?php echo esc_url( $download_urls['request']['body'] ); ?>"><?php esc_attr_e( 'Download' ); ?></a>
+				</p>
 			</div>
 		<?php endif; ?>
 
@@ -123,14 +157,24 @@ $classes = apply_filters( 'wp-rest-api-log-entry-display-classes', array( 'wrap'
 
 		<div class="postbox response-headers">
 			<h3 class="hndle"><span><?php esc_html_e( 'Response Headers', 'wp-rest-api-log' ); ?></span></h3>
-			<div class="inside"><pre><code class="json"><?php echo wp_json_encode( $entry->response->headers, $json_display_options['response']['headers'] ); ?></code></pre></div>
+			<div class="inside">
+				<pre><code class="json"><?php echo wp_json_encode( $entry->response->headers, $json_display_options['response']['headers'] ); ?></code></pre>
+				<p>
+					<a href="<?php echo esc_url( $download_urls['response']['headers'] ); ?>"><?php esc_attr_e( 'Download' ); ?></a>
+				</p>
+			</div>
 		</div>
 
 		<?php do_action( 'wp-rest-api-log-display-entry-before-response-body', $entry ); ?>
 
 		<div class="postbox response-body">
 			<h3 class="hndle"><span><?php esc_html_e( 'Response', 'wp-rest-api-log' ); ?></span></h3>
-			<div class="inside"><pre><code><?php echo esc_html( $entry->response->body ); ?></code></pre></div>
+			<div class="inside">
+				<pre><code><?php echo esc_html( $entry->response->body ); ?></code></pre>
+				<p>
+					<a href="<?php echo esc_url( $download_urls['response']['body'] ); ?>"><?php esc_attr_e( 'Download' ); ?></a>
+				</p>
+			</div>
 		</div>
 
 		<?php do_action( 'wp-rest-api-log-display-entry-after', $entry ); ?>

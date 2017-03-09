@@ -105,11 +105,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		}
 
 		/**
-		 * Registers the routes to download portions of an entry.
+		 * Returns a list of routes available for download.
 		 *
-		 * @return void
+		 * @return array
 		 */
-		static public function register_download_routes() {
+		static public function get_download_routes() {
 
 			$routes = array(
 				'request' => array(
@@ -124,9 +124,19 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 					)
 			);
 
-			$routes = apply_filters( 'wp-rest-api-log-download-routes', $routes );
+			return apply_filters( 'wp-rest-api-log-download-routes', $routes );
+		}
 
-			foreach ( $routes as $request_response => $properties ) {
+		/**
+		 * Registers the routes to download portions of an entry.
+		 *
+		 * @return void
+		 */
+		static public function register_download_routes() {
+
+
+
+			foreach ( self::get_download_routes() as $request_response => $properties ) {
 				foreach( $properties as $property ) {
 
 					register_rest_route( WP_REST_API_Log_Common::PLUGIN_NAME, "/entry/(?P<id>[\d]+)/(?P<rr>{$request_response})/(?P<property>{$property})/download", array(
