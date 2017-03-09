@@ -128,6 +128,33 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		}
 
 		/**
+		 * Gets REST API endpoint URLs to download entry properties.
+		 *
+		 * @param object $entry REST API Log Entry.
+		 * @return array
+		 */
+		static public function get_download_urls( $entry ) {
+
+			$download_routes = self::get_download_routes();
+			$download_urls = array();
+
+			foreach( $download_routes as $rr => $properties ) {
+				$download_urls[ $rr ] = array();
+
+				foreach( $properties as $property ) {
+					$url = rest_url( "/wp-rest-api-log/entry/{$entry->ID}/{$rr}/{$property}/download" );
+					if ( is_ssl() ) {
+						$url = set_url_scheme( $property, 'https' );
+					}
+
+					$download_urls[ $rr ][ $property ] = $url;
+				}
+			}
+
+			return apply_filters( 'wp-rest-api-log-download-urls', $download_urls, $entry );
+		}
+
+		/**
 		 * Registers the routes to download portions of an entry.
 		 *
 		 * @return void
