@@ -20,6 +20,10 @@
 				$( '.wp-rest-api-log-purge-all' ).on( 'click', this.purgeLog );
 			}
 
+			if ( this.entry_element.length > 0 ) {
+				// Hook for copying to clipboard.
+				var clipboard = new Clipboard( '.wp-rest-api-log-entry-copy-property' );
+			}
 		},
 
 		highlightBlocks: function() {
@@ -62,7 +66,6 @@
 				$( '.wp-rest-api-log-purge-all-spinner' ).addClass( 'hidden' ).removeClass( 'is-active' );
 			} );
 		}
-
 	};
 
 	$( document ).ready( function() {

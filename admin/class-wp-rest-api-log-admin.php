@@ -6,20 +6,32 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 	class WP_REST_API_Log_Admin {
 
-
+		/**
+		 * Wire up WordPress hooks and filters.
+		 *
+		 * @return void
+		 */
 		static public function plugins_loaded() {
 			add_filter( 'post_type_link',     array( __CLASS__, 'entry_permalink' ), 10, 2 );
 			add_filter( 'get_edit_post_link', array( __CLASS__, 'entry_permalink' ), 10, 2 );
-			add_action( 'admin_init', array( __CLASS__, 'register_scripts' ) );
+			add_action( 'admin_init', array( __CLASS__, 'register_scripts' ), 10 );
+			add_action( 'admin_init', array( __CLASS__, 'localize_script_data' ), 11 );
 			add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
 			add_filter( 'wp_link_query_args', array( __CLASS__, 'wp_link_query_args' ) );
 			add_filter( 'admin_title', array( __CLASS__, 'admin_title' ), 10, 2 );
 			add_filter( 'user_has_cap', array( __CLASS__, 'add_admin_caps' ), 10, 3 );
 			add_filter( 'plugin_action_links_' . WP_REST_API_LOG_BASENAME, array( __CLASS__, 'plugin_action_links' ), 10, 4 );
 			add_action( 'current_screen', array( __CLASS__, 'maybe_enqueue_scripts' ) );
+
+			// Custom actions for out plugin.
+			add_action( 'wp-rest-api-log-entry-property-links', array( __CLASS__, 'display_entry_property_links' ), 10, 3 );
 		}
 
-
+		/**
+		 * Adds the REST API Log menu to the tools page.
+		 *
+		 * @return void
+		 */
 		static public function admin_menu() {
 
 			add_submenu_page(
@@ -46,19 +58,36 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		}
 
 
+		/**
+		 * Registers admin scripts and styles.
+		 *
+		 * @return void
+		 */
 		static public function register_scripts() {
 
-			$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.min' : '';
+			$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
 			// https://highlightjs.org/
 			$highlight_version = apply_filters( 'wp-rest-api-log-admin-highlight-js-version', '9.9.0' );
-			$highlight_style   = apply_filters( 'wp-rest-api-log-admin-highlight-js-version', 'github' );
+			$highlight_style   = apply_filters( 'wp-rest-api-log-admin-highlight-js-style',   'github' );
 
-			wp_register_script( 'wp-rest-api-log-admin-highlight-js',   '//cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/highlight.min.js' );
-			wp_register_style(  'wp-rest-api-log-admin-highlight-js',  '//cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/styles/' . $highlight_style . '.min.css' );
+			// https://github.com/zenorocha/clipboard.js
+			$clipboard_version = apply_filters( 'wp-rest-api-log-admin-clipboard-js-version', '1.6.0' );
+
+			wp_register_script( 'wp-rest-api-log-admin-highlight-js',  'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/highlight.min.js' );
+			wp_register_style(  'wp-rest-api-log-admin-highlight-js',  'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/styles/' . $highlight_style . '.min.css' );
+			wp_register_script( 'wp-rest-api-log-admin-clipboard-js',  'https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/' . $clipboard_version . '/clipboard.min.js' );
 
 			wp_register_script( 'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'admin/js/wp-rest-api-log-admin' . $min . '.js', 'jquery', WP_REST_API_Log_Common::VERSION );
 			wp_register_style(  'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'admin/css/wp-rest-api-log-admin' . $min . '.css', '', WP_REST_API_Log_Common::VERSION );
+		}
+
+		/**
+		 * Localizes script data for admin scripts.
+		 *
+		 * @return void
+		 */
+		static public function localize_script_data() {
 
 			$data = array(
 				'nonce'  => wp_create_nonce( 'wp_rest' ),
@@ -75,15 +104,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			}
 
 			wp_localize_script( 'wp-rest-api-log-admin', 'WP_REST_API_Log_Admin_Data', $data );
-
-
-			// http://trentrichardson.com/examples/timepicker/
-			//wp_enqueue_script( 'jquery-ui-timepicker', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.js' );
-			//wp_enqueue_style( 'jquery-ui-timepicker', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.css' );
-
 		}
 
-
+		/**
+		 * Displays the log entry template
+		 *
+		 * @return void
+		 */
 		static public function display_log_entry() {
 
 			include_once apply_filters( 'wp-rest-api-log-admin-view-entry-template', WP_REST_API_LOG_PATH . 'admin/partials/wp-rest-api-log-view-entry.php' );
@@ -250,8 +277,29 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			wp_enqueue_script( 'wp-rest-api-log-admin-highlight-js' );
 			wp_enqueue_style(  'wp-rest-api-log-admin-highlight-js' );
 
+			wp_enqueue_script( 'wp-rest-api-log-admin-clipboard-js' );
+
 			wp_enqueue_script( 'wp-rest-api-log-admin' );
 			wp_enqueue_style(  'wp-rest-api-log-admin' );
+		}
+
+		/**
+		 * Displays the property links (Download, Copy) for a log entry.
+		 *
+		 * @param  array $args
+		 * @return void
+		 */
+		static public function display_entry_property_links( $args ) {
+
+			$args = wp_parse_args( $args, array(
+				'rr'               => '',
+				'property'         => '',
+				'download_urls'    => array(),
+				'entry'            => null,
+				)
+			);
+
+			include apply_filters( 'wp-rest-api-log-admin-view-entry-links-template', WP_REST_API_LOG_PATH . 'admin/partials/entry-property-links.php' );
 		}
 	}
 }
