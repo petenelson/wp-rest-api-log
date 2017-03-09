@@ -136,6 +136,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			return $query;
 		}
 
+
 		/**
 		 * Adjusts the title tag when viewing a log entry
 		 *
