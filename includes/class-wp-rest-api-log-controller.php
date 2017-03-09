@@ -134,8 +134,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		 */
 		static public function register_download_routes() {
 
-
-
 			foreach ( self::get_download_routes() as $request_response => $properties ) {
 				foreach( $properties as $property ) {
 
@@ -314,11 +312,23 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				if ( is_object( $value ) || is_array( $value ) ) {
 					$value = json_encode( $value, JSON_PRETTY_PRINT );
 				} else {
+
 					// See if this is a JSON field.
 					$obj = json_decode( $value );
 					if ( null === $obj ) {
-						header( 'Content-Type: text/plain' );
-						$ext = "txt";
+
+						// Might still be a JSON string though.
+						$check_json = trim( $value );
+						$is_json = false;
+						if ( ! empty( $check_json ) ) {
+							$is_json = '{' === substr( $check_json, 0, 1 )
+								&& '}' === substr( $check_json, strlen( $check_json ) - 1 );
+						}
+
+						if ( ! $is_json ) {
+							header( 'Content-Type: text/plain' );
+							$ext = "txt";
+						}
 					}
 				}
 
