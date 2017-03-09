@@ -21,7 +21,7 @@
 			}
 
 			if ( this.entry_element.length > 0 ) {
-				// Hook for opying to clipboard.
+				// Hook for copying to clipboard.
 				var clipboard = new Clipboard( '.wp-rest-api-log-entry-copy-property' );
 			}
 		},
