@@ -39,8 +39,8 @@ Roadmap
 
 == Changelog ==
 
-= v1.6.0 ???, 2017 =
-* Added ability to download request and response fields as JSON files.
+= v1.6.0 March 9, 2017 =
+* Added ability to download request and response fields as JSON files, as well as copy to clipboard.
 * Added button on settings page to Purge All Log Entries.
 * Tweaked some of the ElasticPress routes that skip logging.
 
@@ -96,6 +96,11 @@ Roadmap
 
 == Upgrade Notice ==
 
+= v1.6.0 March 9, 2017 =
+* Added ability to download request and response fields as JSON files, as well as copy to clipboard.
+* Added button on settings page to Purge All Log Entries.
+* Tweaked some of the ElasticPress routes that skip logging.
+
 = v1.5.2 February 21, 2017 =
 * Fixed a bug with ElasticPress logging getting stuck in a loop regarding the _nodes/plugins URL.
 
@@ -108,17 +113,6 @@ Roadmap
 * Updated term fetching when viewing log entries for fewer database queries and better performance.
 * Updated highlight.js to 9.9.0
 
-= v1.4.0 January 23, 2017 =
-* Added the ability to filter routes for logging, either include or exclude specific routes.
-
-= v1.3.0 December 5, 2016 =
-* Added support for logging HTTP_X_FORWARDED_FOR, useful for servers behind a proxy or load balancer.
-* Changed plugin name to REST API Log
-* Changed the wp-rest-api-log post type 'public' setting to false to prevent it from showing up in searches.
-* Updated Highlight JS version to 9.7.0
-* Updated the internal process for granting administrator role access to the custom post type
-* Bug fix: Header values with colons were not being stored correctly.
-* Bug fix: Use proper HTML escaping when viewing log entries.
 
 == Frequently Asked Questions ==
 
