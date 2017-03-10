@@ -481,6 +481,41 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		}
 
 
+		/**
+		 * Returns a list of all log entry IDs in the database.
+		 *
+		 * @return int
+		 */
+		static public function get_all_log_ids( ) {
+
+			$query = new WP_Query( array(
+				'update_post_term_cache' => false,
+				'update_post_meta_cache' => false,
+				'no_found_rows'          => true,
+				'post_type'              => WP_REST_API_Log_DB::POST_TYPE,
+				'fields'                 => 'ids',
+				'posts_per_page'         => -1,
+				)
+			);
+
+			return $query->posts;
+		}
+
+		/**
+		 * Purges all log entries in the database.
+		 *
+		 * @return void
+		 */
+		static public function purge_all_log_entries() {
+
+			$post_ids = self::get_all_log_ids();
+
+			foreach( $post_ids as $post_id ) {
+				wp_delete_post( $post_id, true );
+			}
+		}
+
+
 	} // end class
 
 }

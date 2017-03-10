@@ -38,7 +38,7 @@ if ( ! class_exists( 'WP_REST_API_Log_ElasticPress' ) ) {
 		 */
 		static public function log_query( $query ) {
 
-			if ( empty( $query ) ) {
+			if ( empty( $query ) || ! is_array( $query ) ) {
 				return false;
 			}
 
@@ -58,17 +58,43 @@ if ( ! class_exists( 'WP_REST_API_Log_ElasticPress' ) ) {
 			$route = '';
 			if ( ! empty( $query['url'] ) && ! empty( $query['host'] ) ) {
 				$route = $query['url'];
-				// don't log the _stats/indexing request by default
-				if ( false !== strpos( $query['url'], '_stats/indexing' ) ) {
-					$log_query = false;
+
+				$skip_urls = array(
+					// Don't log the _stats/indexing request by default.
+					'_stats/indexing',
+
+					// Don't log the bulk indexing.
+					'post/_bulk',
+
+					// Don't log the plugins list.
+					'_nodes/plugins',
+					'_nodes?plugin=true',
+				);
+
+				foreach ( $skip_urls as $skip_url ) {
+					if ( false !== strpos( $query['url'], $skip_url ) ) {
+						$log_query = false;
+						break;
+					}
 				}
 
-				// don't log the plugins list
-				if ( false !== strpos( $query['url'], '_nodes?plugin=true' ) || false !== strpos( $query['url'], '_nodes/plugins' ) ) {
-					$log_query = false;
+				if ( $log_query ) {
+					$skip_urls_regex = array(
+						// Don't log requests for individual posts.
+						'\/post\/\d+$',
+					);
+
+					foreach ( $skip_urls_regex as $skip_url_regex ) {
+						if ( 1 === preg_match( '/' . $skip_url_regex . '/', $query['url'] ) ) {
+							$log_query = false;
+							break;
+						}
+					}
 				}
 			}
 
+			// Filter for enabling/disabling logging of a specific
+			// ElasticPress query.
 			$log_query = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-elasticpress-log-query', $log_query, $query );
 
 			if ( ! $log_query ) {

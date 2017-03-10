@@ -16,6 +16,14 @@
 				this.migrateLegacyDB();
 			}
 
+			if ( $( 'body' ).hasClass( 'settings_page_wp-rest-api-log-settings' ) ) {
+				$( '.wp-rest-api-log-purge-all' ).on( 'click', this.purgeLog );
+			}
+
+			if ( this.entry_element.length > 0 ) {
+				// Hook for copying to clipboard.
+				var clipboard = new Clipboard( '.wp-rest-api-log-entry-copy-property' );
+			}
 		},
 
 		highlightBlocks: function() {
@@ -36,8 +44,28 @@
 
 		migrateLegacyDB: function() {
 			$.get( ajaxurl, { "action":WP_REST_API_Log_Migrate_Data.action, "nonce":WP_REST_API_Log_Migrate_Data.nonce } );
-		}
+		},
 
+		purgeLog: function( e ) {
+			e.preventDefault();
+
+			// Turn off the button.
+			$( '.wp-rest-api-log-purge-all' ).addClass( 'hidden' );
+
+			// Turn off the spinner.
+			$( '.wp-rest-api-log-purge-all-spinner' ).removeClass( 'hidden' ).addClass( 'is-active' );
+
+			$.ajax( {
+				url: WP_REST_API_Log_Admin_Data.endpoints.purge_entries,
+				method: 'DELETE',
+				beforeSend: function ( xhr ) {
+					xhr.setRequestHeader( 'X-WP-Nonce', WP_REST_API_Log_Admin_Data.nonce );
+				}
+			} ).done( function( response ) {
+				// Turn off the spinner.
+				$( '.wp-rest-api-log-purge-all-spinner' ).addClass( 'hidden' ).removeClass( 'is-active' );
+			} );
+		}
 	};
 
 	$( document ).ready( function() {
