@@ -64,7 +64,7 @@ if ( ! class_exists( 'WP_REST_API_Log_ElasticPress' ) ) {
 					'_stats/indexing',
 
 					// Don't log the bulk indexing.
-					'post/_bluk',
+					'post/_bulk',
 
 					// Don't log the plugins list.
 					'_nodes/plugins',
