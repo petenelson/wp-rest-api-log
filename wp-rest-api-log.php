@@ -3,7 +3,7 @@
  * Plugin Name: REST API Log
  * Description: Logs requests and responses for the REST API
  * Author: Pete Nelson
- * Version: 1.6.0
+ * Version: 1.6.1
  * Plugin URI: https://github.com/petenelson/wp-rest-api-log
  * Text Domain: wp-rest-api-log
  * Domain Path: /languages

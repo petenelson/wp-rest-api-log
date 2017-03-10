@@ -144,7 +144,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				foreach( $properties as $property ) {
 					$url = rest_url( "/wp-rest-api-log/entry/{$entry->ID}/{$rr}/{$property}/download" );
 					if ( is_ssl() ) {
-						$url = set_url_scheme( $property, 'https' );
+						$url = set_url_scheme( $url, 'https' );
 					}
 
 					$download_urls[ $rr ][ $property ] = $url;

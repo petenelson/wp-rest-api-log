@@ -4,7 +4,7 @@
 **Donate link:** https://github.com/petenelson/wp-rest-api-log  
 **Requires at least:** 4.4  
 **Tested up to:** 4.7  
-**Stable tag:** 1.5.2  
+**Stable tag:** 1.6.1  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -42,6 +42,9 @@ Roadmap
 
 
 ## Changelog ##
+
+### v1.6.1 March 10, 2017 ###
+* Fixed bug in HTTPS download URLs.
 
 ### v1.6.0 March 9, 2017 ###
 * Added ability to download request and response fields as JSON files, as well as copy to clipboard.
@@ -99,6 +102,9 @@ Roadmap
 
 
 ## Upgrade Notice ##
+
+### v1.6.1 March 10, 2017 ###
+* Fixed bug in HTTPS download URLs.
 
 ### v1.6.0 March 9, 2017 ###
 * Added ability to download request and response fields as JSON files, as well as copy to clipboard.
