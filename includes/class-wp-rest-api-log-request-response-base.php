@@ -122,7 +122,13 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 			// Run esc_html on the request fields.
 			foreach( $request_fields as $field ) {
 				if ( is_array( $entry->request->$field ) ) {
-					$entry->request->$field = array_map( 'esc_html', $entry->request->$field );
+					array_walk_recursive(
+						$entry->request->$field,
+						function ( &$v, &$k ) {
+							$v = esc_html( $v );
+							$k = esc_html( $k );
+						}
+					);
 				} else {
 					$entry->request->$field = esc_html( $entry->request->$field );
 				}
@@ -131,7 +137,13 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 			// Run esc_html on the response fields.
 			foreach( $response_fields  as $field ) {
 				if ( is_array( $entry->response->$field ) ) {
-					$entry->response->$field = array_map( 'esc_html', $entry->response->$field );
+					array_walk_recursive(
+						$entry->response->$field,
+						function ( &$v, &$k ) {
+							$v = esc_html( $v );
+							$k = esc_html( $k );
+						}
+					);
 				} else {
 					$entry->response->$field = esc_html( $entry->response->$field );
 				}
