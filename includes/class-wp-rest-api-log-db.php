@@ -174,7 +174,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				if ( ! empty( $args[ $request ][ $type ] ) ) {
 					foreach ( $args[ $request ][ $type ] as $key => $value ) {
 
-						if ( is_array( $value ) && 1 === count( $value ) ) {
+						if ( is_array( $value ) &&
+						    1 === count( $value ) &&
+						    'headers' === $type ) {
 							$value = reset( $value );
 						}
 
@@ -199,8 +201,10 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				if ( ! empty( $args[ $response ][ $type ] ) ) {
 					foreach ( $args[ $response ][ $type ] as $key => $value ) {
 
-						if ( is_array( $value ) && 1 === count( $value ) ) {
-							$value = $value[0];
+						if ( is_array( $value ) &&
+						    1 === count( $value ) &&
+						    'headers' === $type ) {
+							$value = reset( $value );
 						}
 
 						if ( ! empty( $value ) ) {
