@@ -4,7 +4,7 @@
 **Donate link:** https://github.com/petenelson/wp-rest-api-log  
 **Requires at least:** 4.4  
 **Tested up to:** 4.7  
-**Stable tag:** 1.5.2  
+**Stable tag:** 1.7.0  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -38,7 +38,7 @@ Roadmap
 1. Upload the wp-rest-api-log directory to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Go to Settings -> REST API Log to enable or disable logging
-3. Go to Tools -> REST API Log to start viewing log entries
+4. Go to Tools -> REST API Log to start viewing log entries
 
 
 ## Changelog ##
