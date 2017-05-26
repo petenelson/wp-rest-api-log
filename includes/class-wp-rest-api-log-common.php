@@ -7,7 +7,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 	class WP_REST_API_Log_Common {
 
 		const PLUGIN_NAME      = 'wp-rest-api-log';
-		const VERSION          = '2017-03-06-01';
+		const VERSION          = '2017-05-26-01';
 		const TEXT_DOMAIN      = 'wp-rest-api-log';
 
 		static public function current_milliseconds() {
