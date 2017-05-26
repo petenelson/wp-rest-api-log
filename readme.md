@@ -43,6 +43,16 @@ Roadmap
 
 ## Changelog ##
 
+### v1.6.4 May 26, 2017 ###
+* Fixed an issue with the URL in the settings tabs (props davidanderson)
+
+### v1.6.3 March 28, 2017 ###
+* Updated logging for multidimensional query parameters (props mnelson4)
+
+### v1.6.2 March 10, 2017 ###
+* Fixed bug in HTTPS download URLs.
+* Fixed bug in download URL permissions.
+
 ### v1.6.0 March 9, 2017 ###
 * Added ability to download request and response fields as JSON files, as well as copy to clipboard.
 * Added button on settings page to Purge All Log Entries.
@@ -100,23 +110,8 @@ Roadmap
 
 ## Upgrade Notice ##
 
-### v1.6.0 March 9, 2017 ###
-* Added ability to download request and response fields as JSON files, as well as copy to clipboard.
-* Added button on settings page to Purge All Log Entries.
-* Tweaked some of the ElasticPress routes that skip logging.
-
-### v1.5.2 February 21, 2017 ###
-* Fixed a bug with ElasticPress logging getting stuck in a loop regarding the _nodes/plugins URL.
-
-### v1.5.1 February 15, 2017 ###
-* Removed hidden custom taxonomies from the navigation menu admin (props [phh](https://github.com/phh) for the pull request).
-
-### v1.5.0 February 2, 2017 ###
-* Added logging for the user making the request (props [drsdre](https://github.com/drsdre) for the pull request).
-* Added Settings and Log links from the Plugins page.
-* Updated term fetching when viewing log entries for fewer database queries and better performance.
-* Updated highlight.js to 9.9.0
-
+### v1.6.4 May 26, 2017 ###
+* Fixed an issue with the URL in the settings tabs (props davidanderson)
 
 ## Frequently Asked Questions ##
 

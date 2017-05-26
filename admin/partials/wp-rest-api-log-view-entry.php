@@ -129,7 +129,9 @@ $download_urls = WP_REST_API_Log_Controller::get_download_urls( $entry );
 						'entry' => $entry,
 					)
 				); ?>
-				<pre><code class="json"><?php echo wp_json_encode( $entry->request->body_params, $json_display_options['request']['body_params'] ); ?></code></pre>
+				<pre><code class="json"><?php echo wp_json_encode(
+				        $entry->request->body_params,
+                            $json_display_options['request']['body_params'] ); ?></code></pre>
 			</div>
 		</div>
 
