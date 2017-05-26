@@ -109,16 +109,37 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 		}
 
 
+		/**
+		 * Outputs the HTML for the settings tabs.
+		 *
+		 * @return void
+		 */
 		static private function plugin_options_tabs() {
 			$current_tab = self::current_tab();
 
-			echo '<h2>' . __( 'Settings' ) . ' &rsaquo; REST API Log</h2><h2 class="nav-tab-wrapper">';
+			echo '<h2>' . esc_html__( 'Settings' ) . ' &rsaquo; REST API Log</h2><h2 class="nav-tab-wrapper">';
 
 			$tabs = apply_filters( 'wp-rest-api-log-settings-tabs', array() );
 
 			foreach ( $tabs as $tab_key => $tab_caption ) {
 				$active = $current_tab === $tab_key ? 'nav-tab-active' : '';
-				echo '<a class="nav-tab ' . $active . '" href="?page=' . urlencode( self::$settings_page ) . '&tab=' . urlencode( $tab_key ) . '">' . esc_html( $tab_caption ) . '</a>';
+
+				// Build URL for tab.
+				$url = add_query_arg(
+					array(
+						'page' => urlencode( self::$settings_page ),
+						'tab' => urlencode( $tab_key ),
+					),
+					admin_url( 'options-general.php' )
+				);
+
+				// Output the tab anchor tag.
+				printf( '<a class="nav-tab %1$s" href="%2$s">%3$s</a>',
+					sanitize_html_class( $active ),
+					esc_url( $url ),
+					esc_html( $tab_caption )
+				);
+
 			}
 			echo '</h2>';
 		}
