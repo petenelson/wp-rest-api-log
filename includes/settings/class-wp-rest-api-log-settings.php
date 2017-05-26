@@ -133,6 +133,10 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 					admin_url( 'options-general.php' )
 				);
 
+				if ( is_ssl() ) {
+					$url = set_url_scheme( $url, 'https' );
+				}
+
 				// Output the tab anchor tag.
 				printf( '<a class="nav-tab %1$s" href="%2$s">%3$s</a>',
 					sanitize_html_class( $active ),
