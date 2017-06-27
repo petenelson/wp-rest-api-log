@@ -80,6 +80,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			// Replace \n with PHP_EOL.
 			$post_content = str_replace( '\n', PHP_EOL, $post_content );
+			$args['request']['body'] = str_replace( '\n', PHP_EOL, $args['request']['body'] );
 
 			// Allow filtering.
 			$args = apply_filters( self::plugin_name() . '-pre-insert', $args );
