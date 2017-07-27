@@ -37,7 +37,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 		/**
 		 * Inserts a REST API log custom post type record and corresponding
-		 * post meta and taxonomy terms
+		 * post meta and taxonomy terms.
 		 *
 		 * @param  array $args
 		 * @return int
@@ -63,12 +63,11 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					),
 				'milliseconds'          => 0,
 
-				// this can be a K/V array of additional post meta to store
+				// This can be a K/V array of additional post meta to store.
 				'post_meta'             => array(),
 
 				)
 			);
-
 
 			if ( empty( $args['milliseconds'] ) ) {
 				global $wp_rest_api_log_start;
@@ -76,25 +75,32 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				$args['milliseconds'] = absint( $now -  $wp_rest_api_log_start );
 			}
 
-			// allow filtering
+			// Setup the post content with JSON from the response.
+			$post_content = wp_json_encode( $args['response']['body'], JSON_PRETTY_PRINT );
+
+			// Replace \n with PHP_EOL.
+			$post_content = str_replace( '\n', PHP_EOL, $post_content );
+			$args['request']['body'] = str_replace( '\n', PHP_EOL, $args['request']['body'] );
+
+			// Allow filtering.
 			$args = apply_filters( self::plugin_name() . '-pre-insert', $args );
 
 			$new_post = array(
 				'post_author'     => 0,
 				'post_type'       => self::POST_TYPE,
 				'post_title'      => $args['route'],
-				'post_content'    => wp_json_encode( $args['response']['body'], JSON_PRETTY_PRINT ),
+				'post_content'    => $post_content,
 				'post_status'     => 'publish',
 
-				// append a random string to the end to attempt a unique post slug
+				// Append a random string to the end to attempt a unique post slug
 				// route names will often be the same, so this helps WordPress from
 				// having to loop through several times while generating a unique
-				// post slug
-				'post_name'       => sanitize_title( $args['route'] ) . '-' . wp_generate_password( 6 ),
+				// post slug.
+				'post_name'       => sanitize_title( $args['route'] ) . '-' . wp_generate_password( 6, true ),
 
 				);
 
-			// allow filtering
+			// Allow filtering.
 			$new_post = apply_filters( self::plugin_name() . '-pre-insert-new-post', $new_post, $args );
 
 			$post_id = wp_insert_post( $new_post );
