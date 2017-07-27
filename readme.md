@@ -45,6 +45,7 @@ Roadmap
 
 ### v1.6.5 July 26, 2017 ###
 * Fixed some escaping issues in admin and new-line characters when saving to database (props davidanderson)
+* Updated highlight.js and clipboard.js versions
 
 ### v1.6.4 May 26, 2017 ###
 * Fixed an issue with the URL in the settings tabs (props davidanderson)

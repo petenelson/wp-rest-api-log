@@ -68,18 +68,18 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
 			// https://highlightjs.org/
-			$highlight_version = apply_filters( 'wp-rest-api-log-admin-highlight-js-version', '9.9.0' );
+			$highlight_version = apply_filters( 'wp-rest-api-log-admin-highlight-js-version', '9.12.0' );
 			$highlight_style   = apply_filters( 'wp-rest-api-log-admin-highlight-js-style',   'github' );
 
 			// https://github.com/zenorocha/clipboard.js
-			$clipboard_version = apply_filters( 'wp-rest-api-log-admin-clipboard-js-version', '1.6.0' );
+			$clipboard_version = apply_filters( 'wp-rest-api-log-admin-clipboard-js-version', '1.7.0' );
 
 			wp_register_script( 'wp-rest-api-log-admin-highlight-js',  'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/highlight.min.js' );
-			wp_register_style(  'wp-rest-api-log-admin-highlight-js',  'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/styles/' . $highlight_style . '.min.css' );
+			wp_register_style( 'wp-rest-api-log-admin-highlight-js',  'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/styles/' . $highlight_style . '.min.css' );
 			wp_register_script( 'wp-rest-api-log-admin-clipboard-js',  'https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/' . $clipboard_version . '/clipboard.min.js' );
 
 			wp_register_script( 'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'admin/js/wp-rest-api-log-admin' . $min . '.js', 'jquery', WP_REST_API_Log_Common::VERSION );
-			wp_register_style(  'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'admin/css/wp-rest-api-log-admin' . $min . '.css', '', WP_REST_API_Log_Common::VERSION );
+			wp_register_style( 'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'admin/css/wp-rest-api-log-admin' . $min . '.css', '', WP_REST_API_Log_Common::VERSION );
 		}
 
 		/**
@@ -93,12 +93,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 				'nonce'  => wp_create_nonce( 'wp_rest' ),
 				'endpoints' => array(
 					'purge_entries' => rest_url( WP_REST_API_Log_Common::PLUGIN_NAME . '/entries' ),
-					)
+					),
 				);
 
 			// Ensure admin URLs in SSL get pointed to SSL on the frontend.
 			if ( is_ssl() ) {
-				foreach( $data['endpoints'] as &$endpoint ) {
+				foreach ( $data['endpoints'] as &$endpoint ) {
 					$endpoint = set_url_scheme( $endpoint, 'https' );
 				}
 			}
@@ -145,19 +145,18 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		/**
 		 * Removes the wp-rest-api-log post type from the link query args
 		 *
-		 * @param  array $query query args
+		 * @param  array $query Query args.
 		 * @return array
 		 */
 		static public function wp_link_query_args( $query ) {
 
-			if ( isset( $query['post_type' ] ) && is_array( $query['post_type'] ) ) {
-				for ( $i = count( $query['post_type'] )-1; $i >= 0; $i-- ) {
+			if ( isset( $query['post_type'] ) && is_array( $query['post_type'] ) ) {
+				for ( $i = count( $query['post_type'] ) - 1; $i >= 0; $i-- ) {
 					if ( WP_REST_API_Log_DB::POST_TYPE === $query['post_type'][ $i ] ) {
 						unset( $query['post_type'][ $i ] );
 						break;
 					}
 				}
-
 			}
 
 			return $query;
