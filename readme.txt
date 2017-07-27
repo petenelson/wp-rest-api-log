@@ -4,7 +4,7 @@ Tags: wp rest api, rest api, wp api, api, json, json api, log, logging, elasticp
 Donate link: https://github.com/petenelson/wp-rest-api-log
 Requires at least: 4.4
 Tested up to: 4.7
-Stable tag: 1.6.4
+Stable tag: 1.6.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,9 @@ Roadmap
 
 
 == Changelog ==
+
+= v1.6.5 July 26, 2017 =
+* Fixed some escaping issues in admin and new-line characters when saving to database (props davidanderson)
 
 = v1.6.4 May 26, 2017 =
 * Fixed an issue with the URL in the settings tabs (props davidanderson)
