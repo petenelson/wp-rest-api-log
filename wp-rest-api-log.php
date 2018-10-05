@@ -42,6 +42,7 @@ $includes = array(
 	'includes/class-' . $plugin_class_file . '-common.php',
 	'includes/class-' . $plugin_class_file . '-db.php',
 	'includes/class-' . $plugin_class_file . '-post-type.php',
+	'includes/class-' . $plugin_class_file . '-taxonomies.php',
 	'includes/class-' . $plugin_class_file . '-i18n.php',
 	'includes/class-' . $plugin_class_file . '-controller.php',
 	'includes/class-' . $plugin_class_file . '-request-response-base.php',
@@ -112,6 +113,7 @@ WP_REST_API_Log_Settings_Routes::plugins_loaded();
 WP_REST_API_Log_Settings_ElasticPress::plugins_loaded();
 WP_REST_API_Log_Settings_Help::plugins_loaded();
 WP_REST_API_Log_Post_Type::plugins_loaded();
+WP_REST_API_Log_Taxonomies::plugins_loaded();
 WP_REST_API_Log_Controller::plugins_loaded();
 WP_REST_API_Log_ElasticPress::plugins_loaded();
 WP_REST_API_Log_Admin::plugins_loaded();
