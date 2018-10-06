@@ -525,7 +525,27 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			}
 		}
 
+		/**
+		 * Gets the prefix for custom tables.
+		 *
+		 * @return string
+		 */
+		static public function get_custom_table_prefix() {
+			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-custom-table-prefix', 'rest_api_log_' );
+		}
 
+		/**
+		 * Determines if we should use custom tables for storing log
+		 * entries.
+		 *
+		 * @return bool
+		 */
+		static public function use_custom_tables() {
+			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-setting-is-enabled',
+				true,
+				'advanced',
+				'use-custom-tables'
+			);
+		}
 	} // end class
-
 }

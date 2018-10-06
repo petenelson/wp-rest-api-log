@@ -55,7 +55,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 */
 		static public function log_rest_api_response( $served, $result, $request, $rest_server ) {
 
-			// don't log anything if logging is not enabled
+			// Don't log anything if logging is not enabled.
 			$logging_enabled = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-setting-is-enabled',
 				true,
 				'general',

@@ -58,6 +58,7 @@ $includes = array(
 	'includes/settings/class-' . $plugin_class_file . '-settings-general.php',
 	'includes/settings/class-' . $plugin_class_file . '-settings-routes.php',
 	'includes/settings/class-' . $plugin_class_file . '-settings-elasticpress.php',
+	'includes/settings/class-' . $plugin_class_file . '-settings-advanced.php',
 	'includes/settings/class-' . $plugin_class_file . '-settings-help.php',
 	'includes/settings/class-' . $plugin_class_file . '-settings.php',
 	'admin/class-' . $plugin_class_file . '-admin.php',
@@ -110,6 +111,7 @@ WP_REST_API_Log_Settings::plugins_loaded();
 WP_REST_API_Log_Settings_General::plugins_loaded();
 WP_REST_API_Log_Settings_Routes::plugins_loaded();
 WP_REST_API_Log_Settings_ElasticPress::plugins_loaded();
+WP_REST_API_Log_Settings_Advanced::plugins_loaded();
 WP_REST_API_Log_Settings_Help::plugins_loaded();
 WP_REST_API_Log_Post_Type::plugins_loaded();
 WP_REST_API_Log_Controller::plugins_loaded();
