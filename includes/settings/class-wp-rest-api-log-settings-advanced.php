@@ -22,11 +22,15 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Advanced' ) ) {
 
 		static public function get_default_settings() {
 			return array(
-				'use-custom-tables'   => '0',
+				'use-custom-tables' => '0',
 			);
 		}
 
-
+		/**
+		 * Registers the advanced settings.
+		 *
+		 * @return void
+		 */
 		static public function register_advanced_settings() {
 			global $wpdb;
 
