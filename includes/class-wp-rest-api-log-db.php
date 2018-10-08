@@ -17,6 +17,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		const POST_META_MILLISECONDS           = '_milliseconds';
 		const POST_META_REQUEST_BODY           = '_request_body';
 
+		public static $table_prefix;
+		public static $using_custom_tables;
+		private static $_schema;
 
 		public function plugins_loaded() {
 			add_action( WP_REST_API_Log_Common::PLUGIN_NAME . '-insert', array( $this, 'insert' ), 10, 4 );
@@ -26,7 +29,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			// adds where statement when searching post id ranges
 			add_filter( 'posts_where', array( $this, 'add_where_post_id' ), 10, 2 );
-
 		}
 
 
@@ -547,5 +549,69 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				'use-custom-tables'
 			);
 		}
+
+		/**
+		 * Switches wpdb to the custom tables for logging.
+		 *
+		 * @return void
+		 */
+		static public function switch_to_custom_tables() {
+			global $wpdb;
+
+			if ( self::use_custom_tables() && ! self::$using_custom_tables ) {
+				self::$table_prefix = $wpdb->set_prefix( $wpdb->prefix . self::get_custom_table_prefix() );
+				self::$using_custom_tables = true;
+
+				$tables = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-custom-table-names', array(
+					$wpdb->posts,
+					$wpdb->postmeta,
+					$wpdb->terms,
+					$wpdb->termmeta,
+					$wpdb->term_taxonomy,
+					$wpdb->term_relationships,
+				) );
+
+				foreach ( $tables as $table ) {
+					self::create_custom_table( $table );
+				}
+			}
+		}
+
+		/**
+		 * Switches global wpdb back to default tables.
+		 *
+		 * @return void
+		 */
+		static public function switch_to_default_tables() {
+			global $wpdb;
+
+			if ( self::use_custom_tables() && self::$using_custom_tables ) {
+				self::$table_prefix = $wpdb->set_prefix( self::$table_prefix );
+				self::$using_custom_tables = false;
+			}
+		}
+
+		/**
+		 * Creates a custom table if it does not exist.
+		 *
+		 * @param  string $table_name The table name.
+		 * @return bool
+		 */
+		static public function create_custom_table( $table_name ) {
+			global $wpdb;
+
+			$sql = $wpdb->prepare( "SHOW TABLES LIKE '%s';", $table_name );
+
+			$results = $wpdb->get_row( $sql );
+
+			if ( ! is_wp_error( $results ) && empty( $results ) ) {
+
+				if ( empty( self::$_schema ) ) {
+					// self::$_schema = wp_get_db_schema();
+				}
+
+			}
+		}
+
 	} // end class
 }

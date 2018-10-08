@@ -50,5 +50,40 @@ class WP_REST_API_Log_Test_DB extends WP_UnitTestCase {
 		$this->assertFalse( WP_REST_API_Log_DB::use_custom_tables() );
 	}
 
+	public function test_switch_custom_tables() {
+		global $wpdb;
+
+		// $a = $wpdb->set_prefix( 'hello_world' );
+		// var_dump( $a );
+		// var_dump( $wpdb->prefix );
+		// die();
+
+		$default_prefix = $wpdb->prefix;
+		$custom_prefix = $default_prefix . WP_REST_API_Log_DB::get_custom_table_prefix();
+
+		// Make sure custom tables are turned off.
+		$this->disable_custom_tables();
+
+		// Try switching to custom tables, it should not switch.
+		WP_REST_API_Log_DB::switch_to_custom_tables();
+
+		$this->assertSame( $default_prefix, $wpdb->prefix );
+
+		// Turn on custom tables.
+		$this->enable_custom_tables();
+		$this->assertTrue( WP_REST_API_Log_DB::use_custom_tables() );
+
+		// Switch to custom tables.
+		WP_REST_API_Log_DB::switch_to_custom_tables();
+
+		// Verify wpdb is using the custom prefix.
+		$this->assertSame( $custom_prefix, $wpdb->prefix );
+
+		// Switch back to default tables.
+		WP_REST_API_Log_DB::switch_to_default_tables();
+
+		// Verify wpdb is using the default prefix.
+		$this->assertSame( $default_prefix, $wpdb->prefix );
+	}
 
 }
