@@ -19,7 +19,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 		public static $table_prefix;
 		public static $using_custom_tables;
-		private static $_schema;
+		public static $schema = array();
 
 		public function plugins_loaded() {
 			add_action( WP_REST_API_Log_Common::PLUGIN_NAME . '-insert', array( $this, 'insert' ), 10, 4 );
@@ -562,14 +562,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				self::$table_prefix = $wpdb->set_prefix( $wpdb->prefix . self::get_custom_table_prefix() );
 				self::$using_custom_tables = true;
 
-				$tables = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-custom-table-names', array(
-					$wpdb->posts,
-					$wpdb->postmeta,
-					$wpdb->terms,
-					$wpdb->termmeta,
-					$wpdb->term_taxonomy,
-					$wpdb->term_relationships,
-				) );
+				$tables = self::get_custom_table_names();
 
 				foreach ( $tables as $table ) {
 					self::create_custom_table( $table );
@@ -606,10 +599,53 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			if ( ! is_wp_error( $results ) && empty( $results ) ) {
 
-				if ( empty( self::$_schema ) ) {
-					// self::$_schema = wp_get_db_schema();
+				if ( empty( self::$schema ) ) {
+					self::build_db_schema();
 				}
 
+				// Create the table.
+				$wpdb->query( self::$schema[ $table_name] );
+			}
+		}
+
+		/**
+		 * Gets a list of custom table names.
+		 *
+		 * @return array
+		 */
+		static public function get_custom_table_names() {
+
+			global $wpdb;
+
+			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-custom-table-names', array(
+				$wpdb->posts,
+				$wpdb->postmeta,
+				$wpdb->terms,
+				$wpdb->termmeta,
+				$wpdb->term_taxonomy,
+				$wpdb->term_relationships,
+			) );
+		}
+
+		/**
+		 * Builds schema DB commands into an array on the static class.
+		 *
+		 * @return void
+		 */
+		static public function build_db_schema() {
+
+			require_once ABSPATH . 'wp-admin/includes/schema.php';
+
+			$schema = wp_get_db_schema();
+			self::$schema = array();
+
+			foreach ( self::get_custom_table_names() as $table ) {
+
+				$re = '/(CREATE TABLE ' . $table . '.*?;)/ms';
+
+				if ( 1 === preg_match( $re, $schema, $matches ) ) {
+					self::$schema[ $table ] = $matches[0];
+				}
 			}
 		}
 

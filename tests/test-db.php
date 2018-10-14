@@ -53,11 +53,6 @@ class WP_REST_API_Log_Test_DB extends WP_UnitTestCase {
 	public function test_switch_custom_tables() {
 		global $wpdb;
 
-		// $a = $wpdb->set_prefix( 'hello_world' );
-		// var_dump( $a );
-		// var_dump( $wpdb->prefix );
-		// die();
-
 		$default_prefix = $wpdb->prefix;
 		$custom_prefix = $default_prefix . WP_REST_API_Log_DB::get_custom_table_prefix();
 
@@ -78,6 +73,15 @@ class WP_REST_API_Log_Test_DB extends WP_UnitTestCase {
 
 		// Verify wpdb is using the custom prefix.
 		$this->assertSame( $custom_prefix, $wpdb->prefix );
+
+		// Verify the tables were created.
+		foreach ( WP_REST_API_Log_DB::get_custom_table_names() as $table_name ) {
+			$sql = $wpdb->prepare( "SHOW TABLES LIKE '%s';", $table_name );
+			$results = $wpdb->get_row( $sql );
+
+			$this->assertTrue( ! is_wp_error( $results ) );
+			$this->assertNotEmpty( $results );
+		}
 
 		// Switch back to default tables.
 		WP_REST_API_Log_DB::switch_to_default_tables();
