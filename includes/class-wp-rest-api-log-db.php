@@ -105,6 +105,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			// Allow filtering.
 			$new_post = apply_filters( self::plugin_name() . '-pre-insert-new-post', $new_post, $args );
 
+			// Switch table names if-needed,
+			self::switch_to_custom_tables();
+
 			$post_id = wp_insert_post( $new_post );
 
 			if ( ! empty( $post_id ) ) {
@@ -118,6 +121,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				$wp_rest_api_log_new_entry_id = $post_id;
 
 			}
+
+			// Switch back to custom tables.
+			self::switch_to_default_tables();
 
 			return $post_id;
 		}

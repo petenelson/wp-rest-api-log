@@ -7,13 +7,20 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 	class WP_REST_API_Log_Entry {
 
 		static public function from_posts( array $posts ) {
+
+			WP_REST_API_Log_DB::switch_to_custom_tables();
+
 			$entries = array();
 			foreach ( $posts as $post ) {
-				$entries[] = new WP_REST_API_Log_Entry( $post );
+				$entries[] = new WP_REST_API_Log_Entry( $post, array(
+					'auto_switch_tables' => false,
+				) );
 			}
+
+			WP_REST_API_Log_DB::switch_to_default_tables();
+
 			return $entries;
 		}
-
 
 		/**
 		 * ID of the log entry (post ID)
@@ -91,19 +98,35 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 		private $_post;
 
+		public function __construct( $post = null, $args = array() ) {
 
-		public function __construct( $post = null ) {
+			$args = wp_parse_args( $args, array(
+				'auto_switch_tables' => true,
+			) );
 
-			if ( is_int( $post ) ) {
+			if ( ! empty( $post ) ) {
+
+				if ( true === $args['auto_switch_tables'] ) {
+					WP_REST_API_Log_DB::switch_to_custom_tables();
+				}
+
 				$post = get_post( $post );
-			}
+				if ( is_a( $post, '\WP_Post' ) ) {
+					$this->_post = $post;
+					$this->load();
 
-			if ( is_object( $post ) ) {
-				$this->_post = $post;
-				$this->load();
+					if ( WP_REST_API_Log_DB::$using_custom_tables ) {
+						// Make sure this post is not cached since it could
+						// conflict with a post from the default table.
+						clean_post_cache( $post );
+					}
+				}
+
+				if ( true === $args['auto_switch_tables'] ) {
+					WP_REST_API_Log_DB::switch_to_default_tables();
+				}
 			}
 		}
-
 
 		private function load() {
 
