@@ -2,7 +2,7 @@
 Contributors: gungeekatx
 Tags: wp rest api, rest api, wp api, api, json, json api, log, logging, elasticpress, elasticsearch
 Donate link: https://github.com/petenelson/wp-rest-api-log
-Requires at least: 4.4
+Requires at least: 4.7
 Tested up to: 4.9
 Stable tag: 1.6.5
 License: GPLv2 or later
