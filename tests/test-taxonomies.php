@@ -20,8 +20,7 @@ class WP_REST_API_Log_Test_Taxonomies extends WP_UnitTestCase {
 		);
 
 		foreach ( $taxonomies as $taxonomy ) {
-			$tax = get_taxonomy( $taxonomy );
-			$this->assertInstanceOf( 'WP_Taxonomy', $tax );
+			$this->assertInstanceOf( '\WP_Taxonomy', get_taxonomy( $taxonomy ) );
 		}
 	}
 }
