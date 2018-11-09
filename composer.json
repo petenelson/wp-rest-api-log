@@ -2,9 +2,9 @@
 	"name": "petenelson/wp-rest-api-log",
 	"description": "Logs requests and responses for the WP REST API",
 	"keywords": [
-		"wordpress"
+		"wordpress",
 		"rest-api",
-		"logging",
+		"logging"
 	],
 	"homepage": "https://github.com/petenelson/wp-rest-api-log",
 	"license": "GPL2+",
