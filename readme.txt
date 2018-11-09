@@ -41,6 +41,7 @@ Roadmap
 
 = v1.6.6 November 9, 2018 =
 * Moved taxonomy registration to a separate file, made taxonomies not public to prevent them from automatically showing in Yoast SEO sitemaps
+* Updated highlight.js version
 * Updated minimum WP version to 4.7
 * Updated unit test framework
 
@@ -117,6 +118,7 @@ Roadmap
 
 = v1.6.6 November 9, 2018 =
 * Moved taxonomy registration to a separate file, made taxonomies not public to prevent them from automatically showing in Yoast SEO sitemaps
+* Updated highlight.js version
 * Updated minimum WP version to 4.7
 * Updated unit test framework
 
