@@ -7,7 +7,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 	class WP_REST_API_Log_Common {
 
 		const PLUGIN_NAME      = 'wp-rest-api-log';
-		const VERSION          = '2017-05-26-01';
+		const VERSION          = WP_REST_API_LOG_VERSION;
 		const TEXT_DOMAIN      = 'wp-rest-api-log';
 
 		static public function current_milliseconds() {
@@ -46,7 +46,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 				<label for="<?php echo esc_attr( $taxonomy ); ?>" class="screen-reader-text"><?php echo esc_html( $label ) ?></label>
 				<select name="<?php echo esc_attr( $taxonomy ); ?>" id="<?php echo esc_attr( $taxonomy ); ?>">
 					<option value=""><?php echo esc_html( $all_items_prompt ); ?></option>
-					<?php foreach( $terms as $term ) : ?>
+					<?php foreach ( $terms as $term ) : ?>
 						<option value="<?php echo esc_attr( $term->slug ); ?>" <?php selected( $term->slug, $selected_slug ); ?>><?php echo esc_html( $term->name ); ?></option>
 					<?php endforeach; ?>
 				</select>

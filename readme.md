@@ -4,7 +4,7 @@
 **Donate link:** https://github.com/petenelson/wp-rest-api-log  
 **Requires at least:** 4.4  
 **Tested up to:** 4.9  
-**Stable tag:** 1.6.5  
+**Stable tag:** 1.6.6  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -42,6 +42,11 @@ Roadmap
 
 
 ## Changelog ##
+
+### v1.6.6 November 9, 2018 ###
+* Moved taxonomy registration to a separate file, made taxonomies not public to prevent them from automatically showing in Yoast SEO sitemaps
+* Updated minimum WP version to 4.7
+* Updated unit test framework
 
 ### v1.6.5 July 26, 2017 ###
 * Fixed some escaping issues in admin and new-line characters when saving to database (props davidanderson)
@@ -114,8 +119,14 @@ Roadmap
 
 ## Upgrade Notice ##
 
-### v1.6.4 May 26, 2017 ###
-* Fixed an issue with the URL in the settings tabs (props davidanderson)
+### v1.6.6 November 9, 2018 ###
+* Moved taxonomy registration to a separate file, made taxonomies not public to prevent them from automatically showing in Yoast SEO sitemaps
+* Updated minimum WP version to 4.7
+* Updated unit test framework
+
+### v1.6.5 July 26, 2017 ###
+* Fixed some escaping issues in admin and new-line characters when saving to database (props davidanderson)
+* Updated highlight.js and clipboard.js versions
 
 ## Frequently Asked Questions ##
 
