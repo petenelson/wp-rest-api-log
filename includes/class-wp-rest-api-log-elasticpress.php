@@ -141,7 +141,7 @@ if ( ! class_exists( 'WP_REST_API_Log_ElasticPress' ) ) {
 
 			}
 
-			if ( ! empty( $query['request'] ) ) {
+			if ( ! empty( $query['request'] ) && is_array( $query['request'] ) ) {
 
 				// this is actually the response headers
 				if ( ! empty( $query['request']['headers'] ) && is_array( $query['request']['headers'] ) ) {
