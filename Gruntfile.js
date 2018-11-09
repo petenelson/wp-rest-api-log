@@ -68,7 +68,6 @@ module.exports = function( grunt ) {
 						' * Licensed GPLv2+' +
 						' */\n',
 					mangle: {
-						except: ['jQuery']
 					}
 				}
 			}

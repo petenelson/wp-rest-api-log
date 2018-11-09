@@ -1,5 +1,5 @@
 # REST API Log #
-**Contributors:** gungeekatx  
+**Contributors:** [gungeekatx](https://profiles.wordpress.org/gungeekatx)  
 **Tags:** wp rest api, rest api, wp api, api, json, json api, log, logging, elasticpress, elasticsearch  
 **Donate link:** https://github.com/petenelson/wp-rest-api-log  
 **Requires at least:** 4.7  
