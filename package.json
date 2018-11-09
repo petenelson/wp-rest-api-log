@@ -27,6 +27,6 @@
     "load-grunt-tasks": "^3.5.0",
     "grunt-insert": "^0.1.0",
     "grunt-wp-readme-to-markdown": "~0.9.0",
-    "phplint": "^1.7.1"    
+    "phplint": "^1.7.1"
   }
 }
