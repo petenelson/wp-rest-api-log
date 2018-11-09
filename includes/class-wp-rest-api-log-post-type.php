@@ -8,8 +8,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 
 		static public function plugins_loaded() {
 			add_action( 'init', array( __CLASS__, 'register_custom_post_types' ) );
-			add_action( 'init', array( __CLASS__, 'register_custom_taxonomies' ) );
-
 		}
 
 		static public function register_custom_post_types() {
@@ -71,46 +69,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 			);
 
 			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-register-post-type', $args );
-		}
-
-
-		static public function register_custom_taxonomies() {
-
-			// HTTP Method
-
-			$labels = array(
-				'name'                => __( 'Method', 'wp-rest-api-log' ),
-				'singular_name'       => __( 'Methods', 'wp-rest-api-log' ),
-			);
-
-			$args = array(
-				'labels'            => $labels,
-				'public'            => true,
-				'show_in_nav_menus' => false,
-				'show_admin_column' => false,
-				'hierarchical'      => false,
-				'show_tagcloud'     => true,
-				'show_ui'           => true,
-				'query_var'         => true,
-				'rewrite'           => true,
-				'query_var'         => true,
-				'capabilities'      => array(),
-			);
-
-			register_taxonomy( WP_REST_API_Log_DB::TAXONOMY_METHOD, array( WP_REST_API_Log_DB::POST_TYPE ), $args );
-
-
-			// HTTP Status
-			$args['labels']['name']           = __( 'Status', 'wp-rest-api-log' );
-			$args['labels']['singular_name']  = __( 'Statuses', 'wp-rest-api-log' );
-
-			register_taxonomy( WP_REST_API_Log_DB::TAXONOMY_STATUS, array( WP_REST_API_Log_DB::POST_TYPE ), $args );
-
-			// Source
-			$args['labels']['name']           = __( 'Log Source', 'wp-rest-api-log' );
-			$args['labels']['singular_name']  = __( 'Log Sources', 'wp-rest-api-log' );
-
-			register_taxonomy( WP_REST_API_Log_DB::TAXONOMY_SOURCE, array( WP_REST_API_Log_DB::POST_TYPE ), $args );
 		}
 	}
 }
