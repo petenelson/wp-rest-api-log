@@ -67,9 +67,6 @@ module.exports = function( grunt ) {
 						' * Copyright (c) <%= grunt.template.today("yyyy") %>;' +
 						' * Licensed GPLv2+' +
 						' */\n',
-					mangle: {
-						except: ['jQuery']
-					}
 				}
 			}
 		},

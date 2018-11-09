@@ -1,27 +1,40 @@
 <?php
+/**
+ * Provides ElasticPress integration.
+ *
+ * @package WP_REST_API_Log\ElasticPress
+ */
 
-if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'restricted access' );
+}
 
 if ( ! class_exists( 'WP_REST_API_Log_ElasticPress' ) ) {
 
+	/**
+	 * Provides ElasticPress integration.
+	 */
 	class WP_REST_API_Log_ElasticPress {
 
-
 		/**
-		 * plugins_loaded WordPress hook
+		 * Plugins_loaded WordPress hook.
+		 *
 		 * @return void
 		 */
-		static public function plugins_loaded() {
-
-
+		public static function plugins_loaded() {
 			add_action( 'ep_add_query_log', 'WP_REST_API_Log_ElasticPress::log_query' );
-
-			add_filter( 'ep_post_sync_kill', 'WP_REST_API_Log_ElasticPress::sync_kill', 10, 3 );
-
+			add_filter( 'ep_post_sync_kill', 'WP_REST_API_Log_ElasticPress::sync_kill', 10, 2 );
 		}
 
-		static function sync_kill( $kill, $post_args, $post_id ) {
-			// don't sync our log entries to ElasticSearch
+		/**
+		 * Filter hook to determine if we kill a sync request.
+		 *
+		 * @param  bool  $kill      Default value.
+		 * @param  array $post_args EP post args.
+		 * @return bool
+		 */
+		public static function sync_kill( $kill, $post_args ) {
+			// Don't sync our log entries to ElasticSearch.
 			if ( ! empty( $post_args ) && ! empty( $post_args['post_type'] ) && WP_REST_API_Log_DB::POST_TYPE === $post_args['post_type'] ) {
 				$kill = false;
 			}
@@ -29,28 +42,29 @@ if ( ! class_exists( 'WP_REST_API_Log_ElasticPress' ) ) {
 			return $kill;
 		}
 
-
 		/**
 		 * Logs an ElasticPress search and results to the database
 		 *
-		 * @param  object $query the ElasticPress query
+		 * @param  object $query The ElasticPress query.
+		 *
 		 * @return void
 		 */
-		static public function log_query( $query ) {
+		public static function log_query( $query ) {
 
 			if ( empty( $query ) || ! is_array( $query ) ) {
-				return false;
+				return;
 			}
 
-			// don't log anything if logging is not enabled
-			$logging_enabled = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-setting-is-enabled',
+			// Don't log anything if logging is not enabled.
+			$logging_enabled = apply_filters(
+				WP_REST_API_Log_Common::PLUGIN_NAME . '-setting-is-enabled',
 				true,
 				'elasticpress',
 				'logging-enabled'
-				);
+			);
 
 			if ( ! $logging_enabled ) {
-				return false;
+				return;
 			}
 
 			$log_query = true;
@@ -98,13 +112,11 @@ if ( ! class_exists( 'WP_REST_API_Log_ElasticPress' ) ) {
 			$log_query = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-elasticpress-log-query', $log_query, $query );
 
 			if ( ! $log_query ) {
-				return false;
+				return;
 			}
 
-
-			// set up some defaults
+			// Set up some defaults.
 			$args = array(
-				//'ip_address'            => $_SERVER['REMOTE_ADDR'],
 				'route'                 => $route,
 				'method'                => '',
 				'status'                => '',
@@ -114,59 +126,54 @@ if ( ! class_exists( 'WP_REST_API_Log_ElasticPress' ) ) {
 					'body_params'          => array(),
 					'headers'              => array(),
 					'body'                 => '',
-					),
+				),
 				'response'              => array(
 					'body'                 => '',
 					'headers'              => array(),
-					),
-				);
+				),
+			);
 
-
-			// add elapsed time
+			// Add elapsed time.
 			if ( ! empty( $query['time_start'] ) && ! empty( $query['time_finish'] ) ) {
 				$args['milliseconds'] = absint( ( $query['time_finish'] * 1000 ) - ( $query['time_start'] * 1000 ) );
 			}
 
 			if ( ! empty( $query['args'] ) ) {
 
-				// store the JSON sent to ElasticSearch
+				// Store the JSON sent to ElasticSearch.
 				if ( ! empty( $query['args']['body'] ) ) {
 					$args['request']['body'] = base64_encode( $query['args']['body'] );
 				}
 
-				// add the method
-				if ( ! empty( $query['args']['method'] ) ) { 
+				// Add the method.
+				if ( ! empty( $query['args']['method'] ) ) {
 					$args['method'] = $query['args']['method'];
 				}
-
 			}
 
-			if ( ! empty( $query['request'] ) ) {
+			if ( ! empty( $query['request'] ) && is_array( $query['request'] ) ) {
 
-				// this is actually the response headers
+				// This is actually the response headers.
 				if ( ! empty( $query['request']['headers'] ) && is_array( $query['request']['headers'] ) ) {
 
-					foreach( $query['request']['headers'] as $header => $value ) {
+					foreach ( $query['request']['headers'] as $header => $value ) {
 						$args['response']['headers'][ $header ] = $value;
 					}
 				}
 
-				// store the HTTP response code
+				// Store the HTTP response code.
 				if ( ! empty( $query['request']['response'] ) && ! empty( $query['request']['response']['code'] ) ) {
 					$args['status'] = $query['request']['response']['code'];
 				}
 
-				// store the response body
+				// Store the response body.
 				if ( ! empty( $query['request']['body'] ) ) {
 					$args['response']['body'] = json_decode( $query['request']['body'] );
 				}
-
 			}
 
-			// log the EP request/response
+			// Log the EP request/response.
 			do_action( WP_REST_API_Log_Common::PLUGIN_NAME . '-insert', $args );
-
 		}
 	}
 }
-

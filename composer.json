@@ -1,16 +1,26 @@
 {
-    "name": "petenelson/wp-rest-api-log",
-    "description": "Logs requests and responses for the WP REST API",
-    "license": "GPL2+",
-    "authors": [
-        {
-            "name": "Pete Nelson",
-            "email": "pete@petenelson.com"
-        }
-    ],
-    "require": {},
-    "require-dev": {
-        "wp-coding-standards/wpcs": "dev-master",
-        "phpunit/phpunit": "^4.8"
-    }
+	"name": "petenelson/wp-rest-api-log",
+	"description": "Logs requests and responses for the WP REST API",
+	"keywords": [
+		"wordpress",
+		"rest-api",
+		"logging"
+	],
+	"homepage": "https://github.com/petenelson/wp-rest-api-log",
+	"license": "GPL2+",
+	"authors": [
+		{
+			"name": "Pete Nelson",
+			"email": "pete@petenelson.com",
+			"homepage": "https://petenelson.io/"
+		}
+	],
+	"type": "wordpress-plugin",
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+	"require": {},
+	"require-dev": {
+		"wp-coding-standards/wpcs": "dev-master",
+		"phpunit/phpunit": "^4.8"
+	}
 }

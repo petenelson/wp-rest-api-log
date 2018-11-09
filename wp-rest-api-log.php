@@ -3,7 +3,8 @@
  * Plugin Name: REST API Log
  * Description: Logs requests and responses for the REST API
  * Author: Pete Nelson
- * Version: 1.6.5
+ * Author URI: https://petenelson.io
+ * Version: 1.6.6
  * Plugin URI: https://github.com/petenelson/wp-rest-api-log
  * Text Domain: wp-rest-api-log
  * Domain Path: /languages
@@ -14,6 +15,10 @@
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'restricted access' );
+}
+
+if ( ! defined( 'WP_REST_API_LOG_VERSION' ) ) {
+	define( 'WP_REST_API_LOG_VERSION', '1.6.6' );
 }
 
 if ( ! defined( 'WP_REST_API_LOG_ROOT' ) ) {
@@ -42,6 +47,7 @@ $includes = array(
 	'includes/class-' . $plugin_class_file . '-common.php',
 	'includes/class-' . $plugin_class_file . '-db.php',
 	'includes/class-' . $plugin_class_file . '-post-type.php',
+	'includes/class-' . $plugin_class_file . '-taxonomies.php',
 	'includes/class-' . $plugin_class_file . '-i18n.php',
 	'includes/class-' . $plugin_class_file . '-controller.php',
 	'includes/class-' . $plugin_class_file . '-request-response-base.php',
@@ -112,13 +118,16 @@ WP_REST_API_Log_Settings_Routes::plugins_loaded();
 WP_REST_API_Log_Settings_ElasticPress::plugins_loaded();
 WP_REST_API_Log_Settings_Help::plugins_loaded();
 WP_REST_API_Log_Post_Type::plugins_loaded();
+WP_REST_API_Log_Taxonomies::plugins_loaded();
 WP_REST_API_Log_Controller::plugins_loaded();
 WP_REST_API_Log_ElasticPress::plugins_loaded();
 WP_REST_API_Log_Admin::plugins_loaded();
 
 /* Activation hook */
-register_activation_hook( __FILE__, function() {
-	require_once 'includes/class-wp-rest-api-log-activator.php';
-	WP_REST_API_Log_Activator::activate();
-} );
-
+register_activation_hook(
+	__FILE__,
+	function() {
+		require_once 'includes/class-wp-rest-api-log-activator.php';
+		WP_REST_API_Log_Activator::activate();
+	}
+);
