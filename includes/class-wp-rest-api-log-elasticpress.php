@@ -1,6 +1,6 @@
 <?php
 /**
- * Ceros Gutenberg block.
+ * Provides ElasticPress integration.
  *
  * @package WP_REST_API_Log\ElasticPress
  */
