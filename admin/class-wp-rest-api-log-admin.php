@@ -243,7 +243,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 						)
 					);
 
-				$actions = array_merge( $new_actions, $actions );
+				$actions = array_merge( $actions, $new_actions );
 			}
 
 			return $actions;
