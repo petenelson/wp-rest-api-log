@@ -1,14 +1,16 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'restricted access' );
+}
 
 $id = absint( filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT ) );
 $post_type_object = get_post_type_object( WP_REST_API_Log_DB::POST_TYPE );
 
 if ( ! current_user_can( $post_type_object->cap->read_post, $id ) ) {
 	wp_die(
-		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
-		'<p>' . __( 'You are not allowed to read posts in this post type.', 'wp-rest-api-log' ) . '</p>',
+		'<h1>' . esc_html__( 'Cheatin&#8217; uh?' ) . '</h1>' .
+		'<p>' . esc_html__( 'You are not allowed to read posts in this post type.', 'wp-rest-api-log' ) . '</p>',
 		403
 	);
 }
@@ -32,7 +34,7 @@ $entry = apply_filters( 'wp-rest-api-log-display-entry', $entry );
 $body_content = ! empty( $entry->request->body ) ? $entry->request->body : '';
 
 if ( 'ElasticPress' === $entry->source ) {
-	// these request bodies are base64 encoded JSON
+	// These request bodies are base64 encoded JSON.
 	if ( ! empty( $body_content ) ) {
 		$body_object = json_decode( base64_decode( $body_content ) );
 		$body_content = '';
@@ -97,7 +99,7 @@ $download_urls = WP_REST_API_Log_Controller::get_download_urls( $entry );
 						'entry' => $entry,
 					)
 				); ?>
-				<pre><code class="json"><?php echo wp_json_encode( $entry->request->headers, $json_display_options['request']['headers'] ); ?></code></pre>
+				<pre><code class="json"><?php echo esc_html( wp_json_encode( $entry->request->headers, $json_display_options['request']['headers'] ) ); ?></code></pre>
 			</div>
 		</div>
 
@@ -113,7 +115,7 @@ $download_urls = WP_REST_API_Log_Controller::get_download_urls( $entry );
 						'entry' => $entry,
 					)
 				); ?>
-				<pre><code class="json"><?php echo wp_json_encode( $entry->request->query_params, $json_display_options['request']['query_params'] ); ?></code></pre>
+				<pre><code class="json"><?php echo esc_html( wp_json_encode( $entry->request->query_params, $json_display_options['request']['query_params'] ) ); ?></code></pre>
 			</div>
 		</div>
 
@@ -129,9 +131,12 @@ $download_urls = WP_REST_API_Log_Controller::get_download_urls( $entry );
 						'entry' => $entry,
 					)
 				); ?>
-				<pre><code class="json"><?php echo wp_json_encode(
-				        $entry->request->body_params,
-                            $json_display_options['request']['body_params'] ); ?></code></pre>
+				<pre><code class="json"><?php
+					echo esc_html( wp_json_encode(
+						$entry->request->body_params,
+						$json_display_options['request']['body_params']
+					) );
+					?></code></pre>
 			</div>
 		</div>
 
@@ -180,7 +185,7 @@ $download_urls = WP_REST_API_Log_Controller::get_download_urls( $entry );
 						'entry' => $entry,
 					)
 				); ?>
-				<pre><code class="json"><?php echo wp_json_encode( $entry->response->headers, $json_display_options['response']['headers'] ); ?></code></pre>
+				<pre><code class="json"><?php echo esc_html( wp_json_encode( $entry->response->headers, $json_display_options['response']['headers'] ) ); ?></code></pre>
 			</div>
 		</div>
 
