@@ -1,10 +1,10 @@
 # REST API Log #
-**Contributors:** [gungeekatx](https://profiles.wordpress.org/gungeekatx)  
+**Contributors:** gungeekatx  
 **Tags:** wp rest api, rest api, wp api, api, json, json api, log, logging, elasticpress, elasticsearch  
 **Donate link:** https://github.com/petenelson/wp-rest-api-log  
 **Requires at least:** 4.7  
-**Tested up to:** 4.9  
-**Stable tag:** 1.6.6  
+**Tested up to:** 5.0  
+**Stable tag:** 1.6.7  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -42,6 +42,9 @@ Roadmap
 
 
 ## Changelog ##
+
+### v1.6.7 December 16, 2018 ###
+* Updated clipboard.js version
 
 ### v1.6.6 November 9, 2018 ###
 * Moved taxonomy registration to a separate file, made taxonomies not public to prevent them from automatically showing in Yoast SEO sitemaps
