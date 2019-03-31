@@ -121,7 +121,9 @@ Roadmap
 
 == Upgrade Notice ==
 
-= v1.6.7 December 16, 2018 =
+= v1.6.7 March 31, 2019 =
+* Added admin notice about running the plugin on a production server
+* Set the default purge days to 7
 * Updated clipboard.js version
 
 == Frequently Asked Questions ==
