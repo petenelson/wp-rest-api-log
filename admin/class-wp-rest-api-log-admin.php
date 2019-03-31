@@ -72,7 +72,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			$highlight_style   = apply_filters( 'wp-rest-api-log-admin-highlight-js-style',   'github' );
 
 			// https://github.com/zenorocha/clipboard.js
-			$clipboard_version = apply_filters( 'wp-rest-api-log-admin-clipboard-js-version', '1.7.0' );
+			$clipboard_version = apply_filters( 'wp-rest-api-log-admin-clipboard-js-version', '2.0.0' );
 
 			wp_register_script( 'wp-rest-api-log-admin-highlight-js',  'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/highlight.min.js' );
 			wp_register_style( 'wp-rest-api-log-admin-highlight-js',  'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/styles/' . $highlight_style . '.min.css' );

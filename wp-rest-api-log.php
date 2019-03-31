@@ -4,7 +4,7 @@
  * Description: Logs requests and responses for the REST API
  * Author: Pete Nelson
  * Author URI: https://petenelson.io
- * Version: 1.6.6
+ * Version: 1.6.7
  * Plugin URI: https://github.com/petenelson/wp-rest-api-log
  * Text Domain: wp-rest-api-log
  * Domain Path: /languages
