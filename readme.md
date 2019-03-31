@@ -1,9 +1,9 @@
 # REST API Log #
-**Contributors:** gungeekatx  
+**Contributors:** [gungeekatx](https://profiles.wordpress.org/gungeekatx)  
 **Tags:** wp rest api, rest api, wp api, api, json, json api, log, logging, elasticpress, elasticsearch  
 **Donate link:** https://github.com/petenelson/wp-rest-api-log  
 **Requires at least:** 4.7  
-**Tested up to:** 5.0  
+**Tested up to:** 5.1  
 **Stable tag:** 1.6.7  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
@@ -43,7 +43,9 @@ Roadmap
 
 ## Changelog ##
 
-### v1.6.7 December 16, 2018 ###
+### v1.6.7 March 31, 2019 ###
+* Added admin notice about running the plugin on a production server
+* Set the default purge days to 7
 * Updated clipboard.js version
 
 ### v1.6.6 November 9, 2018 ###
@@ -123,15 +125,8 @@ Roadmap
 
 ## Upgrade Notice ##
 
-### v1.6.6 November 9, 2018 ###
-* Moved taxonomy registration to a separate file, made taxonomies not public to prevent them from automatically showing in Yoast SEO sitemaps
-* Updated highlight.js version
-* Updated minimum WP version to 4.7
-* Updated unit test framework
-
-### v1.6.5 July 26, 2017 ###
-* Fixed some escaping issues in admin and new-line characters when saving to database (props davidanderson)
-* Updated highlight.js and clipboard.js versions
+### v1.6.7 December 16, 2018 ###
+* Updated clipboard.js version
 
 ## Frequently Asked Questions ##
 
