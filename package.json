@@ -7,9 +7,7 @@
   },
   "license": "GPL-2.0-or-later",
   "homepage": "https://github.com/petenelson/wp-rest-api-log",
-  "dependencies": {
-    "node-sass": "^4.11.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "autoprefixer": "^6.0.0",
     "glob": "~5.0.15",
@@ -29,6 +27,7 @@
     "grunt-wp-i18n": "^1.0.2",
     "grunt-wp-readme-to-markdown": "^2.0.1",
     "load-grunt-tasks": "^3.5.0",
+    "node-sass": "^4.11.0",
     "phplint": "^1.7.1"
   }
 }
