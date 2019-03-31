@@ -12,6 +12,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 		static public function plugins_loaded() {
 			add_action( 'admin_init', array( __CLASS__, 'register_general_settings' ) );
 			add_filter( 'wp-rest-api-log-settings-tabs', array( __CLASS__, 'add_tab') );
+			add_action( 'admin_notices', array( __CLASS__, 'display_db_notice') );
+			add_action( 'wp_ajax_wp-rest-api-log-db-notice-dismiss', array( __CLASS__, 'dismiss_db_notice') );
 		}
 
 
@@ -91,6 +93,43 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 			}
 
 			return $settings;
+		}
+
+		/**
+		 * Displays an admin notice about running the plugin in production.
+		 *
+		 * @return void
+		 */
+		public static function display_db_notice() {
+
+			$screen = get_current_screen();
+
+			if ( 'settings_page_wp-rest-api-log-settings' === $screen->id && false === get_option( 'wp-rest-api-log-db-notice-dismissed' ) ) {
+				?>
+					<div class="notice notice-warning is-dismissible" id="wp-rest-api-log-admin-db-notice">
+						<p><?php _e( 'Use caution when using this plugin on a production site with a large amount of REST API traffic. It logs a large amount of data and can greatly increase the size of your database.', 'wp-rest-api-log' ); ?></p>
+					</div>
+
+					<script type="text/javascript">
+						jQuery( '#wp-rest-api-log-admin-db-notice' ).on( 'click', '.notice-dismiss', function() {
+							jQuery.post( window.ajaxurl, {
+								action: 'wp-rest-api-log-db-notice-dismiss',
+							} );
+						} );
+					</script>
+				<?php
+			}
+		}
+
+		/**
+		 * Sets an option to dismiss the admin production database notice.
+		 *
+		 * @return void
+		 */
+		public static function dismiss_db_notice() {
+			$key = 'wp-rest-api-log-db-notice-dismissed';
+			delete_option( $key );
+			add_option( $key, '1', '', 'no' );
 		}
 	}
 
