@@ -26,6 +26,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 		static public function get_default_settings() {
 			return array(
 				'logging-enabled'   => '1',
+				'purge-days'        => '7',
 			);
 		}
 
