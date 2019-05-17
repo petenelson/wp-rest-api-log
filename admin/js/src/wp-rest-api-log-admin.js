@@ -52,7 +52,7 @@
 			// Turn off the button.
 			$( '.wp-rest-api-log-purge-all' ).addClass( 'hidden' );
 
-			// Turn off the spinner.
+			// Turn on the spinner.
 			$( '.wp-rest-api-log-purge-all-spinner' ).removeClass( 'hidden' ).addClass( 'is-active' );
 
 			$.ajax( {

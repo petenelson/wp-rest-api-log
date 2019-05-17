@@ -43,16 +43,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 			add_settings_field( 'logging-enabled', __( 'Enabled', 'wp-rest-api-log' ), array( __CLASS__, 'settings_yes_no' ), $key, $section,
 				array( 'key' => $key, 'name' => 'logging-enabled', 'after' => '' ) );
 
-			$total_count =  absint( count( WP_REST_API_Log_DB::get_all_log_ids() ) );
-
-			// HTML for the purge button.
-			if ( 0 === $total_count ) {
-				$purge_button_html = '';
-			} else {
-				$purge_button_html = '<p><a class="button wp-rest-api-log-purge-all" href="#purge-log" class="button">'
-					. esc_html( sprintf( __( 'Purge All %1$s Entries Now', 'wp-rest-api-log' ), number_format( $total_count ) ) )
-					. '</a></p><span class="spinner hidden wp-rest-api-log-purge-all-spinner"></span>';
-			}
+			$purge_button_html = self::get_purge_button_html();
 
 			add_settings_field( 'purge-days', __( 'Days to Retain Old Entries', 'wp-rest-api-log' ), array( __CLASS__, 'settings_input' ), $key, $section,
 				array(
@@ -120,6 +111,48 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 					</script>
 				<?php
 			}
+		}
+
+		/**
+		 * Gets the HTML markup for the purge button.
+		 *
+		 * @return string
+		 */
+		public static function get_purge_button_html() {
+
+			$total_count = 0;
+			$html        = '';
+
+			$data = filter_var_array(
+				$_GET,
+				[
+					'page' => FILTER_SANITIZE_STRING,
+				]
+			);
+
+
+			if ( $data['page'] === WP_REST_API_Log_Settings_Base::$settings_page ) {
+				$total_count = absint( count( WP_REST_API_Log_DB::get_all_log_ids() ) );
+			}
+
+			if ( ! empty( $total_count ) ) {
+				ob_start();
+				?>
+
+					<p>
+						<a class="button wp-rest-api-log-purge-all" href="#purge-log" class="button">
+							<?php // translators: Prompt for purging a number of log entries. ?>
+							<?php echo esc_html( sprintf( __( 'Purge All %1$s Entries Now', 'wp-rest-api-log' ), number_format( $total_count ) ) ); ?>
+						</a>
+					</p>
+					<span class="spinner hidden wp-rest-api-log-purge-all-spinner"></span>
+
+				<?php
+
+				$html = ob_get_clean();
+			}
+
+			return apply_filters( __FUNCTION__, $html );
 		}
 
 		/**
