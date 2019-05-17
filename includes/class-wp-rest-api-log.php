@@ -144,6 +144,44 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			}
 		}
 
+		/**
+		 * Gets old REST API Log record IDs.
+		 *
+		 * @param  int $days_old How many days back to go.
+		 * @return array
+		 */
+		public static function get_old_log_ids( $days_old ) {
+
+			if ( empty( $days_old ) ) {
+				$days_old = WP_REST_API_Log_Settings_General::setting_get( 'general', 'purge-days' );
+			}
+
+			$days_old = absint( $days_old );
+			if ( empty( $days_old ) ) {
+				return array();
+			}
+
+			$db = new WP_REST_API_Log_DB();
+			$args = array(
+				'fields'                 => 'ids',
+				'to'                     => date( 'Y-m-d H:i', current_time( 'timestamp' ) - ( DAY_IN_SECONDS * $days_old ) ),
+				'posts_per_page'         => -1,
+				'update_post_meta_cache' => false,
+				'update_term_meta_cache' => false,
+			);
+
+			$ids = $db->search( $args );
+
+			return $ids;
+		}
+
+		/**
+		 * Purges old REST API Log records.
+		 *
+		 * @param  int $days_old How many days back to go.
+		 * @param  boolean $dry_run  Is this a dry run?
+		 * @return int
+		 */
 		static public function purge_old_records( $days_old = false, $dry_run = false ) {
 
 			if ( empty( $days_old ) ) {
@@ -155,15 +193,8 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 				return;
 			}
 
-			$db = new WP_REST_API_Log_DB();
-			$args = array(
-				'fields'           => 'ids',
-				'to'               => date( 'Y-m-d H:i', current_time( 'timestamp' ) - ( DAY_IN_SECONDS * $days_old ) ),
-				'posts_per_page'   => -1,
-				);
+			$ids = self::get_old_log_ids( $days_old );
 
-
-			$ids = $db->search( $args );
 			$number_deleted = 0;
 
 			if ( ! empty( $ids ) && is_array( $ids ) ) {
