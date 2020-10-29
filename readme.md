@@ -3,8 +3,8 @@
 **Tags:** wp rest api, rest api, wp api, api, json, json api, log, logging, elasticpress, elasticsearch  
 **Donate link:** https://github.com/petenelson/wp-rest-api-log  
 **Requires at least:** 4.7  
-**Tested up to:** 5.1  
-**Stable tag:** 1.6.7  
+**Tested up to:** 5.5  
+**Stable tag:** 1.6.8  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -42,6 +42,10 @@ Roadmap
 
 
 ## Changelog ##
+
+### v1.6.8 October 30, 2020 ###
+* Updated the Purge All Entries functionality in the admin to purge batches of 25 at a time.
+* Added progress bar to purge CLI command
 
 ### v1.6.7 March 31, 2019 ###
 * Added admin notice about running the plugin on a production server
@@ -125,10 +129,9 @@ Roadmap
 
 ## Upgrade Notice ##
 
-### v1.6.7 March 31, 2019 ###
-* Added admin notice about running the plugin on a production server
-* Set the default purge days to 7
-* Updated clipboard.js version
+### v1.6.8 October 30, 2020 ###
+* Updated the Purge All Entries functionality in the admin to purge batches of 25 at a time.
+* Added progress bar to purge CLI command
 
 ## Frequently Asked Questions ##
 
