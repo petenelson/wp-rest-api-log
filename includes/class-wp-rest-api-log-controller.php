@@ -97,6 +97,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				'permission_callback' => array( __CLASS__, 'delete_items_permissions_check' ),
 			) );
 
+			// Route to delete a batch of log entries.
+			register_rest_route( WP_REST_API_Log_Common::PLUGIN_NAME, '/batch-purge-all', array(
+				'methods'             => array( WP_REST_Server::DELETABLE ),
+				'callback'            => array( __CLASS__, 'batch_purge_log' ),
+				'permission_callback' => array( __CLASS__, 'delete_items_permissions_check' ),
+			) );
+
 			register_rest_route( WP_REST_API_Log_Common::PLUGIN_NAME, '/routes', array(
 				'methods'             => array( WP_REST_Server::READABLE ),
 				'callback'            => array( __CLASS__, 'get_routes' ),
@@ -305,6 +312,47 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		static public function purge_log() {
 			WP_REST_API_Log_DB::purge_all_log_entries();
 			return rest_ensure_response( array( 'success' => true ) );
+		}
+
+		/**
+		 * Handler to purge a batch of log entries.
+		 *
+		 * @return WP_REST_Response
+		 */
+		public static function batch_purge_log() {
+
+			// Don't log this request.
+			add_filter( WP_REST_API_Log_Common::PLUGIN_NAME . '-bypass-insert', '__return_true' );
+
+			$query_args = array(
+				'update_post_term_cache' => false,
+				'update_post_meta_cache' => false,
+				'post_type'              => WP_REST_API_Log_DB::POST_TYPE,
+				'fields'                 => 'ids',
+				'posts_per_page'         => 25,
+				'orderby'                => 'date',
+				'order'                  => 'ASC',
+			);
+
+			$query_args = apply_filters( 'wp-rest-api-log-batch-purge-query-args', $query_args );
+
+			$query = new WP_Query( $query_args );
+
+			// Delete this batch of log entries.
+			foreach ( $query->posts as $post_id ) {
+				wp_delete_post( $post_id, true );
+			}
+
+			// Run this again to get the total count of items left.
+			$query_args['posts_per_page'] = 1;
+			$query = new WP_Query( $query_args );
+
+			$response = array(
+				'entries_left'           => $query->found_posts,
+				'entries_left_formatted' => sprintf( __( '%s entries remaining...' ), number_format( $query->found_posts ) ),
+			);
+
+			return rest_ensure_response( $response );
 		}
 
 		/**

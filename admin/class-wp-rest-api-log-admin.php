@@ -92,7 +92,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			$data = array(
 				'nonce'  => wp_create_nonce( 'wp_rest' ),
 				'endpoints' => array(
-					'purge_entries' => rest_url( WP_REST_API_Log_Common::PLUGIN_NAME . '/entries' ),
+					'purge_entries' => rest_url( WP_REST_API_Log_Common::PLUGIN_NAME . '/batch-purge-all' ),
 					),
 				);
 

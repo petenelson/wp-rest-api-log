@@ -46,14 +46,7 @@
 			$.get( ajaxurl, { "action":WP_REST_API_Log_Migrate_Data.action, "nonce":WP_REST_API_Log_Migrate_Data.nonce } );
 		},
 
-		purgeLog: function( e ) {
-			e.preventDefault();
-
-			// Turn off the button.
-			$( '.wp-rest-api-log-purge-all' ).addClass( 'hidden' );
-
-			// Turn off the spinner.
-			$( '.wp-rest-api-log-purge-all-spinner' ).removeClass( 'hidden' ).addClass( 'is-active' );
+		batchPurgeLog: function() {
 
 			$.ajax( {
 				url: WP_REST_API_Log_Admin_Data.endpoints.purge_entries,
@@ -62,9 +55,27 @@
 					xhr.setRequestHeader( 'X-WP-Nonce', WP_REST_API_Log_Admin_Data.nonce );
 				}
 			} ).done( function( response ) {
-				// Turn off the spinner.
-				$( '.wp-rest-api-log-purge-all-spinner' ).addClass( 'hidden' ).removeClass( 'is-active' );
+
+				if ( response && response.entries_left_formatted ) {
+					$( '.wp-rest-api-log-purge-all-status' ).text( response.entries_left_formatted );
+					if ( response.entries_left > 0 ) {
+						WP_REST_API_Log.batchPurgeLog();
+					}
+				}
 			} );
+		},
+
+		purgeLog: function( e ) {
+			e.preventDefault();
+
+			// Turn off the button.
+			$( '.wp-rest-api-log-purge-all' ).addClass( 'hidden' );
+
+			// Turn on the spinner.
+			$( '.wp-rest-api-log-purge-all-spinner' ).removeClass( 'hidden' ).addClass( 'is-active' );
+			$( '.wp-rest-api-log-purge-all-status' ).removeClass( 'hidden' ).addClass( 'is-active' );
+
+			WP_REST_API_Log.batchPurgeLog();
 		}
 	};
 

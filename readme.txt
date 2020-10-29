@@ -41,7 +41,7 @@ Roadmap
 
 = v1.6.8 October 30, 2020 =
 * Updated the Purge All Entries functionality in the admin to purge batches of 25 at a time.
-* Added progress bar to purge CLI command
+* Updated CLI purge command with a progress bar.
 * Fixed ClipboardJS error (props itowhid06)
 
 = v1.6.7 March 31, 2019 =
@@ -128,7 +128,7 @@ Roadmap
 
 = v1.6.8 October 30, 2020 =
 * Updated the Purge All Entries functionality in the admin to purge batches of 25 at a time.
-* Added progress bar to purge CLI command
+* Updated CLI purge command with a progress bar.
 * Fixed ClipboardJS error (props itowhid06)
 
 == Frequently Asked Questions ==

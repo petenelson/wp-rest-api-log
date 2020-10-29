@@ -110,6 +110,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command  {
 
 	}
 
+	// phpcs:ignore
 	/**
 	 * Migrates records from the legacy custom tables into custom post type
 	 *
@@ -122,7 +123,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command  {
 	 * --dry-run
 	 * Shows number of entries that would be deleted but does not
 	 * delete them
-	 * 
+	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp rest-api-log purge
@@ -131,19 +132,32 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command  {
 	 *
 	 * @synopsis [<days_old>] [--dry-run]
 	 */
-	function purge( $positional_args, $assoc_args = array() ) {
+	function purge( $positional_args, $assoc_args = array() ) { // phpcs:ignore
 
 		$days_old     = absint( ! empty( $positional_args[0] ) ? $positional_args[0] : 0 );
 		$dry_run      = ! empty( $assoc_args['dry-run'] );
 
-		WP_CLI::Line( "Purging old REST API log entries..." );
+		WP_CLI::Line( 'Getting old REST API log entries...' );
 
-		$log = new WP_REST_API_Log();
+		$ids = WP_REST_API_Log::get_old_log_ids( $days_old );
 
-		$number_deleted = $log->purge_old_records( $days_old, $dry_run );
+		$count          = count( $ids );
+		$number_deleted = 0;
 
-		WP_CLI::Success( sprintf( "%d entries purged", $number_deleted ) );
+		$progress = \WP_CLI\Utils\make_progress_bar( sprintf( 'Deleting %d old log entries', $count ), $count );
+
+		foreach ( $ids as $id ) {
+			if ( ! $dry_run ) {
+				wp_delete_post( $id, true );
+				$number_deleted++;
+			}
+
+			$progress->tick();
+		}
+
+		$progress->finish();
+
+		WP_CLI::Success( sprintf( '%d entries purged', $number_deleted ) );
 
 	}
-
 }
