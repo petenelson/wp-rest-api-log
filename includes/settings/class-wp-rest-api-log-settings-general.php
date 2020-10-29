@@ -146,6 +146,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 						</a>
 					</p>
 					<span class="spinner hidden wp-rest-api-log-purge-all-spinner"></span>
+					<span class="hidden wp-rest-api-log-purge-all-status"><?php esc_html_e( 'Purging entries...', 'wp-rest-api-log' ); ?></span>
 
 				<?php
 

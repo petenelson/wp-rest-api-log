@@ -152,12 +152,11 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 */
 		public static function get_old_log_ids( $days_old ) {
 
-			if ( empty( $days_old ) ) {
+			if ( empty( $days_old ) && 0 !== $days_old ) {
 				$days_old = WP_REST_API_Log_Settings_General::setting_get( 'general', 'purge-days' );
 			}
 
-			$days_old = absint( $days_old );
-			if ( empty( $days_old ) ) {
+			if ( empty( $days_old ) && 0 !== $days_old ) {
 				return array();
 			}
 

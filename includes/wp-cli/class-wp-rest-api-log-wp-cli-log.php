@@ -160,5 +160,4 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command  {
 		WP_CLI::Success( sprintf( '%d entries purged', $number_deleted ) );
 
 	}
-
 }
