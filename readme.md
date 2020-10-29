@@ -46,6 +46,7 @@ Roadmap
 ### v1.6.8 October 30, 2020 ###
 * Updated the Purge All Entries functionality in the admin to purge batches of 25 at a time.
 * Added progress bar to purge CLI command
+* Fixed ClipboardJS error (props itowhid06)
 
 ### v1.6.7 March 31, 2019 ###
 * Added admin notice about running the plugin on a production server
@@ -132,6 +133,7 @@ Roadmap
 ### v1.6.8 October 30, 2020 ###
 * Updated the Purge All Entries functionality in the admin to purge batches of 25 at a time.
 * Added progress bar to purge CLI command
+* Fixed ClipboardJS error (props itowhid06)
 
 ## Frequently Asked Questions ##
 
