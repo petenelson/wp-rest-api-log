@@ -22,7 +22,7 @@
 
 			if ( this.entry_element.length > 0 ) {
 				// Hook for copying to clipboard.
-				var clipboard = new Clipboard( '.wp-rest-api-log-entry-copy-property' );
+				var clipboard = new ClipboardJS( '.wp-rest-api-log-entry-copy-property' );
 			}
 		},
 
