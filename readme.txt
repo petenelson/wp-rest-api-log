@@ -39,6 +39,9 @@ Roadmap
 
 == Changelog ==
 
+= v1.6.8 May 17, 2019 =
+* Updated CLI purge command with a progress bar.
+
 = v1.6.7 March 31, 2019 =
 * Added admin notice about running the plugin on a production server
 * Set the default purge days to 7
