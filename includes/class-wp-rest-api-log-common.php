@@ -21,7 +21,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 
 
 		static public function valid_methods() {
-			return apply_filters( self::PLUGIN_NAME . '-valid-methods', array( 'GET', 'POST', 'PUT', 'PATCH', 'DELETE' ) );
+			return apply_filters( self::PLUGIN_NAME . '-valid-methods', array( 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS' ) );
 		}
 
 
