@@ -68,8 +68,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
 			// https://highlightjs.org/
-			$highlight_version = apply_filters( 'wp-rest-api-log-admin-highlight-js-version', '9.13.1' );
-			$highlight_style   = apply_filters( 'wp-rest-api-log-admin-highlight-js-style',   'github' );
+			$highlight_version = apply_filters( 'wp-rest-api-log-admin-highlight-js-version', '11.6.0' );
+			$highlight_style   = apply_filters( 'wp-rest-api-log-admin-highlight-js-style',   'default' );
 
 			// https://github.com/zenorocha/clipboard.js
 			$clipboard_version = apply_filters( 'wp-rest-api-log-admin-clipboard-js-version', '2.0.0' );
