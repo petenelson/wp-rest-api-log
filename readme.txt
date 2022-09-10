@@ -3,8 +3,8 @@ Contributors: gungeekatx
 Tags: wp rest api, rest api, wp api, api, json, json api, log, logging, elasticpress, elasticsearch
 Donate link: https://github.com/petenelson/wp-rest-api-log
 Requires at least: 4.7
-Tested up to: 5.7
-Stable tag: 1.6.8
+Tested up to: 6.0.2
+Stable tag: 1.6.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,10 @@ Roadmap
 
 
 == Changelog ==
+
+= v1.6.9 September 9, 2022 =
+* Updated highlight.js version
+* Updated clipboard.js version
 
 = v1.6.8 October 30, 2020 =
 * Updated the Purge All Entries functionality in the admin to purge batches of 25 at a time.
