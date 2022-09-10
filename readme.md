@@ -1,13 +1,12 @@
 # REST API Log #
-**Contributors:** [gungeekatx](https://profiles.wordpress.org/gungeekatx)  
+**Contributors:** [gungeekatx](https://profiles.wordpress.org/gungeekatx/)  
 **Tags:** wp rest api, rest api, wp api, api, json, json api, log, logging, elasticpress, elasticsearch  
 **Donate link:** https://github.com/petenelson/wp-rest-api-log  
 **Requires at least:** 4.7  
-**Tested up to:** 6.0.2
-**Stable tag:** 1.6.9
+**Tested up to:** 6.0.2  
+**Stable tag:** 1.6.9  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
-
 
 [![Code Climate](https://codeclimate.com/github/petenelson/wp-rest-api-log/badges/gpa.svg)](https://codeclimate.com/github/petenelson/wp-rest-api-log)
 [![Travis CI](https://travis-ci.org/petenelson/wp-rest-api-log.svg)](https://travis-ci.org/petenelson/wp-rest-api-log)
