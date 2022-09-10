@@ -9,12 +9,16 @@
 	"homepage": "https://github.com/petenelson/wp-rest-api-log",
 	"scripts": {
 		"clean": "rm -rf release && mkdir release",
-		"build": "npm run clean && npm run copy",
+		"build": "npm run clean && npm run readme-to-md && npm run copy",
 		"copy": "npm run copy:php && npm run copy:txt && npm run copy:dist",
+		"readme-to-md": "wp-readme-to-md --screenshot-url=https://raw.githubusercontent.com/petenelson/wp-rest-api-log/master/assets/{screenshot}.png",
+		"badges": "cat badges.md > README.tmp && cat README.md >> README.tmp",
 		"copy:php": "cp *.php release && cp -R admin release && cp -R includes release",
 		"copy:txt": "cp *.txt release",
 		"copy:dist": "cp -R dist release"
 	},
 	"dependencies": {},
-	"devDependencies": {}
+	"devDependencies": {
+		"wp-readme-to-markdown": "^1.0.1"
+	}
 }
