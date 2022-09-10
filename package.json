@@ -1,12 +1,20 @@
 {
-  "name": "wp-rest-api-log",
-  "version": "1.6.6",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/petenelson/wp-rest-api-log.git"
-  },
-  "license": "GPL-2.0-or-later",
-  "homepage": "https://github.com/petenelson/wp-rest-api-log",
-  "dependencies": {},
-  "devDependencies": {}
+	"name": "wp-rest-api-log",
+	"version": "1.6.6",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/petenelson/wp-rest-api-log.git"
+	},
+	"license": "GPL-2.0-or-later",
+	"homepage": "https://github.com/petenelson/wp-rest-api-log",
+	"scripts": {
+		"clean": "rm -rf release && mkdir release",
+		"build": "npm run clean && npm run copy",
+		"copy": "npm run copy:php && npm run copy:txt && npm run copy:dist",
+		"copy:php": "cp *.php release && cp -R admin release && cp -R includes release",
+		"copy:txt": "cp *.txt release",
+		"copy:dist": "cp -R dist release"
+	},
+	"dependencies": {},
+	"devDependencies": {}
 }
