@@ -8,26 +8,5 @@
   "license": "GPL-2.0-or-later",
   "homepage": "https://github.com/petenelson/wp-rest-api-log",
   "dependencies": {},
-  "devDependencies": {
-    "autoprefixer": "^6.0.0",
-    "glob": "~5.0.15",
-    "grunt": "^1.0.4",
-    "grunt-contrib-clean": "^2.0.0",
-    "grunt-contrib-compress": "^1.4.3",
-    "grunt-contrib-concat": "^0.5.1",
-    "grunt-contrib-copy": "^0.8.0",
-    "grunt-contrib-cssmin": "^3.0.0",
-    "grunt-contrib-jshint": "^2.0.0",
-    "grunt-contrib-uglify": "^4.0.0",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-insert": "^0.1.0",
-    "grunt-phpunit": "^0.3.6",
-    "grunt-postcss": "^0.9.0",
-    "grunt-sass": "^1.0.0",
-    "grunt-wp-i18n": "^1.0.2",
-    "grunt-wp-readme-to-markdown": "^2.0.1",
-    "load-grunt-tasks": "^3.5.0",
-    "node-sass": "^4.13.1",
-    "phplint": "^1.7.1"
-  }
+  "devDependencies": {}
 }
