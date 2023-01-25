@@ -24,12 +24,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 			// remove edit and add new
 			add_filter( "bulk_actions-edit-{$post_type}",            array( $this, 'remove_edit_bulk_action' ) );
 
-			// add dropdowns
-			add_action( 'restrict_manage_posts',                     array( $this, 'add_method_dropdown' ) );
-			add_action( 'restrict_manage_posts',                     array( $this, 'add_status_dropdown' ) );
-			add_action( 'restrict_manage_posts',                     array( $this, 'add_source_dropdown' ) );
+			// Add Dropdowns.
+			add_action( 'restrict_manage_posts', [ $this, 'add_dropdowns' ] );
 		}
-
 
 		public function post_row_actions( $actions, $post ) {
 
@@ -113,49 +110,32 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 
 		}
 
-		public function add_method_dropdown( $post_type ) {
+		/**
+		 * Adds additional dropdowns for filtering.
+		 *
+		 * @param string $post_type The post type.
+		 */
+		public function add_dropdowns( $post_type ) {
 			if ( WP_REST_API_Log_Db::POST_TYPE === $post_type ) {
-
-				$method = WP_REST_API_Log_DB::TAXONOMY_METHOD;
-
-				WP_REST_API_Log_Common::taxonomy_dropdown(
-					__( 'Method', 'wp-rest-api-log' ),
-					__( 'All Methods', 'wp-rest-api-log' ),
-					$method,
-					filter_input( INPUT_GET, $method, FILTER_SANITIZE_STRING )
-					);
-
+				foreach ( $this->get_dropdown_taxonomies() as $taxonomy ) {
+					WP_REST_API_Log_Common::dropdown_terms( $taxonomy );
+				}
 			}
 		}
 
-		public function add_status_dropdown( $post_type ) {
-			if ( WP_REST_API_Log_Db::POST_TYPE === $post_type ) {
+		/**
+		 * Gets a list of taxonomies used for admin list table dropdowns.
+		 *
+		 * @return array
+		 */
+		public function get_dropdown_taxonomies() {
+			$taxonomies = [
+				WP_REST_API_Log_DB::TAXONOMY_METHOD,
+				WP_REST_API_Log_DB::TAXONOMY_STATUS,
+				WP_REST_API_Log_DB::TAXONOMY_SOURCE,
+			];
 
-				$status = WP_REST_API_Log_DB::TAXONOMY_STATUS;
-
-				WP_REST_API_Log_Common::taxonomy_dropdown(
-					__( 'Status', 'wp-rest-api-log' ),
-					__( 'All Statuses', 'wp-rest-api-log' ),
-					$status,
-					filter_input( INPUT_GET, $status, FILTER_SANITIZE_STRING )
-					);
-
-			}
-		}
-
-		public function add_source_dropdown( $post_type ) {
-			if ( WP_REST_API_Log_Db::POST_TYPE === $post_type ) {
-
-				$source = WP_REST_API_Log_DB::TAXONOMY_SOURCE;
-
-				WP_REST_API_Log_Common::taxonomy_dropdown(
-					__( 'Source', 'wp-rest-api-log' ),
-					__( 'All Sources', 'wp-rest-api-log' ),
-					$source,
-					filter_input( INPUT_GET, $source, FILTER_SANITIZE_STRING )
-					);
-
-			}
+			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-taxonomy-dropdowns', $taxonomies );
 		}
 
 		private function get_entry( $post_id ) {
@@ -176,7 +156,5 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 			unset( $actions['edit'] );
 			return $actions;
 		}
-
 	}
-
 }
