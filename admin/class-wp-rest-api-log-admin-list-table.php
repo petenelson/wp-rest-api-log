@@ -26,6 +26,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 
 			// Add Dropdowns.
 			add_action( 'restrict_manage_posts', [ $this, 'add_dropdowns' ] );
+			add_action( 'pre_get_posts', [ $this, 'add_tax_queries' ] );
 		}
 
 		public function post_row_actions( $actions, $post ) {
@@ -155,6 +156,52 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		public function remove_edit_bulk_action( $actions ) {
 			unset( $actions['edit'] );
 			return $actions;
+		}
+
+		/**
+		 * Adds taxonomy queries to the admin list table query.
+		 *
+		 * @param WP_Query $query The query.
+		 * @return void
+		 */
+		public function add_tax_queries( $query ) {
+
+			if ( is_admin() && $query->is_main_query() ) {
+
+				if ( function_exists( 'get_current_screen' ) ) {
+					$screen = get_current_screen();
+
+					if ( 'edit-' . WP_REST_API_Log_Db::POST_TYPE !== $screen->id ) {
+						return;
+					}
+				}
+
+				$tax_query = [
+					'relation' => 'AND',
+				];
+
+				foreach ( $this->get_dropdown_taxonomies() as $taxonomy ) {
+
+					$get = filter_var_array(
+						$_GET,
+						[
+							$taxonomy => FILTER_SANITIZE_STRING,
+						]
+					);
+
+					if ( ! empty( $get[ $taxonomy ] ) ) {
+						$tax_query[] = [
+							'taxonomy' => $taxonomy,
+							'field'    => 'slug',
+							'terms'    => $get[ $taxonomy ],
+						];
+					}
+				}
+
+				if ( count( $tax_query ) > 1 ) {
+					$query->set( 'tax_query', $tax_query );
+				}
+			}
 		}
 	}
 }
