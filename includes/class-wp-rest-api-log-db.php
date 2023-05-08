@@ -44,14 +44,15 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 */
 		public function insert( $args ) {
 
-			$current_user = wp_get_current_user();
+			$current_user   = wp_get_current_user();
+			$strip_all_tags = WP_REST_API_Log_Common::filter_strip_all_tags();
 
 			$server = filter_var_array(
 				$_SERVER,
 				[
-					'REMOTE_ADDR'          => WP_REST_API_Log_Common::filter_strip_all_tags(),
-					'HTTP_X_FORWARDED_FOR' => WP_REST_API_Log_Common::filter_strip_all_tags(),
-					'REQUEST_METHOD'       => WP_REST_API_Log_Common::filter_strip_all_tags(),
+					'REMOTE_ADDR'          => $strip_all_tags,
+					'HTTP_X_FORWARDED_FOR' => $strip_all_tags,
+					'REQUEST_METHOD'       => $strip_all_tags,
 				]
 			);
 
