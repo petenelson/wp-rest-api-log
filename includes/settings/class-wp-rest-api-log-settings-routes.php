@@ -121,7 +121,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Routes' ) ) {
 
 			foreach( $string_fields as $field ) {
 				if ( isset( $settings[ $field ] ) ) {
-					$settings[ $field ] = filter_var( $settings[ $field ], FILTER_SANITIZE_STRING );
+					$settings[ $field ] = sanitize_text_field( $settings[ $field ] );
 				}
 			}
 

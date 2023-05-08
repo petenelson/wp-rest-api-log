@@ -88,10 +88,18 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 			$current_user = wp_get_current_user();
 
+			$server = filter_var_array(
+				$_SERVER,
+				[
+					'REMOTE_ADDR'          => WP_REST_API_Log_Common::filter_strip_all_tags(),
+					'HTTP_X_FORWARDED_FOR' => WP_REST_API_Log_Common::filter_strip_all_tags(),
+				]
+			);
+
 			$args = array(
-				'ip_address'            => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_SANITIZE_STRING ),
+				'ip_address'            => $server[ 'REMOTE_ADDR' ],
 				'user'                  => $current_user->user_login,
-				'http_x_forwarded_for'  => filter_input( INPUT_SERVER, 'HTTP_X_FORWARDED_FOR', FILTER_SANITIZE_STRING ),
+				'http_x_forwarded_for'  => $server[ 'HTTP_X_FORWARDED_FOR' ],
 				'route'                 => $route,
 				'method'                => $request->get_method(),
 				'status'                => $result->get_status(),
@@ -110,9 +118,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			do_action( WP_REST_API_Log_Common::PLUGIN_NAME . '-insert', $args );
 
 			return $served;
-
 		}
-
 
 		static public function get_response_headers( $result ) {
 			// headers_list returns an array of headers like this: Content-Type: application/json;

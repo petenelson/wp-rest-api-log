@@ -94,7 +94,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 			</div>
 			<?php
 
-			$settings_updated = filter_input( INPUT_GET, 'settings-updated', FILTER_SANITIZE_STRING );
+			$settings_updated = WP_REST_API_Log_Common::get_string_query_param( 'settings-updated' );
 			if ( ! empty( $settings_updated ) ) {
 				do_action( 'wp-rest-api-log-settings-updated' );
 				flush_rewrite_rules();
@@ -102,12 +102,15 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 
 		}
 
-
+		/**
+		 * Gets the current tab.
+		 *
+		 * @return string
+		 */
 		static private function current_tab() {
-			$current_tab = filter_input( INPUT_GET, 'tab', FILTER_SANITIZE_STRING );
+			$current_tab = WP_REST_API_Log_Common::get_string_query_param( 'tab' );
 			return empty( $current_tab ) ? 'wp-rest-api-log-settings-general' : $current_tab;
 		}
-
 
 		/**
 		 * Outputs the HTML for the settings tabs.
