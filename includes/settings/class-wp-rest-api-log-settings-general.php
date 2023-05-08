@@ -126,10 +126,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 			$data = filter_var_array(
 				$_GET,
 				[
-					'page' => FILTER_SANITIZE_STRING,
+					'page' => WP_REST_API_Log_Common::filter_strip_all_tags(),
 				]
 			);
-
 
 			if ( $data['page'] === WP_REST_API_Log_Settings_Base::$settings_page ) {
 				$total_count = absint( count( WP_REST_API_Log_DB::get_all_log_ids() ) );

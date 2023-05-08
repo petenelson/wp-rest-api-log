@@ -18,9 +18,8 @@
 	"type": "wordpress-plugin",
 	"minimum-stability": "dev",
 	"prefer-stable": true,
-	"require": {},
 	"require-dev": {
 		"wp-coding-standards/wpcs": "dev-master",
-		"phpunit/phpunit": "^4.8"
+		"yoast/phpunit-polyfills": "^1.0"
 	}
 }

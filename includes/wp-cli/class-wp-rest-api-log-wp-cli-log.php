@@ -112,7 +112,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command  {
 
 	// phpcs:ignore
 	/**
-	 * Migrates records from the legacy custom tables into custom post type
+	 * Purges old REST API Log records.
 	 *
 	 * ## OPTIONS
 	 *
