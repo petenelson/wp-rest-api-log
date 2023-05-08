@@ -42,7 +42,9 @@ Roadmap
 
 ## Changelog ##
 
-### v1.6.9 September 9, 2022 ###
+### v1.6.9 May 8, 2023 ###
+* Fixed bugs related to Method and Status filtering.
+* Removed deprecated FILTER_SANITIZE_STRING calls.
 * Updated highlight.js version
 * Updated clipboard.js version
 
