@@ -50,5 +50,5 @@ class WP_REST_API_Log_Tests_Bootstrap {
 	}
 }
 
-$wp_austin_unit_tests = new WP_REST_API_Log_Tests_Bootstrap();
-$wp_austin_unit_tests->bootstrap();
+$wp_rest_api_log_tests = new WP_REST_API_Log_Tests_Bootstrap();
+$wp_rest_api_log_tests->bootstrap();

@@ -44,16 +44,26 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 */
 		public function insert( $args ) {
 
-			$current_user = wp_get_current_user();
+			$current_user   = wp_get_current_user();
+			$strip_all_tags = WP_REST_API_Log_Common::filter_strip_all_tags();
+
+			$server = filter_var_array(
+				$_SERVER,
+				[
+					'REMOTE_ADDR'          => $strip_all_tags,
+					'HTTP_X_FORWARDED_FOR' => $strip_all_tags,
+					'REQUEST_METHOD'       => $strip_all_tags,
+				]
+			);
 
 			$args = wp_parse_args( $args, array(
 				'time'                  => current_time( 'mysql' ),
-				'ip_address'            => filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_SANITIZE_STRING ),
+				'ip_address'            => $server[ 'REMOTE_ADDR' ],
 				'user'                  => $current_user->user_login,
-				'http_x_forwarded_for'  => filter_input( INPUT_SERVER, 'HTTP_X_FORWARDED_FOR', FILTER_SANITIZE_STRING ),
+				'http_x_forwarded_for'  => $server[ 'HTTP_X_FORWARDED_FOR' ],
 				'route'                 => '',
 				'source'                => 'WP REST API',
-				'method'                => filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING ),
+				'method'                => $server[ 'REQUEST_METHOD' ],
 				'status'                => 200,
 				'request'               => array(
 					'body'                 => '',
@@ -72,7 +82,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			if ( empty( $args['milliseconds'] ) ) {
 				global $wp_rest_api_log_start;
 				$now = WP_REST_API_Log_Common::current_milliseconds();
-				$args['milliseconds'] = absint( $now -  $wp_rest_api_log_start );
+				$args['milliseconds'] = absint( $now - $wp_rest_api_log_start );
 			}
 
 			// Setup the post content with JSON from the response.

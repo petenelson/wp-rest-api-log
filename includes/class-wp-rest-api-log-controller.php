@@ -329,7 +329,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				'update_post_meta_cache' => false,
 				'post_type'              => WP_REST_API_Log_DB::POST_TYPE,
 				'fields'                 => 'ids',
-				'posts_per_page'         => 25,
+				'posts_per_page'         => 50,
 				'orderby'                => 'date',
 				'order'                  => 'ASC',
 			);
@@ -338,10 +338,15 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 			$query = new WP_Query( $query_args );
 
+			// Turn off term counting.
+			wp_defer_term_counting( true );
+
 			// Delete this batch of log entries.
 			foreach ( $query->posts as $post_id ) {
 				wp_delete_post( $post_id, true );
 			}
+
+			wp_defer_term_counting( false );
 
 			// Run this again to get the total count of items left.
 			$query_args['posts_per_page'] = 1;

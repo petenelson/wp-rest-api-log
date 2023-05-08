@@ -42,14 +42,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 				return;
 			}
 
-			$tax_obj = get_taxonomy( $taxonomy );
-
-			$get = filter_var_array(
-				$_GET,
-				[
-					$taxonomy => FILTER_SANITIZE_STRING,
-				]
-			);
+			$tax_obj      = get_taxonomy( $taxonomy );
+			$get_taxonomy = self::get_string_query_param( $taxonomy );
 
 			$args = wp_parse_args(
 				$args,
@@ -62,9 +56,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 			);
 
 			// Default the selected slug to the query string if nothing was passed.
-			$selected_slug = ! empty( $args['selected'] ) ? $args['selected'] : $get[ $taxonomy ];
-
-			$all_items = ! empty( $args['all_label'] ) ? $args['all_label'] : $tax_obj->labels->all_items;
+			$selected_slug = ! empty( $args['selected'] ) ? $args['selected'] : $get_taxonomy;
+			$all_items     = ! empty( $args['all_label'] ) ? $args['all_label'] : $tax_obj->labels->all_items;
 
 			$term_query = new \WP_Term_Query(
 				[
@@ -90,5 +83,34 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 			</select>
 			<?php
 		}
-	} // end class
+
+		/**
+		 * Callback filter for filter_var_array() to strip HTML tags.
+		 *
+		 * @return array
+		 */
+		static public function filter_strip_all_tags() {
+			return [
+				'filter'  => FILTER_CALLBACK,
+				'options' => '\wp_strip_all_tags',
+			];
+		}
+
+		/**
+		 * Gets a $_GET querystring parameter.
+		 *
+		 * @return string
+		 */
+		static public function get_string_query_param( $param  ) {
+
+			$get = filter_var_array(
+				$_GET,
+				[
+					$param => self::filter_strip_all_tags(),
+				]
+			);
+
+			return $get[ $param ];
+		}
+	}
 }

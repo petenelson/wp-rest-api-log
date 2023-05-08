@@ -185,7 +185,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 					$get = filter_var_array(
 						$_GET,
 						[
-							$taxonomy => FILTER_SANITIZE_STRING,
+							$taxonomy => WP_REST_API_Log_Common::filter_strip_all_tags(),
 						]
 					);
 
