@@ -9,6 +9,7 @@
  * Text Domain: wp-rest-api-log
  * Domain Path: /languages
  * License: GPL2+
+ * Requires: PHP 7.4
  *
  * @package wp-rest-api-log
  */
