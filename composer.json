@@ -19,7 +19,13 @@
 	"minimum-stability": "dev",
 	"prefer-stable": true,
 	"require-dev": {
-		"wp-coding-standards/wpcs": "dev-master",
+		"squizlabs/php_codesniffer": "^3.9",
+		"wp-coding-standards/wpcs": "^3.1",
 		"yoast/phpunit-polyfills": "^1.0"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
 	}
 }
