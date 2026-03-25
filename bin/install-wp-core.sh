@@ -19,10 +19,16 @@ then
     rm -rf $WP_DEVELOP_DIR
 fi
 
+# Exit if the WP_VERSION environment variable is not set.
+if [ -z "${WP_VERSION:-}" ]; then
+    echo "Error: WP_VERSION environment variable is not set."
+    exit 1
+fi
+
 mkdir -p $WP_DEVELOP_DIR
 
 # Use the Git mirror of WordPress.
-git clone --depth=1 --branch="$WP_VERSION" https://develop.git.wordpress.org/ $WP_DEVELOP_DIR
+git clone --depth=1 --branch="$WP_VERSION" https://github.com/WordPress/wordpress-develop.git $WP_DEVELOP_DIR
 
 # Set up WordPress configuration.
 pushd $WP_DEVELOP_DIR
