@@ -12,7 +12,6 @@ set -euo pipefail
 
 # Set up WordPress installation.
 export WP_DEVELOP_DIR=./tmp/wordpress/
-export WP_VERSION=6.2
 
 if [ -d "$WP_DEVELOP_DIR" ] 
 then
@@ -23,7 +22,7 @@ fi
 mkdir -p $WP_DEVELOP_DIR
 
 # Use the Git mirror of WordPress.
-git clone --depth=1 --branch="$WP_VERSION" git://develop.git.wordpress.org/ $WP_DEVELOP_DIR
+git clone --depth=1 --branch="$WP_VERSION" https://develop.git.wordpress.org/ $WP_DEVELOP_DIR
 
 # Set up WordPress configuration.
 pushd $WP_DEVELOP_DIR

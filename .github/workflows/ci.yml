@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  phpunit:
+    name: PHP ${{ matrix.php }} / WP ${{ matrix.wp }} / Multisite ${{ matrix.multisite }}
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: wordpress_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.0', '8.1', '8.2', '8.3']
+        wp: ['6.3', '6.4', '6.5', 'trunk']
+        multisite: [0, 1]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mysqli
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Install WordPress
+        env:
+          WP_VERSION: ${{ matrix.wp }}
+        run: bash bin/install-wp-core.sh
+
+      - name: Run PHPUnit
+        env:
+          WP_DEVELOP_DIR: ./tmp/wordpress/
+          WP_MULTISITE: ${{ matrix.multisite }}
+        run: ./vendor/bin/phpunit
