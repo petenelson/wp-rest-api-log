@@ -41,6 +41,7 @@ Roadmap
 
 = v1.7.1 July 20, 2026 =
 * Added additional security check to REST download endpoint (props alisalive)
+* Fixed PHP 8 deprecation notice for submenu page (props BrianHenryIE)
 
 = v1.7.0 May 8, 2023 =
 * Fixed bugs related to Method and Status filtering.
