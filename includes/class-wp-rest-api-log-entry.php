@@ -64,6 +64,12 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		public $status;
 
 		/**
+		 * Source of the request (from wp-rest-api-log-source taxonomy)
+		 * @var string
+		 */
+		public $source;
+
+		/**
 		 * Route (post_title)
 		 * @var string
 		 */
