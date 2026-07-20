@@ -242,15 +242,20 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 		static public function download_permissions_check( WP_REST_Request $request ) {
 
-			$rr = ! empty( $request['rr'] ) ? sanitize_text_field( $request['rr'] ) : '';
+			$rr       = ! empty( $request['rr'] ) ? sanitize_text_field( $request['rr'] ) : '';
 			$property = ! empty( $request['property'] ) ? sanitize_text_field( $request['property'] ) : '';
-			$hash = ! empty( $request['hash'] ) ? sanitize_text_field( $request['hash'] ) : '';
+			$hash     = ! empty( $request['hash'] ) ? sanitize_text_field( $request['hash'] ) : '';
+			$allowed  = false;
 
-			if ( ! empty( $rr ) && ! empty( $property ) && ! empty( $hash ) ) {
-				return $hash === wp_hash( wp_nonce_tick() . "wp-rest-api-log-download-{$rr}-{$property}" );
+			$can_read_entries = WP_REST_API_Log_Controller::get_permissions_check();
+
+			if ( ! empty( $rr ) && ! empty( $property ) && ! empty( $hash ) && $can_read_entries ) {
+				$allowed = $hash === wp_hash( wp_nonce_tick() . "wp-rest-api-log-download-{$rr}-{$property}" );
 			} else {
-				return false;
+				$allowed = false;
 			}
+
+			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-can-download-entry', $allowed, $rr, $property );
 		}
 
 		static public function delete_items_permissions_check() {
