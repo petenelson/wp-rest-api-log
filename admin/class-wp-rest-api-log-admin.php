@@ -35,7 +35,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		static public function admin_menu() {
 
 			add_submenu_page(
-				null,
+				'',
 				__( 'REST API Log Entries', 'wp-rest-api-log' ),
 				'',
 				'read_' . WP_REST_API_Log_DB::POST_TYPE,

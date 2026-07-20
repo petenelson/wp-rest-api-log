@@ -21,7 +21,7 @@ if ( ! empty( $id ) ) {
 
 if ( empty( $entry->ID ) ) {
 	wp_die(
-		'<h1>' . esc_html_e( 'Invalid WP REST API Log Entry ID', 'wp-rest-api-log' ) . '</h1>',
+		'<h1>' . esc_html__( 'Invalid WP REST API Log Entry ID', 'wp-rest-api-log' ) . '</h1>',
 		404
 	);
 }

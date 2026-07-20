@@ -158,7 +158,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 					$hash = wp_hash( wp_nonce_tick() . "wp-rest-api-log-download-{$rr}-{$property}" );
 
 					// Add the hash to the URL.
-					$url = add_query_arg( 'hash', $hash, $url );
+					$url = add_query_arg( 'hash', rawurlencode( $hash ), $url );
+
+					// Add a nonce to the URL for security.
+					$nonce = wp_create_nonce( 'wp_rest' );
+					$url   = add_query_arg( '_wpnonce', rawurlencode( $nonce ), $url );
 
 					$download_urls[ $rr ][ $property ] = $url;
 				}
@@ -237,20 +241,30 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		}
 
 		static public function get_permissions_check() {
-			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-can-view-entries', current_user_can( 'read_' . WP_REST_API_Log_DB::POST_TYPE ) );
+			$post_type = get_post_type_object( WP_REST_API_Log_DB::POST_TYPE );
+			if ( $post_type instanceof WP_Post_Type ) {
+				return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-can-view-entries', current_user_can( $post_type->cap->read_post ) );
+			} else {
+				return false;
+			}
 		}
 
 		static public function download_permissions_check( WP_REST_Request $request ) {
 
-			$rr = ! empty( $request['rr'] ) ? sanitize_text_field( $request['rr'] ) : '';
+			$rr       = ! empty( $request['rr'] ) ? sanitize_text_field( $request['rr'] ) : '';
 			$property = ! empty( $request['property'] ) ? sanitize_text_field( $request['property'] ) : '';
-			$hash = ! empty( $request['hash'] ) ? sanitize_text_field( $request['hash'] ) : '';
+			$hash     = ! empty( $request['hash'] ) ? sanitize_text_field( $request['hash'] ) : '';
+			$allowed  = false;
 
-			if ( ! empty( $rr ) && ! empty( $property ) && ! empty( $hash ) ) {
-				return $hash === wp_hash( wp_nonce_tick() . "wp-rest-api-log-download-{$rr}-{$property}" );
+			$can_read_entries = WP_REST_API_Log_Controller::get_permissions_check();
+
+			if ( ! empty( $rr ) && ! empty( $property ) && ! empty( $hash ) && $can_read_entries ) {
+				$allowed = $hash === wp_hash( wp_nonce_tick() . "wp-rest-api-log-download-{$rr}-{$property}" );
 			} else {
-				return false;
+				$allowed = false;
 			}
+
+			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-can-download-entry', $allowed, $rr, $property );
 		}
 
 		static public function delete_items_permissions_check() {
