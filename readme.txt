@@ -4,8 +4,8 @@ Tags: wp rest api, rest api, wp api, api, json, json api, log, logging, elasticp
 Donate link: https://github.com/petenelson/wp-rest-api-log
 Requires at least: 4.7
 Requires: PHP 7.4
-Tested up to: 6.2
-Stable tag: 1.7.0
+Tested up to: 7.0.2
+Stable tag: 1.7.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -39,6 +39,11 @@ Roadmap
 
 
 == Changelog ==
+
+= v1.7.1 July 20, 2026 =
+* Added additional security check to REST download endpoint (props alisalive)
+* Fixed PHP 8 deprecation notice for submenu page (props BrianHenryIE)
+* Fixed echo bug when viewing an invalid log entry ID (props DAnn2012)
 
 = v1.7.0 May 8, 2023 =
 * Fixed bugs related to Method and Status filtering.
