@@ -3,8 +3,8 @@
 **Tags:** wp rest api, rest api, wp api, api, json, json api, log, logging, elasticpress, elasticsearch  
 **Donate link:** https://github.com/petenelson/wp-rest-api-log  
 **Requires at least:** 4.7  
-**Tested up to:** 6.7.1  
-**Stable tag:** 1.7.0  
+**Tested up to:** 7.0.2  
+**Stable tag:** 1.7.1  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -41,6 +41,9 @@ Roadmap
 
 
 ## Changelog ##
+
+### v1.7.1 July 20, 2026 ###
+* Added additional security check to REST download endpoint (props alisalive)
 
 ### v1.7.0 May 8, 2023 ###
 * Fixed bugs related to Method and Status filtering.
