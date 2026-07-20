@@ -158,7 +158,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 					$hash = wp_hash( wp_nonce_tick() . "wp-rest-api-log-download-{$rr}-{$property}" );
 
 					// Add the hash to the URL.
-					$url = add_query_arg( 'hash', $hash, $url );
+					$url = add_query_arg( 'hash', rawurlencode( $hash ), $url );
+
+					// Add a nonce to the URL for security.
+					$nonce = wp_create_nonce( 'wp_rest' );
+					$url   = add_query_arg( '_wpnonce', rawurlencode( $nonce ), $url );
 
 					$download_urls[ $rr ][ $property ] = $url;
 				}
@@ -237,7 +241,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		}
 
 		static public function get_permissions_check() {
-			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-can-view-entries', current_user_can( 'read_' . WP_REST_API_Log_DB::POST_TYPE ) );
+			$post_type = get_post_type_object( WP_REST_API_Log_DB::POST_TYPE );
+			if ( $post_type instanceof WP_Post_Type ) {
+				return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-can-view-entries', current_user_can( $post_type->cap->read_post ) );
+			} else {
+				return false;
+			}
 		}
 
 		static public function download_permissions_check( WP_REST_Request $request ) {
