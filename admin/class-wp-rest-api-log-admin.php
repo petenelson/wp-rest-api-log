@@ -11,7 +11,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 *
 		 * @var string|false
 		 */
-		static public $view_entry_hook = '';
+		static public $view_entry_hook = false;
 
 		/**
 		 * Wire up WordPress hooks and filters.
