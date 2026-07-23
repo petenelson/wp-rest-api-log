@@ -43,8 +43,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 
 			$args = array(
 				'labels'              => self::get_post_type_labels(),
-				'show_in_rest'        => true,
-				'rest_base'           => WP_REST_API_Log_DB::POST_TYPE, // allows the CPT to show up in the native API
+				'show_in_rest'        => false,
 				'hierarchical'        => false,
 				'public'              => false,
 				'show_ui'             => true,
