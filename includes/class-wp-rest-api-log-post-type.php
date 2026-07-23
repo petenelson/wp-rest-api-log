@@ -8,6 +8,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 
 		static public function plugins_loaded() {
 			add_action( 'init', array( __CLASS__, 'register_custom_post_types' ) );
+			add_filter( 'rest_prepare_' . WP_REST_API_Log_DB::POST_TYPE, array( __CLASS__, 'restrict_rest_log_entries' ), 10, 3 );
 		}
 
 		static public function register_custom_post_types() {
@@ -42,7 +43,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 
 			$args = array(
 				'labels'              => self::get_post_type_labels(),
-				'show_in_rest'        => false,
+				'show_in_rest'        => true,
+				'rest_base'           => WP_REST_API_Log_DB::POST_TYPE, // allows the CPT to show up in the native API
 				'hierarchical'        => false,
 				'public'              => false,
 				'show_ui'             => true,
@@ -68,6 +70,33 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 			);
 
 			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-register-post-type', $args );
+		}
+
+		/**
+		 * Restrict access to REST API log entries based on user capabilities.
+		 *
+		 * @param WP_REST_Response $response The response object.
+		 * @param WP_Post          $post     The post object.
+		 * @param WP_REST_Request  $request  The request object.
+		 * @return WP_REST_Response|WP_Error The response object or WP_Error if access is denied.
+		*/
+		static public function restrict_rest_log_entries( $response, $post, $request ) {
+
+			$post_type = get_post_type_object( WP_REST_API_Log_DB::POST_TYPE );
+			if ( $post_type instanceof WP_Post_Type ) {
+				$has_access = current_user_can( $post_type->cap->read_post );
+			} else {
+				$has_access = false;
+			}
+
+			if ( ! $has_access ) {
+				$response = new WP_REST_Response(
+					new WP_Error( 'rest_forbidden', esc_html__( 'You cannot view REST API log entries.', 'wp-rest-api-log' ) ),
+					403
+				);
+			}
+
+			return $response;
 		}
 	}
 }
