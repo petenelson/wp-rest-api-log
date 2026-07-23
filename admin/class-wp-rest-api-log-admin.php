@@ -9,7 +9,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		/**
 		 * Hook suffix for the hidden log entry view page, set in admin_menu().
 		 *
-		 * @var string
+		 * @var string|false
 		 */
 		static public $view_entry_hook = '';
 
