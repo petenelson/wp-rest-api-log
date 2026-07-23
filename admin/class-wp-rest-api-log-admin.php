@@ -189,17 +189,17 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 
 		/**
-		 * Adjusts the title tag when viewing a log entry
+		 * Adjusts the title tag when viewing a log entry.
+		 *
+		 * No longer needs a special case for the log entry view screen:
+		 * set_view_entry_title() already sets the correct $title for that
+		 * screen, so core's own title-building logic handles it.
 		 *
 		 * @param  string $admin_title
 		 * @param  string $title
 		 * @return string
 		 */
 		static public function admin_title( $admin_title, $title ) {
-			$screen = get_current_screen();
-			if ( ! empty( $screen ) && 'tools_page_wp-rest-api-log-view-entry' === $screen->id ) {
-				$admin_title = __( 'REST API Log Entry', 'wp-rest-api-log' ) . $admin_title;
-			}
 			return $admin_title;
 		}
 
