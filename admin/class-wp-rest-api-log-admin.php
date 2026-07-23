@@ -53,7 +53,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			// The view entry page has no parent menu, so WordPress core never resolves
 			// a page title for it. Set one early to avoid a null value being passed to
 			// strip_tags() in wp-admin/admin-header.php.
-			add_action( 'load-' . self::$view_entry_hook, array( __CLASS__, 'set_view_entry_title' ) );
+			if ( ! empty( self::$view_entry_hook ) ) {
+				add_action( 'load-' . self::$view_entry_hook, array( __CLASS__, 'set_view_entry_title' ) );
+			}
 
 			global $submenu;
 			if ( ! empty( $submenu['tools.php'] ) ) {
