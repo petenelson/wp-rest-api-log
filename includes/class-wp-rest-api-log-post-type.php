@@ -26,7 +26,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 				'add_new'            => esc_html__( 'Add New REST API Log Entries', 'wp-rest-api-log' ),
 				'add_new_item'       => esc_html__( 'Add New REST API Log Entry', 'wp-rest-api-log' ),
 				'new_item'           => esc_html__( 'New REST API Log Entry', 'wp-rest-api-log' ),
-				'edit_item'          => esc_html__( 'Edit Publication Page', 'wp-rest-api-log' ),
+				'edit_item'          => esc_html__( 'Edit REST API Log Entry', 'wp-rest-api-log' ),
 				'view_item'          => esc_html__( 'View REST API Log Entry', 'wp-rest-api-log' ),
 				'all_items'          => esc_html__( 'All REST API Log Entries', 'wp-rest-api-log' ),
 				'search_items'       => esc_html__( 'Search Entries', 'wp-rest-api-log' ),
