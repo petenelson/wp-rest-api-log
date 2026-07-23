@@ -45,6 +45,7 @@ Roadmap
 ### v1.7.2 July 23, 2026 ###
 * Changed "show_in_rest" to false for the wp-rest-api-log custom post type
 * Fixed array_walk_recursive callback signature for PHP 8.0 compatibility (props the-csaba)
+* Fixed PHP deprecation notice caused by a null page title when viewing a log entry
 
 ### v1.7.1 July 20, 2026 ###
 * Added additional security check to REST download endpoint (props alisalive)
