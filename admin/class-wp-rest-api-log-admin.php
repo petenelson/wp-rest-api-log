@@ -7,6 +7,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 	class WP_REST_API_Log_Admin {
 
 		/**
+		 * Hook suffix for the hidden log entry view page, set in admin_menu().
+		 *
+		 * @var string|false
+		 */
+		static public $view_entry_hook = false;
+
+		/**
 		 * Wire up WordPress hooks and filters.
 		 *
 		 * @return void
@@ -34,7 +41,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 */
 		static public function admin_menu() {
 
-			add_submenu_page(
+			self::$view_entry_hook = add_submenu_page(
 				'',
 				__( 'REST API Log Entries', 'wp-rest-api-log' ),
 				'',
@@ -42,6 +49,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 				WP_REST_API_Log_Common::PLUGIN_NAME . '-view-entry',
 				array( __CLASS__, 'display_log_entry')
 			);
+
+			// The view entry page has no parent menu, so WordPress core never resolves
+			// a page title for it. Set one early to avoid a null value being passed to
+			// strip_tags() in wp-admin/admin-header.php.
+			if ( ! empty( self::$view_entry_hook ) ) {
+				add_action( 'load-' . self::$view_entry_hook, array( __CLASS__, 'set_view_entry_title' ) );
+			}
 
 			global $submenu;
 			if ( ! empty( $submenu['tools.php'] ) ) {
@@ -107,6 +121,17 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		}
 
 		/**
+		 * Sets the global $title for the log entry view page before WordPress
+		 * core computes the admin page title.
+		 *
+		 * @return void
+		 */
+		static public function set_view_entry_title() {
+			global $title;
+			$title = __( 'REST API Log Entry', 'wp-rest-api-log' );
+		}
+
+		/**
 		 * Displays the log entry template
 		 *
 		 * @return void
@@ -164,17 +189,17 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 
 		/**
-		 * Adjusts the title tag when viewing a log entry
+		 * Adjusts the title tag when viewing a log entry.
+		 *
+		 * No longer needs a special case for the log entry view screen:
+		 * set_view_entry_title() already sets the correct $title for that
+		 * screen, so core's own title-building logic handles it.
 		 *
 		 * @param  string $admin_title
 		 * @param  string $title
 		 * @return string
 		 */
 		static public function admin_title( $admin_title, $title ) {
-			$screen = get_current_screen();
-			if ( ! empty( $screen ) && 'tools_page_wp-rest-api-log-view-entry' === $screen->id ) {
-				$admin_title = __( 'REST API Log Entry', 'wp-rest-api-log' ) . $admin_title;
-			}
 			return $admin_title;
 		}
 
