@@ -160,4 +160,261 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command  {
 		WP_CLI::Success( sprintf( '%d entries purged', $number_deleted ) );
 
 	}
+
+	// phpcs:ignore
+	/**
+	 * Generates sample REST API log entries for testing.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [<count>]
+	 * Number of sample log entries to generate, defaults to 100
+	 *
+	 * [--days=<days>]
+	 * Spreads the generated entries across this many past days, defaults to 30
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp rest-api-log generate
+	 *
+	 *     wp rest-api-log generate 5000
+	 *
+	 *     wp rest-api-log generate 5000 --days=60
+	 *
+	 * @synopsis [<count>] [--days=<days>]
+	 */
+	function generate( $positional_args, $assoc_args = array() ) { // phpcs:ignore
+
+		$count = absint( ! empty( $positional_args[0] ) ? $positional_args[0] : 100 );
+		$days  = absint( ! empty( $assoc_args['days'] ) ? $assoc_args['days'] : 30 );
+
+		if ( empty( $count ) ) {
+			WP_CLI::Error( 'Please provide a count greater than zero.' );
+			return;
+		}
+
+		$db = new WP_REST_API_Log_DB();
+
+		$progress = \WP_CLI\Utils\make_progress_bar( sprintf( 'Generating %d sample log entries', $count ), $count );
+
+		for ( $i = 0; $i < $count; $i++ ) {
+
+			$status = self::random_status_code();
+			$method = self::random_method();
+			$time   = self::random_time( $days );
+
+			$args = array(
+				'time'                 => $time,
+				'ip_address'           => self::random_ip_address(),
+				'user'                 => self::random_user(),
+				'http_x_forwarded_for' => '',
+				'route'                => self::random_route(),
+				'source'               => 'WP REST API',
+				'method'               => $method,
+				'status'               => $status,
+				'request'              => array(
+					'body' => self::random_request_body( $method ),
+					),
+				'response'              => array(
+					'body' => self::random_response_body( $status ),
+					),
+				'milliseconds'         => wp_rand( 5, 1500 ),
+				);
+
+			$post_id = $db->insert( $args );
+
+			if ( ! empty( $post_id ) ) {
+
+				global $wpdb;
+
+				$wpdb->update(
+					$wpdb->posts,
+					array(
+						'post_date'         => $time,
+						'post_date_gmt'     => get_gmt_from_date( $time ),
+						'post_modified'     => $time,
+						'post_modified_gmt' => get_gmt_from_date( $time ),
+						),
+					array(
+						'ID' => $post_id, // where clause
+						)
+				);
+
+			}
+
+			$progress->tick();
+
+		}
+
+		$progress->finish();
+
+		WP_CLI::Success( sprintf( '%d sample log entries generated', $count ) );
+
+	}
+
+	/**
+	 * Picks a random HTTP status code, weighted so most entries are 200
+	 * with a mix of other common success and error codes.
+	 *
+	 * @return int
+	 */
+	private static function random_status_code() {
+
+		$weighted = array(
+			200 => 70,
+			201 => 5,
+			204 => 3,
+			400 => 5,
+			401 => 3,
+			403 => 3,
+			404 => 6,
+			429 => 2,
+			500 => 2,
+			503 => 1,
+			);
+
+		$roll       = wp_rand( 1, 100 );
+		$cumulative = 0;
+
+		foreach ( $weighted as $status => $weight ) {
+			$cumulative += $weight;
+			if ( $roll <= $cumulative ) {
+				return $status;
+			}
+		}
+
+		return 200;
+	}
+
+	/**
+	 * Picks a random HTTP method, weighted so GET requests are the
+	 * most common.
+	 *
+	 * @return string
+	 */
+	private static function random_method() {
+
+		$weighted = array(
+			'GET'    => 65,
+			'POST'   => 20,
+			'PUT'    => 6,
+			'PATCH'  => 4,
+			'DELETE' => 5,
+			);
+
+		$roll       = wp_rand( 1, 100 );
+		$cumulative = 0;
+
+		foreach ( $weighted as $method => $weight ) {
+			$cumulative += $weight;
+			if ( $roll <= $cumulative ) {
+				return $method;
+			}
+		}
+
+		return 'GET';
+	}
+
+	/**
+	 * Picks a random sample REST route.
+	 *
+	 * @return string
+	 */
+	private static function random_route() {
+
+		$routes = array(
+			'/wp/v2/posts',
+			'/wp/v2/posts/' . wp_rand( 1, 500 ),
+			'/wp/v2/pages',
+			'/wp/v2/pages/' . wp_rand( 1, 100 ),
+			'/wp/v2/media',
+			'/wp/v2/media/' . wp_rand( 1, 300 ),
+			'/wp/v2/users',
+			'/wp/v2/users/' . wp_rand( 1, 20 ),
+			'/wp/v2/comments',
+			'/wp/v2/categories',
+			'/wp/v2/tags',
+			'/wp/v2/search',
+			'/wp-rest-api-log/v1/entries',
+			'/oembed/1.0/embed',
+			);
+
+		return $routes[ array_rand( $routes ) ];
+	}
+
+	/**
+	 * Generates a random IPv4 address.
+	 *
+	 * @return string
+	 */
+	private static function random_ip_address() {
+		return sprintf( '%d.%d.%d.%d', wp_rand( 1, 223 ), wp_rand( 0, 255 ), wp_rand( 0, 255 ), wp_rand( 1, 254 ) );
+	}
+
+	/**
+	 * Picks a random existing user login, falling back to an empty
+	 * string when the site has no users.
+	 *
+	 * @return string
+	 */
+	private static function random_user() {
+
+		static $logins = null;
+
+		if ( null === $logins ) {
+			$users  = get_users( array( 'fields' => 'user_login', 'number' => 20 ) );
+			$logins = ! empty( $users ) ? $users : array( '' );
+		}
+
+		return $logins[ array_rand( $logins ) ];
+	}
+
+	/**
+	 * Generates a random timestamp within the past number of days.
+	 *
+	 * @param  int $days
+	 * @return string
+	 */
+	private static function random_time( $days ) {
+		$seconds_ago = wp_rand( 0, max( 0, $days ) * DAY_IN_SECONDS );
+		return gmdate( 'Y-m-d H:i:s', current_time( 'timestamp' ) - $seconds_ago );
+	}
+
+	/**
+	 * Builds a sample request body, empty for methods that typically
+	 * don't send one.
+	 *
+	 * @param  string $method
+	 * @return string
+	 */
+	private static function random_request_body( $method ) {
+
+		if ( ! in_array( $method, array( 'POST', 'PUT', 'PATCH' ), true ) ) {
+			return '';
+		}
+
+		return wp_json_encode( array( 'sample_param' => wp_rand( 1, 999 ) ) );
+	}
+
+	/**
+	 * Builds a sample response body appropriate for the given status code.
+	 *
+	 * @param  int $status
+	 * @return array
+	 */
+	private static function random_response_body( $status ) {
+
+		if ( $status >= 400 ) {
+			return array(
+				'code'    => 'rest_sample_error',
+				'message' => sprintf( 'Sample error response for status %d.', $status ),
+				'data'    => array( 'status' => $status ),
+				);
+		}
+
+		return array(
+			'id'    => wp_rand( 1, 1000 ),
+			'title' => 'Sample response body',
+			);
+	}
 }
