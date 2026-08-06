@@ -202,6 +202,9 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 			$number_deleted = 0;
 
+			// Turn off term counting.
+			wp_defer_term_counting( true );
+
 			if ( ! empty( $ids ) && is_array( $ids ) ) {
 				foreach ( $ids as $id ) {
 					if ( ! $dry_run ) {
@@ -210,6 +213,8 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 					$number_deleted++;
 				}
 			}
+
+			wp_defer_term_counting( false );
 
 			return $number_deleted;
 

@@ -110,7 +110,6 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command  {
 
 	}
 
-	// phpcs:ignore
 	/**
 	 * Purges old REST API Log records.
 	 *
@@ -132,7 +131,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command  {
 	 *
 	 * @synopsis [<days_old>] [--dry-run]
 	 */
-	function purge( $positional_args, $assoc_args = array() ) { // phpcs:ignore
+	function purge( $positional_args, $assoc_args = array() ) {
 
 		$days_old     = absint( ! empty( $positional_args[0] ) ? $positional_args[0] : 0 );
 		$dry_run      = ! empty( $assoc_args['dry-run'] );
@@ -146,6 +145,10 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command  {
 
 		$progress = \WP_CLI\Utils\make_progress_bar( sprintf( 'Deleting %d old log entries', $count ), $count );
 
+
+		// Turn off term counting.
+		wp_defer_term_counting( true );
+
 		foreach ( $ids as $id ) {
 			if ( ! $dry_run ) {
 				wp_delete_post( $id, true );
@@ -157,11 +160,11 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command  {
 
 		$progress->finish();
 
-		WP_CLI::Success( sprintf( '%d entries purged', $number_deleted ) );
+		wp_defer_term_counting( false );
 
+		WP_CLI::Success( sprintf( '%d entries purged', $number_deleted ) );
 	}
 
-	// phpcs:ignore
 	/**
 	 * Generates sample REST API log entries for testing.
 	 *
@@ -183,7 +186,24 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command  {
 	 *
 	 * @synopsis [<count>] [--days=<days>]
 	 */
-	function generate( $positional_args, $assoc_args = array() ) { // phpcs:ignore
+	function generate( $positional_args, $assoc_args = array() ) {
+
+		$allowed = 'production' !== wp_get_environment_type();
+
+		/**
+		 * Filters whether generating sample REST API log entries is allowed.
+		 *
+		 * @param bool $allowed Whether generating sample log entries is allowed.
+		 *                      Default false in production, true otherwise.
+		 *
+		 * @since 1.7.3
+		 */
+		$allowed = apply_filters( 'wp_rest_api_log_generate_allowed', $allowed );
+
+		if ( ! $allowed ) {
+			WP_CLI::Error( 'Generating sample log entries is not allowed in production.' );
+			return;
+		}
 
 		$count = absint( ! empty( $positional_args[0] ) ? $positional_args[0] : 100 );
 		$days  = absint( ! empty( $assoc_args['days'] ) ? $assoc_args['days'] : 30 );
@@ -196,6 +216,9 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command  {
 		$db = new WP_REST_API_Log_DB();
 
 		$progress = \WP_CLI\Utils\make_progress_bar( sprintf( 'Generating %d sample log entries', $count ), $count );
+
+		// Turn this off for faster inserts.
+		wp_defer_term_counting( true );
 
 		for ( $i = 0; $i < $count; $i++ ) {
 
@@ -248,8 +271,10 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command  {
 
 		$progress->finish();
 
-		WP_CLI::Success( sprintf( '%d sample log entries generated', $count ) );
+		// Turn this back on after inserts to update term counts.
+		wp_defer_term_counting( false );
 
+		WP_CLI::Success( sprintf( '%d sample log entries generated', $count ) );
 	}
 
 	/**
