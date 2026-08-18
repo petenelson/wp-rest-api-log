@@ -1,4 +1,10 @@
 <?php
+/**
+ * Contact details shown on the plugin's Help settings tab.
+ *
+ * @package wp-rest-api-log
+ */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'restricted access' );
 }

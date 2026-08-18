@@ -1,4 +1,17 @@
 <?php
+/**
+ * Admin template that renders a single REST API log entry.
+ *
+ * Included by WP_REST_API_Log_Admin::display_log_entry(), so every variable
+ * declared here is scoped to that method rather than to the global scope.
+ * PHPCS analyses this file on its own and cannot see the enclosing method,
+ * which is why the scope-related sniffs are disabled below.
+ *
+ * @package wp-rest-api-log
+ */
+
+// phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited -- Included inside a method; these variables are method-scoped.
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are method-scoped.
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'restricted access' );
@@ -9,6 +22,7 @@ $post_type_object = get_post_type_object( WP_REST_API_Log_DB::POST_TYPE );
 
 if ( ! current_user_can( $post_type_object->cap->read_post, $id ) ) {
 	wp_die(
+		// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string.
 		'<h1>' . esc_html__( 'Cheatin&#8217; uh?' ) . '</h1>' .
 		'<p>' . esc_html__( 'You are not allowed to read posts in this post type.', 'wp-rest-api-log' ) . '</p>',
 		403
@@ -36,6 +50,7 @@ $body_content = ! empty( $entry->request->body ) ? $entry->request->body : '';
 if ( 'ElasticPress' === $entry->source ) {
 	// These request bodies are base64 encoded JSON.
 	if ( ! empty( $body_content ) ) {
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Decoding a logged ElasticPress request body, not obfuscated code.
 		$body_object  = json_decode( base64_decode( $body_content ) );
 		$body_content = '';
 	}
@@ -72,7 +87,7 @@ $download_urls = WP_REST_API_Log_Controller::get_download_urls( $entry );
 
 			<div class="inside">
 				<ul>
-					<li><?php esc_html_e( 'Date' ); ?>: <?php echo esc_html( $entry->time ); ?></li>
+					<li><?php esc_html_e( 'Date' ); // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string. ?>: <?php echo esc_html( $entry->time ); ?></li>
 					<li><?php esc_html_e( 'Source', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->source ); ?></li>
 					<li><?php esc_html_e( 'Method', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->method ); ?></li>
 					<li><?php esc_html_e( 'Status', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->status ); ?></li>

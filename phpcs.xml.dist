@@ -42,6 +42,12 @@
 	</rule>
 
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<!--
+		"wp-rest-api-log" is only ever used as a hook prefix, never as a PHP
+		identifier, so the warning about it being an invalid identifier prefix
+		does not apply here.
+		-->
+		<exclude name="WordPress.NamingConventions.PrefixAllGlobals.InvalidPrefixPassed"/>
 		<properties>
 			<property name="prefixes" type="array">
 				<element value="WP_REST_API_Log"/>

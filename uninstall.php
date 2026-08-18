@@ -1,4 +1,9 @@
 <?php
+/**
+ * Removes the plugin's custom tables and options when it is uninstalled.
+ *
+ * @package wp-rest-api-log
+ */
 
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
@@ -6,22 +11,32 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 global $wpdb;
 
-$tables = array(
+$wp_rest_api_log_tables = array(
 	$wpdb->prefix . 'wp_rest_api_log',
 	$wpdb->prefix . 'wp_rest_api_logmeta',
 );
 
-foreach ( $tables as $table_name ) {
-	$wpdb->query( "drop table if exists $table_name" );
+foreach ( $wp_rest_api_log_tables as $wp_rest_api_log_table_name ) {
+	// Table names cannot be passed through $wpdb->prepare(), and these are
+	// built from $wpdb->prefix rather than from user input.
+	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+	$wpdb->query( "drop table if exists $wp_rest_api_log_table_name" );
 }
 
 
-$options = array(
+$wp_rest_api_log_options = array(
 	'wp-rest-api-log-meta-dbversion',
 	'wp-rest-api-log-entries-dbversion',
 	'wp-rest-api-log-settings-general',
 );
 
-foreach ( $options as $option ) {
-	delete_option( $option );
+foreach ( $wp_rest_api_log_options as $wp_rest_api_log_option ) {
+	delete_option( $wp_rest_api_log_option );
 }
+
+unset(
+	$wp_rest_api_log_tables,
+	$wp_rest_api_log_table_name,
+	$wp_rest_api_log_options,
+	$wp_rest_api_log_option
+);
