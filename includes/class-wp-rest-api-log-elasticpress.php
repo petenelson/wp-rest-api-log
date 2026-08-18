@@ -142,6 +142,7 @@ if ( ! class_exists( 'WP_REST_API_Log_ElasticPress' ) ) {
 
 				// Store the JSON sent to ElasticSearch.
 				if ( ! empty( $query['args']['body'] ) ) {
+					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Encoding a logged request body for storage, not obfuscating code.
 					$args['request']['body'] = base64_encode( $query['args']['body'] );
 				}
 

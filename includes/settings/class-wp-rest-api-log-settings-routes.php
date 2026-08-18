@@ -1,4 +1,9 @@
 <?php
+/**
+ * Routes tab on the plugin's settings screen.
+ *
+ * @package wp-rest-api-log
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'restricted access' );
@@ -6,9 +11,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'WP_REST_API_Log_Settings_Routes' ) ) {
 
+	/**
+	 * Registers the Routes tab and its route-filtering settings.
+	 */
 	class WP_REST_API_Log_Settings_Routes extends WP_REST_API_Log_Settings_Base {
 
-		static $settings_key = 'wp-rest-api-log-settings-routes';
+		/**
+		 * Option name used to store this tab's settings.
+		 *
+		 * @var string
+		 */
+		public static $settings_key = 'wp-rest-api-log-settings-routes';
 
 		/**
 		 * Hooks up WorPress actions and filters.

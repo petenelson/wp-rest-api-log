@@ -1,4 +1,9 @@
 <?php
+/**
+ * Help tab on the plugin's settings screen.
+ *
+ * @package wp-rest-api-log
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'restricted access' );
@@ -6,30 +11,61 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'WP_REST_API_Log_Settings_Help' ) ) {
 
+	/**
+	 * Registers the Help tab and renders its contents.
+	 */
 	class WP_REST_API_Log_Settings_Help extends WP_REST_API_Log_Settings_Base {
 
-		static $settings_key = 'wp-rest-api-log-settings-help';
+		/**
+		 * Option name used to store this tab's settings.
+		 *
+		 * @var string
+		 */
+		public static $settings_key = 'wp-rest-api-log-settings-help';
 
 
+		/**
+		 * Hooks up WordPress actions and filters.
+		 *
+		 * @return void
+		 */
 		public static function plugins_loaded() {
 			add_action( 'admin_init', array( __CLASS__, 'register_help_settings' ) );
 			add_filter( 'wp-rest-api-log-settings-tabs', array( __CLASS__, 'add_tab' ) );
 		}
 
 
+		/**
+		 * Adds a Help tab.
+		 *
+		 * @param array $tabs List of tabs.
+		 * @return array
+		 */
 		public static function add_tab( $tabs ) {
 			$tabs[ self::$settings_key ] = __( 'Help', 'wp-rest-api-log' );
 			return $tabs;
 		}
 
 
-		public static function register_help_settings( $title ) {
+		/**
+		 * Registers the Help settings section.
+		 *
+		 * @param string $title Section title supplied by the admin_init hook.
+		 * @return void
+		 */
+		public static function register_help_settings( $title ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Signature is fixed by the admin_init callback.
 
 			add_settings_section( 'help', '', array( __CLASS__, 'section_header' ), self::$settings_key );
 		}
 
 
-		public static function section_header( $args ) {
+		/**
+		 * Renders the Help section contents.
+		 *
+		 * @param array $args Section arguments supplied by the Settings API.
+		 * @return void
+		 */
+		public static function section_header( $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Signature is fixed by the Settings API.
 			include_once WP_REST_API_LOG_ROOT . 'admin/partials/admin-help.php';
 		}
 	}

@@ -11,13 +11,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'WP_REST_API_Log_i18n' ) ) {
 
+	// phpcs:disable PEAR.NamingConventions.ValidClassName.Invalid -- Class name is part of the plugin's public API.
 	/**
 	 * Handles internationalization for the plugin.
 	 *
 	 * The lowercase "i18n" in the class name is retained for backwards
 	 * compatibility; renaming it would break code that references the class.
 	 */
-	class WP_REST_API_Log_i18n { // phpcs:ignore PEAR.NamingConventions.ValidClassName.Invalid -- Class name is part of the plugin's public API.
+	class WP_REST_API_Log_i18n {
+		// phpcs:enable PEAR.NamingConventions.ValidClassName.Invalid
 
 		/**
 		 * Loads the plugin text domain.
