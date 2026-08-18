@@ -1,4 +1,9 @@
 <?php
+/**
+ * Hooks into the REST API to record requests and responses.
+ *
+ * @package wp-rest-api-log
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'restricted access' );
@@ -6,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
+	/**
+	 * Captures REST API traffic and writes it to the log.
+	 */
 	class WP_REST_API_Log {
 
 
@@ -16,7 +24,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 */
 		public static function plugins_loaded() {
 
-			// Filter that is called by the REST API right before it sends a response
+			// Filter that is called by the REST API right before it sends a response.
 			add_filter( 'rest_pre_serve_request', array( __CLASS__, 'log_rest_api_response' ), 9999, 4 );
 
 			// Disabling logging for specific requests.
@@ -28,26 +36,28 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			// Handler for cron job.
 			add_action( 'wp-rest-api-log-purge-old-records', array( __CLASS__, 'purge_old_records' ) );
 
-			// for local development
-			// add_filter( 'determine_current_user', function( $user_id ) {
+			/*
+			Kept for local development reference: overrides the current user
+			from the request so authenticated routes can be exercised locally.
 
-			// if ( 'hello' == $_REQUEST['dev-key'] ) {
-			// $user = get_user_by( 'login', $_REQUEST['login'] );
-			// if ( ! empty( $user ) ){
-			// $user_id = $user->ID;
-			// }
-			// }
+			add_filter( 'determine_current_user', function( $user_id ) {
+				if ( 'hello' == $_REQUEST['dev-key'] ) {
+					$user = get_user_by( 'login', $_REQUEST['login'] );
+					if ( ! empty( $user ) ) {
+						$user_id = $user->ID;
+					}
+				}
 
-			// return $user_id;
-
-			// } );
+				return $user_id;
+			} );
+			*/
 		}
 
 
 		/**
 		 * Logs the REST API request & response right before it returns the data to the client.
 		 *
-		 * @param  bool   $served      True if the response was served by something other than the REST API, otherwise false,
+		 * @param  bool   $served      True if the response was served by something other than the REST API, otherwise false.
 		 * @param  object $result      REST API response data.
 		 * @param  object $request     REST API request data.
 		 * @param  object $rest_server REST API server.
@@ -55,7 +65,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 */
 		public static function log_rest_api_response( $served, $result, $request, $rest_server ) {
 
-			// don't log anything if logging is not enabled
+			// Don't log anything if logging is not enabled.
 			$logging_enabled = apply_filters(
 				WP_REST_API_Log_Common::PLUGIN_NAME . '-setting-is-enabled',
 				true,
@@ -67,7 +77,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 				return $served;
 			}
 
-			// Allow specific requests to not be logged
+			// Allow specific requests to not be logged.
 			$bypass_insert = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-bypass-insert', false, $result, $request, $rest_server );
 			if ( $bypass_insert ) {
 				return $served;
@@ -119,9 +129,15 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			return $served;
 		}
 
+		/**
+		 * Returns the response headers as a name/value array.
+		 *
+		 * @param  object $result REST API response data.
+		 * @return array Headers keyed by header name.
+		 */
 		public static function get_response_headers( $result ) {
-			// headers_list returns an array of headers like this: Content-Type: application/json;
-			// we want a key/value array
+			// headers_list returns an array of headers like this:
+			// "Content-Type: application/json". We want a key/value array.
 			if ( function_exists( 'headers_list' ) ) {
 				$headers = array();
 				foreach ( headers_list() as $header ) {
@@ -131,7 +147,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 						// Grab the header name.
 						$header_name = array_shift( $header );
 
-						// Grab any remaining items in the array as the value
+						// Grab any remaining items in the array as the value.
 						$header_value = implode( '', $header );
 
 						$headers[ $header_name ] = trim( $header_value );
@@ -143,6 +159,11 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			}
 		}
 
+		/**
+		 * Schedules the hourly cron job that purges old log entries.
+		 *
+		 * @return void
+		 */
 		public static function create_purge_cron() {
 			if ( ! wp_next_scheduled( 'wp-rest-api-log-purge-old-records' ) ) {
 				wp_schedule_event( time() + 60, 'hourly', 'wp-rest-api-log-purge-old-records' );
@@ -168,6 +189,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			$db   = new WP_REST_API_Log_DB();
 			$args = array(
 				'fields'                 => 'ids',
+				// phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date, WordPress.DateTime.CurrentTimeTimestamp.Requested -- Site-local time is intentional here and changing it would move the purge cut-off.
 				'to'                     => date( 'Y-m-d H:i', current_time( 'timestamp' ) - ( DAY_IN_SECONDS * $days_old ) ),
 				'posts_per_page'         => -1,
 				'update_post_meta_cache' => false,
@@ -183,8 +205,8 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 * Purges old REST API Log records.
 		 *
 		 * @param  int     $days_old How many days back to go.
-		 * @param  boolean $dry_run  Is this a dry run?
-		 * @return int
+		 * @param  boolean $dry_run  Whether this is a dry run.
+		 * @return int|void Number of entries deleted, or nothing when no age is configured.
 		 */
 		public static function purge_old_records( $days_old = false, $dry_run = false ) {
 
@@ -213,7 +235,16 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			return $number_deleted;
 		}
 
-		public static function bypass_common_routes( $bypass_insert, $result, $request, $rest_server ) {
+		/**
+		 * Excludes the plugin's own routes, and optionally oEmbed, from logging.
+		 *
+		 * @param  bool   $bypass_insert Whether the entry should be skipped.
+		 * @param  object $result        REST API response data.
+		 * @param  object $request       REST API request data.
+		 * @param  object $rest_server   REST API server.
+		 * @return bool
+		 */
+		public static function bypass_common_routes( $bypass_insert, $result, $request, $rest_server ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Signature is fixed by the filter.
 
 			// Ignore our own plugin.
 			$ignore_routes = array(

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Models a single REST API log entry.
+ *
+ * @package wp-rest-api-log
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'restricted access' );
@@ -6,8 +11,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
+	/**
+	 * A single log entry, hydrated from its underlying post, post meta and
+	 * taxonomy terms.
+	 */
 	class WP_REST_API_Log_Entry {
 
+		/**
+		 * Builds a list of log entries from a list of posts.
+		 *
+		 * @param  array $posts Log entry post objects.
+		 * @return array List of WP_REST_API_Log_Entry objects.
+		 */
 		public static function from_posts( array $posts ) {
 			$entries = array();
 			foreach ( $posts as $post ) {
@@ -108,11 +123,29 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 */
 		public $milliseconds;
 
-		public $_links = array( 'self' => array( 'href' => '' ) );
+		/**
+		 * REST API links for this entry.
+		 *
+		 * The leading underscore matches the REST API's "_links" convention and
+		 * is part of the response shape, so the name is kept as-is.
+		 *
+		 * @var array
+		 */
+		public $_links = array( 'self' => array( 'href' => '' ) ); // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore -- Name matches the REST API "_links" response key.
 
-		private $_post;
+		/**
+		 * The underlying log entry post.
+		 *
+		 * @var WP_Post
+		 */
+		private $_post; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore -- Retained for backwards compatibility.
 
 
+		/**
+		 * Loads a log entry from a post.
+		 *
+		 * @param WP_Post|int|null $post Log entry post object or ID.
+		 */
 		public function __construct( $post = null ) {
 
 			if ( is_int( $post ) ) {
@@ -126,6 +159,11 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		}
 
 
+		/**
+		 * Hydrates the entry from its post, post meta and taxonomy terms.
+		 *
+		 * @return void
+		 */
 		private function load() {
 
 			$this->request  = new WP_REST_API_Log_API_Request( $this->_post );
@@ -136,6 +174,11 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			$this->load_taxonomies();
 		}
 
+		/**
+		 * Populates the fields stored on the post itself.
+		 *
+		 * @return void
+		 */
 		private function load_post_data() {
 			$this->ID       = $this->_post->ID;
 			$this->route    = $this->_post->post_title;
@@ -147,6 +190,11 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			}
 		}
 
+		/**
+		 * Populates the fields stored in post meta.
+		 *
+		 * @return void
+		 */
 		private function load_post_meta() {
 
 			$post_id = $this->_post->ID;
@@ -157,6 +205,11 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			$this->milliseconds         = absint( get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_MILLISECONDS, true ) );
 		}
 
+		/**
+		 * Populates the method, status and source taxonomy fields.
+		 *
+		 * @return void
+		 */
 		private function load_taxonomies() {
 			$post_id = $this->_post->ID;
 

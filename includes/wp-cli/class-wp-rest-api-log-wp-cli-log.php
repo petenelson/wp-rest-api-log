@@ -1,5 +1,13 @@
 <?php
+/**
+ * WP-CLI commands for managing the REST API log.
+ *
+ * @package wp-rest-api-log
+ */
 
+/**
+ * Enables, disables, migrates and purges REST API log entries.
+ */
 class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 
 	/**
@@ -11,7 +19,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 	 *
 	 *     wp rest-api-log enable
 	 */
-	function enable() {
+	public function enable() {
 
 		WP_REST_API_Log_Settings_General::change_enabled_setting( 'general', 'logging-enabled', true, 'WP_REST_API_Log_Settings_General::sanitize_settings' );
 
@@ -33,7 +41,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 	 *
 	 *     wp rest-api-log disable
 	 */
-	function disable() {
+	public function disable() {
 
 		WP_REST_API_Log_Settings_General::change_enabled_setting( 'general', 'logging-enabled', false, 'WP_REST_API_Log_Settings_General::sanitize_settings' );
 
@@ -55,7 +63,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 	 *
 	 *     wp rest-api-log status
 	 */
-	function status() {
+	public function status() {
 
 		$option = get_option( WP_REST_API_Log_Settings_General::$settings_key );
 
@@ -75,7 +83,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 	 *
 	 *     wp rest-api-log migrate
 	 */
-	function migrate() {
+	public function migrate() {
 
 		WP_CLI::Line( 'Getting log entries that need to be migrated...' );
 
@@ -124,7 +132,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 	 *
 	 * @synopsis [<days_old>] [--dry-run]
 	 */
-	function purge( $positional_args, $assoc_args = array() ) { // phpcs:ignore
+	public function purge( $positional_args, $assoc_args = array() ) {
 
 		$days_old = absint( ! empty( $positional_args[0] ) ? $positional_args[0] : 0 );
 		$dry_run  = ! empty( $assoc_args['dry-run'] );
