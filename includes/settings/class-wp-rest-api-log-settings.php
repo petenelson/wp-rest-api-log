@@ -1,4 +1,9 @@
 <?php
+/**
+ * Top-level settings screen for the plugin.
+ *
+ * @package wp-rest-api-log
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'restricted access' );
@@ -6,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 
+	/**
+	 * Builds the plugin's settings page and exposes the settings-read filters.
+	 */
 	class WP_REST_API_Log_Settings extends WP_REST_API_Log_Settings_Base {
 
 		/**
@@ -14,11 +22,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 		 * @return void
 		 */
 		public static function plugins_loaded() {
-			// admin menus
+			// Admin menus.
 			add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
 			add_action( 'admin_notices', array( __CLASS__, 'activation_admin_notice' ) );
 
-			// filters to get plugin settings
+			// Filters to get plugin settings.
 			add_filter( 'wp-rest-api-log-setting-is-enabled', array( __CLASS__, 'filter_setting_is_enabled' ), 10, 3 );
 			add_filter( 'wp-rest-api-log-setting-get', array( __CLASS__, 'setting_get' ), 10, 3 );
 		}
@@ -34,7 +42,10 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 				?>
 					<div class="updated">
 						<p>
-							<?php echo wp_kses_post( sprintf( __( '<strong>REST API Log activated!</strong> Please <a href="%s">visit the Settings page</a> to customize the settings.', 'wp-rest-api-log' ), esc_url( admin_url( 'options-general.php?page=wp-rest-api-log-settings' ) ) ) ); ?>
+							<?php
+							/* translators: %s: URL of the plugin settings page. */
+							echo wp_kses_post( sprintf( __( '<strong>REST API Log activated!</strong> Please <a href="%s">visit the Settings page</a> to customize the settings.', 'wp-rest-api-log' ), esc_url( admin_url( 'options-general.php?page=wp-rest-api-log-settings' ) ) ) );
+							?>
 						</p>
 					</div>
 				<?php
@@ -43,8 +54,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 		}
 
 
+		/**
+		 * Runs when the plugin is deactivated.
+		 *
+		 * @return void
+		 */
 		public static function deactivation_hook() {
-			// placeholder in case we need deactivation code
+			// Placeholder in case we need deactivation code.
 		}
 
 		/**
@@ -53,7 +69,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 		 * @return void
 		 */
 		public static function create_default_settings() {
-			// create default settings
+			// Create default settings.
 			add_option( WP_REST_API_Log_Settings_General::$settings_key, WP_REST_API_Log_Settings_General::get_default_settings(), '', $autoload = 'no' );
 			add_option( WP_REST_API_Log_Settings_Routes::$settings_key, WP_REST_API_Log_Settings_Routes::get_default_settings(), '', $autoload = 'no' );
 		}
@@ -90,6 +106,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 					<?php do_settings_sections( $tab ); ?>
 					<?php
 					if ( WP_REST_API_Log_Settings_Help::$settings_key !== $tab ) {
+						// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string.
 						submit_button( __( 'Save Changes' ), 'primary', 'submit', true );
 					}
 					?>
@@ -122,6 +139,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 		private static function plugin_options_tabs() {
 			$current_tab = self::current_tab();
 
+			// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string.
 			echo '<h2>' . esc_html__( 'Settings' ) . ' &rsaquo; REST API Log</h2><h2 class="nav-tab-wrapper">';
 
 			$tabs = apply_filters( 'wp-rest-api-log-settings-tabs', array() );
@@ -132,7 +150,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 				// Build URL for tab.
 				$url = add_query_arg(
 					array(
+						// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode -- Retained to preserve the existing URL encoding.
 						'page' => urlencode( self::$settings_page ),
+						// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode -- Retained to preserve the existing URL encoding.
 						'tab'  => urlencode( $tab_key ),
 					),
 					admin_url( 'options-general.php' )

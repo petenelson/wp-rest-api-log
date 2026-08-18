@@ -1,4 +1,9 @@
 <?php
+/**
+ * Shared helpers used across the plugin.
+ *
+ * @package wp-rest-api-log
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'restricted access' );
@@ -6,28 +11,55 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 
+	/**
+	 * Constants and utility helpers shared by the rest of the plugin.
+	 */
 	class WP_REST_API_Log_Common {
 
 		const PLUGIN_NAME = 'wp-rest-api-log';
 		const VERSION     = WP_REST_API_LOG_VERSION;
 		const TEXT_DOMAIN = 'wp-rest-api-log';
 
+		/**
+		 * Returns the current time in milliseconds.
+		 *
+		 * @return float
+		 */
 		public static function current_milliseconds() {
 			return self::microtime_to_milliseconds( microtime() );
 		}
 
+		/**
+		 * Converts a microtime() string into milliseconds.
+		 *
+		 * @param  string $microtime Value returned by microtime().
+		 * @return float
+		 */
 		public static function microtime_to_milliseconds( $microtime ) {
 			list( $usec, $sec ) = explode( ' ', $microtime );
 			return ( ( (float) $usec + (float) $sec ) ) * 1000;
 		}
 
 
+		/**
+		 * Returns the HTTP methods the plugin will log.
+		 *
+		 * @return array Filterable via "wp-rest-api-log-valid-methods".
+		 */
 		public static function valid_methods() {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- self::PLUGIN_NAME is the "wp-rest-api-log" prefix.
 			return apply_filters( self::PLUGIN_NAME . '-valid-methods', array( 'GET', 'POST', 'PUT', 'PATCH', 'DELETE' ) );
 		}
 
 
+		/**
+		 * Determines whether an HTTP method should be logged.
+		 *
+		 * @param  string $method HTTP method name.
+		 * @return bool Filterable via "wp-rest-api-log-is-method-valid".
+		 */
 		public static function is_valid_method( $method ) {
+			// phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict,WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Loose comparison retained to preserve existing behavior; self::PLUGIN_NAME is the "wp-rest-api-log" prefix.
 			return apply_filters( self::PLUGIN_NAME . '-is-method-valid', in_array( $method, self::valid_methods() ) );
 		}
 
@@ -101,11 +133,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 		/**
 		 * Gets a $_GET querystring parameter.
 		 *
+		 * @param  string $param Query string parameter name.
 		 * @return string
 		 */
 		public static function get_string_query_param( $param ) {
 
 			$get = filter_var_array(
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin list filtering; no state is changed.
 				$_GET,
 				array(
 					$param => self::filter_strip_all_tags(),
