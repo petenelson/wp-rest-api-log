@@ -1,4 +1,9 @@
 <?php
+/**
+ * Registers the plugin's own REST API routes.
+ *
+ * @package wp-rest-api-log
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'restricted access' );
@@ -6,15 +11,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
+	/**
+	 * Exposes log entries, routes and downloads over the REST API.
+	 */
 	class WP_REST_API_Log_Controller {
 
 
-		static function plugins_loaded() {
+		/**
+		 * Hooks the plugin's REST routes into the REST API.
+		 *
+		 * @return void
+		 */
+		public static function plugins_loaded() {
 			add_action( 'rest_api_init', array( __CLASS__, 'register_rest_routes' ) );
 			add_action( 'rest_api_init', array( __CLASS__, 'register_download_routes' ) );
 		}
 
 
+		// phpcs:disable Squiz.PHP.CommentedOutCode.Found -- Commented-out argument definitions are kept as placeholders.
+		/**
+		 * Registers the plugin's read and delete REST routes.
+		 *
+		 * @return void
+		 */
 		public static function register_rest_routes() {
 
 			register_rest_route(
@@ -94,9 +113,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 					'methods'             => array( WP_REST_Server::DELETABLE ),
 					'callback'            => array( __CLASS__, 'delete_items' ),
 					'permission_callback' => array( __CLASS__, 'delete_items_permissions_check' ),
-					'args'                => array( // TODO refator delete, this won't work with $_REQUESTs
+					'args'                => array( // TODO: refactor delete, this won't work with $_REQUESTs.
 						'older-than-seconds' => array(
-							'sanitize_callback' => 'absint',  // TODO add validate callback
+							'sanitize_callback' => 'absint',  // TODO: add validate callback.
 							'default'           => DAY_IN_SECONDS * 30,
 						),
 					),
@@ -238,6 +257,14 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 			}
 		}
 
+		// phpcs:enable Squiz.PHP.CommentedOutCode.Found
+
+		/**
+		 * Returns a page of log entries.
+		 *
+		 * @param  WP_REST_Request $request The REST request.
+		 * @return WP_REST_Response
+		 */
 		public static function get_items( WP_REST_Request $request ) {
 
 			$args = array(
@@ -261,14 +288,32 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 			return rest_ensure_response( WP_REST_API_Log_Entry::from_posts( $posts ) );
 		}
 
+		/**
+		 * Returns a single log entry.
+		 *
+		 * @param  WP_REST_Request $request The REST request.
+		 * @return WP_REST_Response
+		 */
 		public static function get_item( WP_REST_Request $request ) {
 			return rest_ensure_response( self::get_entry( $request['id'] ) );
 		}
 
+		/**
+		 * Builds the error returned for an unknown log entry ID.
+		 *
+		 * @param  int $id The requested log entry ID.
+		 * @return WP_Error
+		 */
 		public static function invalid_entry_id_error( $id ) {
+			/* translators: %d: the requested log entry ID. */
 			return new WP_Error( 'invalid_entry_id', sprintf( __( 'Invalid REST API Log ID %d.', 'wp-rest-api-log' ), $id ), array( 'status' => 404 ) );
 		}
 
+		/**
+		 * Determines whether the current user may read log entries.
+		 *
+		 * @return bool Filterable via "wp-rest-api-log-can-view-entries".
+		 */
 		public static function get_permissions_check() {
 			$post_type = get_post_type_object( WP_REST_API_Log_DB::POST_TYPE );
 			if ( $post_type instanceof WP_Post_Type ) {
@@ -278,6 +323,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 			}
 		}
 
+		/**
+		 * Determines whether the current user may download a log entry field.
+		 *
+		 * @param  WP_REST_Request $request The REST request.
+		 * @return bool Filterable via "wp-rest-api-log-can-download-entry".
+		 */
 		public static function download_permissions_check( WP_REST_Request $request ) {
 
 			$rr       = ! empty( $request['rr'] ) ? sanitize_text_field( $request['rr'] ) : '';
@@ -288,7 +339,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 			$can_read_entries = self::get_permissions_check();
 
 			if ( ! empty( $rr ) && ! empty( $property ) && ! empty( $hash ) && $can_read_entries ) {
-				$allowed = $hash === wp_hash( wp_nonce_tick() . "wp-rest-api-log-download-{$rr}-{$property}" );
+				$allowed = wp_hash( wp_nonce_tick() . "wp-rest-api-log-download-{$rr}-{$property}" ) === $hash;
 			} else {
 				$allowed = false;
 			}
@@ -296,10 +347,21 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-can-download-entry', $allowed, $rr, $property );
 		}
 
+		/**
+		 * Determines whether the current user may delete log entries.
+		 *
+		 * @return bool Filterable via "wp-rest-api-log-can-delete-entries".
+		 */
 		public static function delete_items_permissions_check() {
 			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-can-delete-entries', current_user_can( 'delete_' . WP_REST_API_Log_DB::POST_TYPE ) );
 		}
 
+		/**
+		 * Validates that a requested log entry ID exists.
+		 *
+		 * @param  int $id Log entry post ID.
+		 * @return bool|WP_Error True when valid, WP_Error otherwise.
+		 */
 		public static function validate_entry_id( $id ) {
 			if ( $id < 1 ) {
 				return invalid_entry_id_error( $id );
@@ -312,6 +374,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 			}
 		}
 
+		/**
+		 * Loads a log entry by ID.
+		 *
+		 * @param  int $id Log entry post ID.
+		 * @return WP_REST_API_Log_Entry|false False when the ID is not a log entry.
+		 */
 		public static function get_entry( $id ) {
 
 			$post = get_post( $id );
@@ -323,7 +391,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 			}
 		}
 
-		public static function get_routes( WP_REST_Request $request ) {
+		/**
+		 * Returns the distinct routes that have been logged.
+		 *
+		 * @param  WP_REST_Request $request The REST request.
+		 * @return WP_REST_Response
+		 */
+		public static function get_routes( WP_REST_Request $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Signature is fixed by the REST route callback.
 
 			global $wpdb;
 
@@ -332,14 +406,21 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				WP_REST_API_Log_DB::POST_TYPE
 			);
 
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- $query is built with $wpdb->prepare() directly above.
 			$routes = $wpdb->get_col( $query );
 
 			return rest_ensure_response( $routes );
 		}
 
 
+		/**
+		 * Deletes log entries older than the requested age.
+		 *
+		 * @param  WP_REST_Request $request The REST request.
+		 * @return WP_REST_Response
+		 */
 		public static function delete_items( WP_REST_Request $request ) {
-			// TODO refactor
+			// TODO: refactor.
 			$args = array(
 				'older_than_seconds' => $request['older-than-seconds'],
 			);
@@ -398,7 +479,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 			$response = array(
 				'entries_left'           => $query->found_posts,
-				'entries_left_formatted' => sprintf( __( '%s entries remaining...' ), number_format( $query->found_posts ) ),
+				// translators: %s: formatted number of log entries still to be migrated.
+				'entries_left_formatted' => sprintf( __( '%s entries remaining...' ), number_format( $query->found_posts ) ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Text domain omitted since 1.0; adding it would change which catalogue is used.
 			);
 
 			return rest_ensure_response( $response );
@@ -456,6 +538,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 				// Determine what we're going to send to the browser.
 				if ( is_object( $value ) || is_array( $value ) ) {
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Raw json_encode() retained so the downloaded file is byte-for-byte what was logged.
 					$value = json_encode( $value, JSON_PRETTY_PRINT );
 				} else {
 
@@ -488,6 +571,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				header( 'Content-Disposition: attachment; filename=' . $filename );
 
 				// Output the field value.
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- This is a file download; escaping would corrupt the downloaded body.
 				echo $value;
 
 				// Tell the REST API that we handled this ourselves.

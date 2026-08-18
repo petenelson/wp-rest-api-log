@@ -1,4 +1,9 @@
 <?php
+/**
+ * Stores and queries REST API log entries.
+ *
+ * @package wp-rest-api-log
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'restricted access' );
@@ -6,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
+	/**
+	 * Writes log entries to the custom post type and queries them back out.
+	 */
 	class WP_REST_API_Log_DB {
 
 		const POST_TYPE       = 'wp-rest-api-log';
@@ -20,17 +28,27 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		const POST_META_REQUEST_BODY         = '_request_body';
 
 
+		/**
+		 * Hooks up the insert action and the search WHERE filters.
+		 *
+		 * @return void
+		 */
 		public function plugins_loaded() {
 			add_action( WP_REST_API_Log_Common::PLUGIN_NAME . '-insert', array( $this, 'insert' ), 10, 4 );
 
-			// adds where statement when searching for routes
+			// Adds where statement when searching for routes.
 			add_filter( 'posts_where', array( $this, 'add_where_route' ), 10, 2 );
 
-			// adds where statement when searching post id ranges
+			// Adds where statement when searching post id ranges.
 			add_filter( 'posts_where', array( $this, 'add_where_post_id' ), 10, 2 );
 		}
 
 
+		/**
+		 * Returns the hook prefix used by this class.
+		 *
+		 * @return string
+		 */
 		private static function plugin_name() {
 			return WP_REST_API_Log_Common::PLUGIN_NAME . '-entries';
 		}
@@ -40,8 +58,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 * Inserts a REST API log custom post type record and corresponding
 		 * post meta and taxonomy terms.
 		 *
-		 * @param  array $args
-		 * @return int
+		 * @param  array $args Log entry data.
+		 * @return int Post ID of the new log entry, or 0 on failure.
 		 */
 		public function insert( $args ) {
 
@@ -96,6 +114,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$args['request']['body'] = str_replace( '\n', PHP_EOL, $args['request']['body'] );
 
 			// Allow filtering.
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- self::plugin_name() is the "wp-rest-api-log-entries" prefix.
 			$args = apply_filters( self::plugin_name() . '-pre-insert', $args );
 
 			$new_post = array(
@@ -114,6 +133,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			);
 
 			// Allow filtering.
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- self::plugin_name() is the "wp-rest-api-log-entries" prefix.
 			$new_post = apply_filters( self::plugin_name() . '-pre-insert-new-post', $new_post, $args );
 
 			$post_id = wp_insert_post( $new_post );
@@ -134,23 +154,37 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		}
 
 
+		/**
+		 * Stores the method, status and source taxonomy terms for an entry.
+		 *
+		 * @param  int   $post_id Log entry post ID.
+		 * @param  array $args    Log entry data.
+		 * @return void
+		 */
 		private function insert_post_terms( $post_id, $args ) {
 
-			// sanitize and store method
+			// Sanitize and store method.
 			if ( ! WP_REST_API_Log_Common::is_valid_method( $args['method'] ) ) {
 				$args['method'] = 'GET';
 			}
 			wp_set_post_terms( $post_id, $args['method'], self::TAXONOMY_METHOD );
 
-			// store status code
+			// Store status code.
 			$args['status'] = absint( $args['status'] );
 			wp_set_post_terms( $post_id, $args['status'], self::TAXONOMY_STATUS );
 
-			// store the source
+			// Store the source.
 			wp_set_post_terms( $post_id, $args['source'], self::TAXONOMY_SOURCE );
 		}
 
 
+		/**
+		 * Stores the top-level post meta for an entry.
+		 *
+		 * @param  int   $post_id Log entry post ID.
+		 * @param  array $args    Log entry data.
+		 * @return void
+		 */
 		private function insert_post_meta( $post_id, $args ) {
 
 			$meta = array(
@@ -170,7 +204,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				}
 			}
 
-			// log any additional post meta
+			// Log any additional post meta.
 			if ( ! empty( $args['post_meta'] ) && is_array( $args['post_meta'] ) ) {
 
 				foreach ( $args['post_meta'] as $key => $value ) {
@@ -180,6 +214,13 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		}
 
 
+		/**
+		 * Stores the request headers and parameters as post meta.
+		 *
+		 * @param  int   $post_id Log entry post ID.
+		 * @param  array $args    Log entry data.
+		 * @return void
+		 */
 		private function insert_request_meta( $post_id, $args ) {
 
 			$request = 'request';
@@ -205,6 +246,13 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		}
 
 
+		/**
+		 * Stores the response headers as post meta.
+		 *
+		 * @param  int   $post_id Log entry post ID.
+		 * @param  array $args    Log entry data.
+		 * @return void
+		 */
 		private function insert_response_meta( $post_id, $args ) {
 
 			$response = 'response';
@@ -230,6 +278,12 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		}
 
 
+		/**
+		 * Searches the log entries.
+		 *
+		 * @param  array $args Query arguments; see the method body for defaults.
+		 * @return array Log entries, or post IDs when "fields" is "ids".
+		 */
 		public function search( $args = array() ) {
 
 			$args = wp_parse_args(
@@ -254,6 +308,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				'posts_per_page' => $args['posts_per_page'],
 				'paged'          => $args['page'],
 				'date_query'     => array(),
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Filtering log entries by method/status/source is the point of this query.
 				'tax_query'      => array( 'relation' => 'AND' ),
 			);
 
@@ -265,7 +320,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				$query_args['p'] = $args['id'];
 			}
 
-			// dates
+			// Dates.
 			if ( ! empty( $args['from'] ) ) {
 				$query_args['date_query']['after'] = $args['from'];
 			}
@@ -274,13 +329,13 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				$query_args['date_query']['before'] = $args['to'];
 			}
 
-			// route, handled by posts_where filter
+			// Route, handled by posts_where filter.
 			if ( ! empty( $args['route'] ) ) {
 				$query_args['_wp-rest-api-log-route']            = $args['route'];
 				$query_args['_wp-rest-api-log-route-match-type'] = $args['route_match_type'];
 			}
 
-			// post id, handled by posts_where filter
+			// Post ID, handled by posts_where filter.
 			if ( ! empty( $args['after_id'] ) ) {
 				$query_args['_wp-rest-api-log-after-id'] = $args['after_id'];
 			}
@@ -289,7 +344,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				$query_args['_wp-rest-api-log-before-id'] = $args['before_id'];
 			}
 
-			// HTTP Method
+			// HTTP Method.
 			if ( ! empty( $args['method'] ) ) {
 				$query_args['tax_query'][] = array(
 					'taxonomy' => self::TAXONOMY_METHOD,
@@ -298,7 +353,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				);
 			}
 
-			// HTTP Status
+			// HTTP Status.
 			if ( ! empty( $args['status'] ) ) {
 				$query_args['tax_query'][] = array(
 					'taxonomy' => self::TAXONOMY_STATUS,
@@ -320,8 +375,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		/**
 		 * Adds custom where statement for routes
 		 *
-		 * @param string $where original SQL
-		 * @param object $query WP_Query
+		 * @param string $where Original SQL.
+		 * @param object $query WP_Query instance.
 		 * @return string
 		 */
 		public function add_where_route( $where, $query ) {
@@ -362,8 +417,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		/**
 		 * Adds custom where statement for post id ranges
 		 *
-		 * @param string $where original SQL
-		 * @param object $query WP_Query
+		 * @param string $where Original SQL.
+		 * @param object $query WP_Query instance.
 		 * @return string
 		 */
 		public function add_where_post_id( $where, $query ) {
@@ -394,11 +449,13 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			global $wpdb;
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Checks for the plugin's legacy custom tables; no API exists for this and the result must not be cached.
 			$existing_tables = $wpdb->get_col( "SHOW TABLES LIKE '{$wpdb->prefix}wp_rest_api_log%';" );
 			$log_ids         = array();
 
 			if ( ! empty( $existing_tables ) ) {
 
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reads the plugin's legacy custom table during migration.
 				$ids = $wpdb->get_col( "select id from {$wpdb->prefix}wp_rest_api_log" );
 
 				foreach ( $ids as $id ) {
@@ -409,7 +466,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 							'update_post_meta_cache' => false,
 							'update_post_term_cache' => false,
 							'post_type'              => self::POST_TYPE,
+							// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Needed to detect entries that were already migrated.
 							'meta_key'               => '_wp_rest_api_log_migrated_id',
+							// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Needed to detect entries that were already migrated.
 							'meta_value'             => $id,
 							'fields'                 => 'ids',
 							'post_status'            => 'publish',
@@ -427,15 +486,18 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 		/**
 		 * Migrates single record from the initial version of the plugin's
-		 * custom tables to a custom post type
+		 * custom tables to a custom post type.
 		 *
-		 * @return int
+		 * @param  int $id Legacy log row ID.
+		 * @return int Post ID of the migrated log entry.
 		 */
 		public function migrate_db_record( $id ) {
 
 			global $wpdb;
 
-			$log       = $wpdb->get_row( $wpdb->prepare( "select * from {$wpdb->prefix}wp_rest_api_log where id = %d", $id ) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reads the plugin's legacy custom table during a one-off migration.
+			$log = $wpdb->get_row( $wpdb->prepare( "select * from {$wpdb->prefix}wp_rest_api_log where id = %d", $id ) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reads the plugin's legacy custom table during a one-off migration.
 			$meta_rows = $wpdb->get_results( $wpdb->prepare( "select * from {$wpdb->prefix}wp_rest_api_logmeta where log_id = %d", $log->id ) );
 
 			$args = array(
@@ -471,10 +533,11 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			$post_id = $this->insert( $args );
 
-			// save the legacy ID so we don't migrate it again
+			// Save the legacy ID so we don't migrate it again.
 			add_post_meta( $post_id, '_wp_rest_api_log_migrated_id', $id );
 
-			// manually update the post dates
+			// Manually update the post dates.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- wp_update_post() would overwrite the migrated dates.
 			$wpdb->update(
 				$wpdb->posts,
 				array(
@@ -484,7 +547,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					'post_modified_gmt' => $log->time,
 				),
 				array(
-					'ID' => $post_id, // where clause
+					'ID' => $post_id, // Where clause.
 				)
 			);
 

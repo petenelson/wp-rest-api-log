@@ -1,4 +1,9 @@
 <?php
+/**
+ * Customizes the admin list table for log entries.
+ *
+ * @package wp-rest-api-log
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'restricted access' );
@@ -6,16 +11,41 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 
+	/**
+	 * Adds the custom columns, row actions and filters to the log entry list
+	 * table.
+	 */
 	class WP_REST_API_Log_Admin_List_Table {
 
-		private $_post    = null;
-		private $_post_id = 0;
+		/**
+		 * Cached log entry for the row currently being rendered.
+		 *
+		 * @var WP_REST_API_Log_Entry|null
+		 */
+		private $_post = null; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore -- Retained for backwards compatibility.
 
+		/**
+		 * Post ID the cached log entry belongs to.
+		 *
+		 * @var int
+		 */
+		private $_post_id = 0; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore -- Retained for backwards compatibility.
+
+		/**
+		 * Hooks the list table customizations into WordPress.
+		 *
+		 * @return void
+		 */
 		public function plugins_loaded() {
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 		}
 
 
+		/**
+		 * Registers the list table column, row action and filter hooks.
+		 *
+		 * @return void
+		 */
 		public function admin_init() {
 			$post_type = WP_REST_API_Log_Db::POST_TYPE;
 
@@ -23,7 +53,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 			add_filter( "manage_edit-{$post_type}_columns", array( $this, 'custom_columns' ) );
 			add_action( "manage_{$post_type}_posts_custom_column", array( $this, 'custom_column' ), 10, 2 );
 
-			// remove edit and add new
+			// Remove edit and add new.
 			add_filter( "bulk_actions-edit-{$post_type}", array( $this, 'remove_edit_bulk_action' ) );
 
 			// Add Dropdowns.
@@ -31,11 +61,18 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 			add_action( 'pre_get_posts', array( $this, 'add_tax_queries' ) );
 		}
 
+		/**
+		 * Removes the inapplicable row actions from log entry rows.
+		 *
+		 * @param  array   $actions Row actions.
+		 * @param  WP_Post $post    The post the row is for.
+		 * @return array
+		 */
 		public function post_row_actions( $actions, $post ) {
 
 			if ( WP_REST_API_Log_Db::POST_TYPE === $post->post_type ) {
 
-				// turn off items
+				// Turn off items.
 				unset( $actions['edit'] );
 				unset( $actions['inline hide-if-no-js'] );
 
@@ -47,14 +84,22 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		}
 
 
+		/**
+		 * Defines the columns shown in the log entry list table.
+		 *
+		 * @param  array $columns Default columns.
+		 * @return array
+		 */
 		public function custom_columns( $columns ) {
 
 			unset( $columns['author'] );
 			$columns['method'] = 'Method';
 			$columns           = array(
 				'cb'         => '<input type="checkbox" />',
+				// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string.
 				'date'       => __( 'Date' ),
 				'method'     => __( 'Method', 'wp-rest-api-log' ),
+				// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string.
 				'title'      => __( 'Title' ),
 				'status'     => __( 'Status', 'wp-rest-api-log' ),
 				'elapsed'    => __( 'Elapsed Time', 'wp-rest-api-log' ),
@@ -67,6 +112,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		}
 
 
+		/**
+		 * Renders the contents of a custom column.
+		 *
+		 * @param  string $column  Column name.
+		 * @param  int    $post_id Log entry post ID.
+		 * @return void
+		 */
 		public function custom_column( $column, $post_id ) {
 			$entry = $this->get_entry( $post_id );
 
@@ -139,6 +191,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-taxonomy-dropdowns', $taxonomies );
 		}
 
+		/**
+		 * Returns the log entry for a post, caching the most recent one.
+		 *
+		 * @param  int $post_id Log entry post ID.
+		 * @return WP_REST_API_Log_Entry
+		 */
 		private function get_entry( $post_id ) {
 			if ( empty( $this->_post ) || $post_id !== $this->_post_id ) {
 				$this->_post    = new WP_REST_API_Log_Entry( $post_id );
@@ -148,9 +206,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		}
 
 		/**
-		 * Removes the Edit option from bulk actions
+		 * Removes the Edit option from bulk actions.
 		 *
-		 * @param  array $actions
+		 * @param  array $actions Bulk actions.
 		 * @return array
 		 */
 		public function remove_edit_bulk_action( $actions ) {
@@ -183,6 +241,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 				foreach ( $this->get_dropdown_taxonomies() as $taxonomy ) {
 
 					$get = filter_var_array(
+						// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin list filtering; no state is changed.
 						$_GET,
 						array(
 							$taxonomy => WP_REST_API_Log_Common::filter_strip_all_tags(),

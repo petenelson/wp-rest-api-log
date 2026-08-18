@@ -1,4 +1,9 @@
 <?php
+/**
+ * Admin screens, assets and menu entries for the plugin.
+ *
+ * @package wp-rest-api-log
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'restricted access' );
@@ -6,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
+	/**
+	 * Registers the plugin's admin pages, assets and log entry viewer.
+	 */
 	class WP_REST_API_Log_Admin {
 
 		/**
@@ -82,18 +90,23 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 			$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
-			// https://highlightjs.org/
+			// See https://highlightjs.org/.
 			$highlight_version = apply_filters( 'wp-rest-api-log-admin-highlight-js-version', '11.7.0' );
 			$highlight_style   = apply_filters( 'wp-rest-api-log-admin-highlight-js-style', 'default' );
 
-			// https://github.com/zenorocha/clipboard.js
+			// See https://github.com/zenorocha/clipboard.js.
 			$clipboard_version = apply_filters( 'wp-rest-api-log-admin-clipboard-js-version', '2.0.11' );
 
+			// These are versioned CDN URLs, so no ?ver= query argument is added.
+			// The $in_footer argument is left at its default to preserve the
+			// existing load order.
+			// phpcs:disable WordPress.WP.EnqueuedResourceParameters.MissingVersion, WordPress.WP.EnqueuedResourceParameters.NotInFooter
 			wp_register_script( 'wp-rest-api-log-admin-highlight-js', 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/highlight.min.js' );
 			wp_register_style( 'wp-rest-api-log-admin-highlight-js', 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/styles/' . $highlight_style . '.min.css' );
 			wp_register_script( 'wp-rest-api-log-admin-clipboard-js', 'https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/' . $clipboard_version . '/clipboard.min.js' );
 
 			wp_register_script( 'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'dist/js/admin.js', 'jquery', WP_REST_API_Log_Common::VERSION );
+			// phpcs:enable WordPress.WP.EnqueuedResourceParameters.MissingVersion, WordPress.WP.EnqueuedResourceParameters.NotInFooter
 			wp_register_style( 'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'dist/css/admin.css', '', WP_REST_API_Log_Common::VERSION );
 		}
 
@@ -129,6 +142,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 */
 		public static function set_view_entry_title() {
 			global $title;
+			// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Deliberately sets core's $title for this admin screen.
 			$title = __( 'REST API Log Entry', 'wp-rest-api-log' );
 		}
 
@@ -157,6 +171,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 				$permalink = add_query_arg(
 					array(
 						'page' => WP_REST_API_Log_Common::PLUGIN_NAME . '-view-entry',
+						// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode -- Retained to preserve the existing URL encoding.
 						'id'   => urlencode( $post->ID ),
 					),
 					admin_url( 'tools.php' )
@@ -166,6 +181,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		}
 
 
+		/**
+		 * Returns the plugin slug used for menu and page names.
+		 *
+		 * @return string
+		 */
 		private function plugin_name() {
 			return WP_REST_API_Log_Common::PLUGIN_NAME . '-admin';
 		}
@@ -199,11 +219,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 * set_view_entry_title() already sets the correct $title for that
 		 * screen, so core's own title-building logic handles it.
 		 *
-		 * @param  string $admin_title
-		 * @param  string $title
+		 * @param  string $admin_title The page title, with extra context added.
+		 * @param  string $title       The original page title.
 		 * @return string
 		 */
-		public static function admin_title( $admin_title, $title ) {
+		public static function admin_title( $admin_title, $title ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Signature is fixed by the filter.
 			return $admin_title;
 		}
 
@@ -217,10 +237,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 */
 		public static function add_admin_caps( $allcaps, $caps, $args ) {
 
-			// Get the user
+			// Get the user.
 			$user = get_userdata( $args[1] );
 
-			// Give the administrator role access to the custom post type
+			// Give the administrator role access to the custom post type.
+			// phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict -- Loose comparison retained to preserve existing behavior.
 			if ( ! empty( $user ) && ! empty( $user->roles ) && in_array( 'administrator', $user->roles ) ) {
 
 				$post_type = get_post_type_object( WP_REST_API_Log_DB::POST_TYPE );
@@ -248,7 +269,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 *                            'Inactive', 'Recently Activated', 'Upgrade',
 		 *                            'Must-Use', 'Drop-ins', 'Search'.
 		 */
-		public static function plugin_action_links( $actions, $plugin_file, $plugin_data, $context ) {
+		public static function plugin_action_links( $actions, $plugin_file, $plugin_data, $context ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Signature is fixed by the filter.
 
 			if ( is_plugin_active( $plugin_file ) && current_user_can( 'manage_options' ) ) {
 
@@ -264,11 +285,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 					'settings' => sprintf(
 						'<a href="%1$s">%2$s</a>',
 						esc_url( $url ),
+						// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string.
 						esc_html__( 'Settings' )
 					),
 					'log'      => sprintf(
 						'<a href="%1$s">%2$s</a>',
 						esc_url( admin_url( 'edit.php?post_type=wp-rest-api-log' ) ),
+						// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string.
 						esc_html__( 'Log' )
 					),
 				);
@@ -292,6 +315,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 				'edit-wp-rest-api-log',
 			);
 
+			// phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict -- Loose comparison retained to preserve existing behavior.
 			if ( in_array( $screen->id, $screen_ids ) ) {
 				self::enqueue_scripts();
 			}
@@ -315,7 +339,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		/**
 		 * Displays the property links (Download, Copy) for a log entry.
 		 *
-		 * @param  array $args
+		 * @param  array $args Property link arguments passed to the partial.
 		 * @return void
 		 */
 		public static function display_entry_property_links( $args ) {
