@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<ruleset name="WP REST API Log">
+
+	<description>WordPress Coding Standards for the WP REST API Log plugin.</description>
+
+	<!-- Scan the whole plugin by default. -->
+	<file>.</file>
+
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/dist/*</exclude-pattern>
+	<exclude-pattern>/bower_components/*</exclude-pattern>
+	<exclude-pattern>/tmp/*</exclude-pattern>
+	<exclude-pattern>/release/*</exclude-pattern>
+
+	<!-- Show sniff codes and progress, and use colors when available. -->
+	<arg value="ps"/>
+	<arg name="colors"/>
+	<arg name="extensions" value="php"/>
+	<arg name="basepath" value="."/>
+	<arg name="parallel" value="8"/>
+
+	<rule ref="WordPress">
+		<!--
+		The plugin's public hooks have shipped as "wp-rest-api-log-*" since 1.0.
+		Renaming them to underscores would break every consumer, so the naming
+		is intentionally frozen. New hooks should still use underscores.
+		-->
+		<exclude name="WordPress.NamingConventions.ValidHookName.UseUnderscores"/>
+	</rule>
+
+	<!-- Minimum supported versions. -->
+	<config name="minimum_wp_version" value="6.3"/>
+	<config name="testVersion" value="7.4-"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="wp-rest-api-log"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="WP_REST_API_Log"/>
+				<element value="wp_rest_api_log"/>
+				<!-- Legacy dash-separated prefix used by the public hooks. -->
+				<element value="wp-rest-api-log"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- The test suite follows PHPUnit conventions, not WordPress file naming. -->
+	<rule ref="WordPress.Files.FileName">
+		<exclude-pattern>/tests/*</exclude-pattern>
+	</rule>
+
+</ruleset>

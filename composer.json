@@ -19,8 +19,8 @@
 	"minimum-stability": "dev",
 	"prefer-stable": true,
 	"require-dev": {
-		"squizlabs/php_codesniffer": "^3.9",
-		"wp-coding-standards/wpcs": "^3.1",
+		"squizlabs/php_codesniffer": "^3.13",
+		"wp-coding-standards/wpcs": "^3.4",
 		"yoast/phpunit-polyfills": "^1.0"
 	},
 	"config": {
