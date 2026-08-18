@@ -1,4 +1,9 @@
 <?php
+/**
+ * Registers the taxonomies used to categorize log entries.
+ *
+ * @package wp-rest-api-log
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'restricted access' );
@@ -6,8 +11,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'WP_REST_API_Log_Taxonomies' ) ) {
 
+	/**
+	 * Registers and manages the log entry taxonomies (method, status, source).
+	 */
 	class WP_REST_API_Log_Taxonomies {
 
+		/**
+		 * Hooks the taxonomy registration into WordPress.
+		 *
+		 * @return void
+		 */
 		public static function plugins_loaded() {
 			add_action( 'init', array( __CLASS__, 'register_custom_taxonomies' ) );
 		}

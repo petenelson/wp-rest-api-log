@@ -63,4 +63,15 @@
 		<exclude-pattern>/tests/*</exclude-pattern>
 	</rule>
 
+	<!--
+	These three files hold the WP_REST_API_Log_API_* classes but shipped without
+	the "-api-" segment in their names. Renaming them is a structural change
+	rather than a formatting one, so the existing names are kept for now.
+	-->
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>/includes/class-wp-rest-api-log-request\.php$</exclude-pattern>
+		<exclude-pattern>/includes/class-wp-rest-api-log-response\.php$</exclude-pattern>
+		<exclude-pattern>/includes/class-wp-rest-api-log-response-base\.php$</exclude-pattern>
+	</rule>
+
 </ruleset>

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Registers the custom post type used to store log entries.
+ *
+ * @package wp-rest-api-log
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'restricted access' );
@@ -6,12 +11,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 
+	/**
+	 * Registers and configures the log entry post type.
+	 */
 	class WP_REST_API_Log_Post_Type {
 
+		/**
+		 * Hooks the post type registration into WordPress.
+		 *
+		 * @return void
+		 */
 		public static function plugins_loaded() {
 			add_action( 'init', array( __CLASS__, 'register_custom_post_types' ) );
 		}
 
+		/**
+		 * Registers the log entry post type.
+		 *
+		 * @return void
+		 */
 		public static function register_custom_post_types() {
 
 			$args = self::get_post_type_args();
@@ -20,6 +38,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 		}
 
 
+		/**
+		 * Returns the labels used by the log entry post type.
+		 *
+		 * @return array Post type labels, filterable via
+		 *               "wp-rest-api-log-post-type-labels".
+		 */
 		public static function get_post_type_labels() {
 
 			$labels = array(
@@ -40,6 +64,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 		}
 
 
+		/**
+		 * Returns the registration arguments for the log entry post type.
+		 *
+		 * @return array Post type arguments, filterable via
+		 *               "wp-rest-api-log-register-post-type".
+		 */
 		public static function get_post_type_args() {
 
 			$args = array(

@@ -1,9 +1,18 @@
 <?php
+/**
+ * Decides which REST API routes should be logged.
+ *
+ * @package wp-rest-api-log
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'restricted access' );
 }
 
+/**
+ * Applies the configured route filters to determine whether a given route
+ * should be written to the log.
+ */
 class WP_REST_API_Log_Filters {
 
 	/**
@@ -74,7 +83,7 @@ class WP_REST_API_Log_Filters {
 		$route_filters = array_values( array_map( 'trim', explode( "\n", $route_filters ) ) );
 
 		// If we're set to exclude matching filters, but we have no filters,
-		// then the route can be logged
+		// then the route can be logged.
 		if ( 'exclude_matches' === $route_logging_mode && empty( $route_filters ) ) {
 			return true;
 		}
