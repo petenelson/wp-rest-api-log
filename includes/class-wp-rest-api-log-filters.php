@@ -1,6 +1,8 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'restricted access' );
+}
 
 class WP_REST_API_Log_Filters {
 
@@ -9,12 +11,12 @@ class WP_REST_API_Log_Filters {
 	 *
 	 * @return array
 	 */
-	static public function filter_modes() {
+	public static function filter_modes() {
 		return array(
-			''                   => __( 'All', 'wp-rest-api-log' ),
-			'log_matches'        => __( 'Only Matching Filters', 'wp-rest-api-log' ),
-			'exclude_matches'    => __( 'Exclude Matching Filters', 'wp-rest-api-log' ),
-			);
+			''                => __( 'All', 'wp-rest-api-log' ),
+			'log_matches'     => __( 'Only Matching Filters', 'wp-rest-api-log' ),
+			'exclude_matches' => __( 'Exclude Matching Filters', 'wp-rest-api-log' ),
+		);
 	}
 
 
@@ -44,9 +46,8 @@ class WP_REST_API_Log_Filters {
 				$route_filter .= '$';
 
 				// Convert backslash to literals.
-				$route_filter = str_replace( '/', "\/", $route_filter );
+				$route_filter = str_replace( '/', '\/', $route_filter );
 			}
-
 		}
 
 		return $route_filter;
@@ -58,7 +59,7 @@ class WP_REST_API_Log_Filters {
 	 * @param  string $route Route (ex: /wp/v2).
 	 * @return bool
 	 */
-	static public function can_log_route( $route ) {
+	public static function can_log_route( $route ) {
 
 		// Get the filter mode.
 		$route_logging_mode = apply_filters( 'wp-rest-api-log-setting-get', 'routes', 'route-log-matching-mode' );
@@ -79,15 +80,15 @@ class WP_REST_API_Log_Filters {
 		}
 
 		// Loop through the filters and apply each one to the route.
-		foreach( $route_filters as $route_filter ) {
-			if ( empty( $route_filter  ) ) {
+		foreach ( $route_filters as $route_filter ) {
+			if ( empty( $route_filter ) ) {
 				continue;
 			}
 
 			$regex = self::route_to_regex( $route_filter );
 
-			//preg_match() returns 1 if the pattern matches given subject,
-			//0 if it does not, or FALSE if an error occurred.
+			// preg_match() returns 1 if the pattern matches given subject,
+			// 0 if it does not, or FALSE if an error occurred.
 			$match = preg_match( '/' . $regex . '/', $route );
 
 			// We can log this if the mode is set to log only matches.

@@ -2,7 +2,7 @@
 /**
  * Class WP_REST_API_Log_Test_Common
  *
- * @package 
+ * @package
  */
 
 /**
@@ -26,6 +26,4 @@ class WP_REST_API_Log_Test_Common extends WP_UnitTestCase {
 		$valid_methods = WP_REST_API_Log_Common::valid_methods();
 		$this->assertTrue( WP_REST_API_Log_Common::is_valid_method( 'GET' ) );
 	}
-
 }
-

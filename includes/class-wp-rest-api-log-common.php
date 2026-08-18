@@ -1,31 +1,33 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'restricted access' );
+}
 
 if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 
 	class WP_REST_API_Log_Common {
 
-		const PLUGIN_NAME      = 'wp-rest-api-log';
-		const VERSION          = WP_REST_API_LOG_VERSION;
-		const TEXT_DOMAIN      = 'wp-rest-api-log';
+		const PLUGIN_NAME = 'wp-rest-api-log';
+		const VERSION     = WP_REST_API_LOG_VERSION;
+		const TEXT_DOMAIN = 'wp-rest-api-log';
 
-		static public function current_milliseconds() {
+		public static function current_milliseconds() {
 			return self::microtime_to_milliseconds( microtime() );
 		}
 
-		static public function microtime_to_milliseconds( $microtime ) {
-			list( $usec, $sec ) = explode( " ", $microtime );
-			return ( ( (float)$usec + (float)$sec ) ) * 1000;
+		public static function microtime_to_milliseconds( $microtime ) {
+			list( $usec, $sec ) = explode( ' ', $microtime );
+			return ( ( (float) $usec + (float) $sec ) ) * 1000;
 		}
 
 
-		static public function valid_methods() {
+		public static function valid_methods() {
 			return apply_filters( self::PLUGIN_NAME . '-valid-methods', array( 'GET', 'POST', 'PUT', 'PATCH', 'DELETE' ) );
 		}
 
 
-		static public function is_valid_method( $method ) {
+		public static function is_valid_method( $method ) {
 			return apply_filters( self::PLUGIN_NAME . '-is-method-valid', in_array( $method, self::valid_methods() ) );
 		}
 
@@ -36,7 +38,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 		 * @param  array  $args     Additional args.
 		 * @return void
 		 */
-		static public function dropdown_terms( $taxonomy, $args = [] ) {
+		public static function dropdown_terms( $taxonomy, $args = array() ) {
 
 			if ( ! taxonomy_exists( $taxonomy ) ) {
 				return;
@@ -47,12 +49,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 
 			$args = wp_parse_args(
 				$args,
-				[
+				array(
 					// Selected term slug.
 					'selected'   => '',
 					'hide_empty' => false,
 					'all_items'  => '',
-				]
+				)
 			);
 
 			// Default the selected slug to the query string if nothing was passed.
@@ -60,11 +62,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 			$all_items     = ! empty( $args['all_label'] ) ? $args['all_label'] : $tax_obj->labels->all_items;
 
 			$term_query = new \WP_Term_Query(
-				[
+				array(
 					'taxonomy' => $taxonomy,
 					'orderby'  => 'count',
 					'order'    => 'DESC',
-				]
+				)
 			);
 
 			?>
@@ -89,11 +91,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 		 *
 		 * @return array
 		 */
-		static public function filter_strip_all_tags() {
-			return [
+		public static function filter_strip_all_tags() {
+			return array(
 				'filter'  => FILTER_CALLBACK,
 				'options' => '\wp_strip_all_tags',
-			];
+			);
 		}
 
 		/**
@@ -101,13 +103,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 		 *
 		 * @return string
 		 */
-		static public function get_string_query_param( $param  ) {
+		public static function get_string_query_param( $param ) {
 
 			$get = filter_var_array(
 				$_GET,
-				[
+				array(
 					$param => self::filter_strip_all_tags(),
-				]
+				)
 			);
 
 			return $get[ $param ];

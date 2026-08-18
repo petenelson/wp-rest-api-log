@@ -1,6 +1,8 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'restricted access' );
+}
 
 if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 
@@ -38,17 +40,16 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 
 		private function load() {
 
-			$this->headers   = $this->get_post_meta_array( 'headers' );
+			$this->headers = $this->get_post_meta_array( 'headers' );
 
 			if ( 'request' === $this->_type ) {
 				$this->body = get_post_meta( $this->_post->ID, '_request_body', true );
-				if ( false === $this->body) {
+				if ( false === $this->body ) {
 					$this->body = '';
 				}
 			} else {
 				$this->body = $this->_post->post_content;
 			}
-
 		}
 
 
@@ -74,7 +75,7 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 				// ex: _request_headers|Expires
 				// ex: _request_headers|Content-type
 				$look_for = "{$this->_type}_{$type}|";
-				$pos = stripos( $key, $look_for );
+				$pos      = stripos( $key, $look_for );
 
 				if ( 0 === $pos ) {
 
@@ -85,14 +86,10 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 					} else {
 						$meta[ $meta_name ] = maybe_unserialize( $value );
 					}
-
-
 				}
-
 			}
 
 			return $meta;
-
 		}
 
 		/**
@@ -101,26 +98,25 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 		 * @param  object $entry REST API Log Entry
 		 * @return object
 		 */
-		static public function esc_html_fields( $entry ) {
+		public static function esc_html_fields( $entry ) {
 
 			// Get the list of request fiels.
 			$request_fields = array(
 				'query_params',
 				'headers',
-				);
+			);
 
 			$request_fields = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-esc-html-request-fields', $request_fields );
-
 
 			// Get the list of response fiels.
 			$response_fields = array(
 				'headers',
-				);
+			);
 
 			$response_fields = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-esc-html-response-fields', $response_fields );
 
 			// Run esc_html on the request fields.
-			foreach( $request_fields as $field ) {
+			foreach ( $request_fields as $field ) {
 				if ( is_array( $entry->request->$field ) ) {
 					array_walk_recursive(
 						$entry->request->$field,
@@ -134,7 +130,7 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 			}
 
 			// Run esc_html on the response fields.
-			foreach( $response_fields  as $field ) {
+			foreach ( $response_fields  as $field ) {
 				if ( is_array( $entry->response->$field ) ) {
 					array_walk_recursive(
 						$entry->response->$field,
@@ -148,10 +144,7 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 			}
 
 			return $entry;
-
 		}
-
-
 	}
 
 }

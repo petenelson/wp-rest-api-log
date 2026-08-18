@@ -2,7 +2,7 @@
 /**
  * Class WP_REST_API_Log_Test_Taxonomies
  *
- * @package 
+ * @package
  */
 
 /**
@@ -24,4 +24,3 @@ class WP_REST_API_Log_Test_Taxonomies extends WP_UnitTestCase {
 		}
 	}
 }
-

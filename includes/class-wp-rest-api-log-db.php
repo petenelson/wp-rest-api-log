@@ -1,21 +1,23 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'restricted access' );
+}
 
 if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 	class WP_REST_API_Log_DB {
 
-		const POST_TYPE        = 'wp-rest-api-log';
-		const TAXONOMY_METHOD  = 'wp-rest-api-log-method';
-		const TAXONOMY_STATUS  = 'wp-rest-api-log-status';
-		const TAXONOMY_SOURCE  = 'wp-rest-api-log-source';
+		const POST_TYPE       = 'wp-rest-api-log';
+		const TAXONOMY_METHOD = 'wp-rest-api-log-method';
+		const TAXONOMY_STATUS = 'wp-rest-api-log-status';
+		const TAXONOMY_SOURCE = 'wp-rest-api-log-source';
 
-		const POST_META_IP_ADDRESS             = '_ip-address';
-		const POST_META_REQUEST_USER           = '_request_user';
-		const POST_META_HTTP_X_FORWARDED_FOR   = '_http_x_forwarded_for';
-		const POST_META_MILLISECONDS           = '_milliseconds';
-		const POST_META_REQUEST_BODY           = '_request_body';
+		const POST_META_IP_ADDRESS           = '_ip-address';
+		const POST_META_REQUEST_USER         = '_request_user';
+		const POST_META_HTTP_X_FORWARDED_FOR = '_http_x_forwarded_for';
+		const POST_META_MILLISECONDS         = '_milliseconds';
+		const POST_META_REQUEST_BODY         = '_request_body';
 
 
 		public function plugins_loaded() {
@@ -26,11 +28,10 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			// adds where statement when searching post id ranges
 			add_filter( 'posts_where', array( $this, 'add_where_post_id' ), 10, 2 );
-
 		}
 
 
-		static private function plugin_name() {
+		private static function plugin_name() {
 			return WP_REST_API_Log_Common::PLUGIN_NAME . '-entries';
 		}
 
@@ -49,39 +50,41 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			$server = filter_var_array(
 				$_SERVER,
-				[
+				array(
 					'REMOTE_ADDR'          => $strip_all_tags,
 					'HTTP_X_FORWARDED_FOR' => $strip_all_tags,
 					'REQUEST_METHOD'       => $strip_all_tags,
-				]
+				)
 			);
 
-			$args = wp_parse_args( $args, array(
-				'time'                  => current_time( 'mysql' ),
-				'ip_address'            => $server[ 'REMOTE_ADDR' ],
-				'user'                  => $current_user->user_login,
-				'http_x_forwarded_for'  => $server[ 'HTTP_X_FORWARDED_FOR' ],
-				'route'                 => '',
-				'source'                => 'WP REST API',
-				'method'                => $server[ 'REQUEST_METHOD' ],
-				'status'                => 200,
-				'request'               => array(
-					'body'                 => '',
+			$args = wp_parse_args(
+				$args,
+				array(
+					'time'                 => current_time( 'mysql' ),
+					'ip_address'           => $server['REMOTE_ADDR'],
+					'user'                 => $current_user->user_login,
+					'http_x_forwarded_for' => $server['HTTP_X_FORWARDED_FOR'],
+					'route'                => '',
+					'source'               => 'WP REST API',
+					'method'               => $server['REQUEST_METHOD'],
+					'status'               => 200,
+					'request'              => array(
+						'body' => '',
 					),
-				'response'               => array(
-					'body'                 => '',
+					'response'             => array(
+						'body' => '',
 					),
-				'milliseconds'          => 0,
+					'milliseconds'         => 0,
 
-				// This can be a K/V array of additional post meta to store.
-				'post_meta'             => array(),
+					// This can be a K/V array of additional post meta to store.
+					'post_meta'            => array(),
 
 				)
 			);
 
 			if ( empty( $args['milliseconds'] ) ) {
 				global $wp_rest_api_log_start;
-				$now = WP_REST_API_Log_Common::current_milliseconds();
+				$now                  = WP_REST_API_Log_Common::current_milliseconds();
 				$args['milliseconds'] = absint( $now - $wp_rest_api_log_start );
 			}
 
@@ -89,26 +92,26 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$post_content = wp_json_encode( $args['response']['body'], JSON_PRETTY_PRINT );
 
 			// Replace \n with PHP_EOL.
-			$post_content = str_replace( '\n', PHP_EOL, $post_content );
+			$post_content            = str_replace( '\n', PHP_EOL, $post_content );
 			$args['request']['body'] = str_replace( '\n', PHP_EOL, $args['request']['body'] );
 
 			// Allow filtering.
 			$args = apply_filters( self::plugin_name() . '-pre-insert', $args );
 
 			$new_post = array(
-				'post_author'     => 0,
-				'post_type'       => self::POST_TYPE,
-				'post_title'      => $args['route'],
-				'post_content'    => $post_content,
-				'post_status'     => 'publish',
+				'post_author'  => 0,
+				'post_type'    => self::POST_TYPE,
+				'post_title'   => $args['route'],
+				'post_content' => $post_content,
+				'post_status'  => 'publish',
 
 				// Append a random string to the end to attempt a unique post slug
 				// route names will often be the same, so this helps WordPress from
 				// having to loop through several times while generating a unique
 				// post slug.
-				'post_name'       => sanitize_title( $args['route'] ) . '-' . wp_generate_password( 6, true ),
+				'post_name'    => sanitize_title( $args['route'] ) . '-' . wp_generate_password( 6, true ),
 
-				);
+			);
 
 			// Allow filtering.
 			$new_post = apply_filters( self::plugin_name() . '-pre-insert-new-post', $new_post, $args );
@@ -145,19 +148,18 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			// store the source
 			wp_set_post_terms( $post_id, $args['source'], self::TAXONOMY_SOURCE );
-
 		}
 
 
 		private function insert_post_meta( $post_id, $args ) {
 
 			$meta = array(
-				self::POST_META_IP_ADDRESS             => $args['ip_address'],
-				self::POST_META_REQUEST_USER           => $args['user'],
-				self::POST_META_HTTP_X_FORWARDED_FOR   => $args['http_x_forwarded_for'],
-				self::POST_META_MILLISECONDS           => $args['milliseconds'],
-				self::POST_META_REQUEST_BODY           => $args['request']['body'],
-				);
+				self::POST_META_IP_ADDRESS           => $args['ip_address'],
+				self::POST_META_REQUEST_USER         => $args['user'],
+				self::POST_META_HTTP_X_FORWARDED_FOR => $args['http_x_forwarded_for'],
+				self::POST_META_MILLISECONDS         => $args['milliseconds'],
+				self::POST_META_REQUEST_BODY         => $args['request']['body'],
+			);
 
 			foreach ( $meta as $key => $value ) {
 				if ( is_array( $value ) && 1 === count( $value ) ) {
@@ -171,12 +173,10 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			// log any additional post meta
 			if ( ! empty( $args['post_meta'] ) && is_array( $args['post_meta'] ) ) {
 
-				foreach( $args['post_meta'] as $key => $value ){
+				foreach ( $args['post_meta'] as $key => $value ) {
 					add_post_meta( $post_id, $key, $value );
 				}
-
 			}
-
 		}
 
 
@@ -185,80 +185,77 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$request = 'request';
 			$types   = array( 'headers', 'query_params', 'body_params' );
 
-			foreach( $types as $type ) {
+			foreach ( $types as $type ) {
 
 				if ( ! empty( $args[ $request ][ $type ] ) ) {
 					foreach ( $args[ $request ][ $type ] as $key => $value ) {
 
 						if ( is_array( $value ) &&
-						    1 === count( $value ) &&
-						    'headers' === $type ) {
+							1 === count( $value ) &&
+							'headers' === $type ) {
 							$value = reset( $value );
 						}
 
 						if ( ! empty( $value ) ) {
 							add_post_meta( $post_id, "{$request}_{$type}|{$key}", $value );
 						}
-
 					}
 				}
 			}
-
 		}
 
 
 		private function insert_response_meta( $post_id, $args ) {
 
 			$response = 'response';
-			$types   = array( 'headers' );
+			$types    = array( 'headers' );
 
-			foreach( $types as $type ) {
+			foreach ( $types as $type ) {
 
 				if ( ! empty( $args[ $response ][ $type ] ) ) {
 					foreach ( $args[ $response ][ $type ] as $key => $value ) {
 
 						if ( is_array( $value ) &&
-						    1 === count( $value ) &&
-						    'headers' === $type ) {
+							1 === count( $value ) &&
+							'headers' === $type ) {
 							$value = reset( $value );
 						}
 
 						if ( ! empty( $value ) ) {
 							add_post_meta( $post_id, "{$response}_{$type}|{$key}", $value );
 						}
-
 					}
 				}
 			}
-
 		}
 
 
 		public function search( $args = array() ) {
 
-			$args = wp_parse_args( $args,
+			$args = wp_parse_args(
+				$args,
 				array(
-					'after_id'           => 0,
-					'before_id'          => 0,
-					'from'               => '',
-					'to'                 => current_time( 'mysql' ),
-					'route'              => '',
-					'route_match_type'   => 'exact',
-					'method'             => false,
-					'status'             => false,
-					'page'               => 1,
-					'posts_per_page'     => 50,
-					'params'             => array(),
+					'after_id'         => 0,
+					'before_id'        => 0,
+					'from'             => '',
+					'to'               => current_time( 'mysql' ),
+					'route'            => '',
+					'route_match_type' => 'exact',
+					'method'           => false,
+					'status'           => false,
+					'page'             => 1,
+					'posts_per_page'   => 50,
+					'params'           => array(),
 				)
 			);
 
 			$query_args = array(
-				'post_type'         => self::POST_TYPE,
-				'posts_per_page'    => $args['posts_per_page'],
-				'paged'             => $args['page'],
-				'date_query'        => array(),
-				'tax_query'         => array( 'relation' => 'AND' ),
-  				);
+				'post_type'      => self::POST_TYPE,
+				'posts_per_page' => $args['posts_per_page'],
+				'paged'          => $args['page'],
+				'date_query'     => array(),
+				'tax_query'      => array( 'relation' => 'AND' ),
+			);
 
 			if ( ! empty( $args['fields'] ) ) {
 				$query_args['fields'] = $args['fields'];
@@ -279,17 +276,17 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			// route, handled by posts_where filter
 			if ( ! empty( $args['route'] ) ) {
-				$query_args['_wp-rest-api-log-route']              = $args['route'];
-				$query_args['_wp-rest-api-log-route-match-type']   = $args['route_match_type'];
+				$query_args['_wp-rest-api-log-route']            = $args['route'];
+				$query_args['_wp-rest-api-log-route-match-type'] = $args['route_match_type'];
 			}
 
 			// post id, handled by posts_where filter
 			if ( ! empty( $args['after_id'] ) ) {
-				$query_args['_wp-rest-api-log-after-id']           = $args['after_id'];
+				$query_args['_wp-rest-api-log-after-id'] = $args['after_id'];
 			}
 
 			if ( ! empty( $args['before_id'] ) ) {
-				$query_args['_wp-rest-api-log-before-id']          = $args['before_id'];
+				$query_args['_wp-rest-api-log-before-id'] = $args['before_id'];
 			}
 
 			// HTTP Method
@@ -298,7 +295,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					'taxonomy' => self::TAXONOMY_METHOD,
 					'field'    => 'slug',
 					'terms'    => explode( ',', $args['method'] ),
-					);
+				);
 			}
 
 			// HTTP Status
@@ -307,7 +304,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					'taxonomy' => self::TAXONOMY_STATUS,
 					'field'    => 'slug',
 					'terms'    => explode( ',', $args['status'] ),
-					);
+				);
 			}
 
 			$posts = array();
@@ -318,7 +315,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			}
 
 			return $posts;
-
 		}
 
 		/**
@@ -335,9 +331,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 				global $wpdb;
 
-				$route_match_type   = $query->get( '_wp-rest-api-log-route-match-type' );
-				$route_start        = '';
-				$route_end          = '';
+				$route_match_type = $query->get( '_wp-rest-api-log-route-match-type' );
+				$route_start      = '';
+				$route_end        = '';
 
 				switch ( $route_match_type ) {
 
@@ -350,8 +346,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 						break;
 
 					case 'wildcard':
-						$route_start   = '%';
-						$route_end     = '%';
+						$route_start = '%';
+						$route_end   = '%';
 						break;
 				}
 
@@ -399,7 +395,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			global $wpdb;
 
 			$existing_tables = $wpdb->get_col( "SHOW TABLES LIKE '{$wpdb->prefix}wp_rest_api_log%';" );
-			$log_ids = array();
+			$log_ids         = array();
 
 			if ( ! empty( $existing_tables ) ) {
 
@@ -407,28 +403,26 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 				foreach ( $ids as $id ) {
 
-					$query = new WP_Query( array(
-						'posts_per_page'           => 1,
-						'update_post_meta_cache'   => false,
-						'update_post_term_cache'   => false,
-						'post_type'                => self::POST_TYPE,
-						'meta_key'                 => '_wp_rest_api_log_migrated_id',
-						'meta_value'               => $id,
-						'fields'                   => 'ids',
-						'post_status'              => 'publish',
+					$query = new WP_Query(
+						array(
+							'posts_per_page'         => 1,
+							'update_post_meta_cache' => false,
+							'update_post_term_cache' => false,
+							'post_type'              => self::POST_TYPE,
+							'meta_key'               => '_wp_rest_api_log_migrated_id',
+							'meta_value'             => $id,
+							'fields'                 => 'ids',
+							'post_status'            => 'publish',
 						)
 					);
 
 					if ( ! $query->have_posts() ) {
 						$log_ids[] = $id;
 					}
-
 				}
-
 			}
 
 			return $log_ids;
-
 		}
 
 		/**
@@ -441,26 +435,25 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			global $wpdb;
 
-			$log         = $wpdb->get_row( $wpdb->prepare( "select * from {$wpdb->prefix}wp_rest_api_log where id = %d", $id ) );
-			$meta_rows   = $wpdb->get_results( $wpdb->prepare( "select * from {$wpdb->prefix}wp_rest_api_logmeta where log_id = %d", $log->id ) );
+			$log       = $wpdb->get_row( $wpdb->prepare( "select * from {$wpdb->prefix}wp_rest_api_log where id = %d", $id ) );
+			$meta_rows = $wpdb->get_results( $wpdb->prepare( "select * from {$wpdb->prefix}wp_rest_api_logmeta where log_id = %d", $log->id ) );
 
 			$args = array(
-				'time'                  => $log->time,
-				'ip_address'            => $log->ip_address,
-				'route'                 => $log->route,
-				'method'                => $log->method,
-				'status'                => $log->status,
-				'request'               => array(
-					'body'                 => $log->request_body,
-					),
-				'response'               => array(
-					'body'                 => json_decode( $log->response_body ),
-					),
-				'milliseconds'          => $log->milliseconds,
+				'time'         => $log->time,
+				'ip_address'   => $log->ip_address,
+				'route'        => $log->route,
+				'method'       => $log->method,
+				'status'       => $log->status,
+				'request'      => array(
+					'body' => $log->request_body,
+				),
+				'response'     => array(
+					'body' => json_decode( $log->response_body ),
+				),
+				'milliseconds' => $log->milliseconds,
 			);
 
-
-			foreach( $meta_rows as $meta_row ) {
+			foreach ( $meta_rows as $meta_row ) {
 
 				switch ( $meta_row->meta_type ) {
 					case 'header':
@@ -474,7 +467,6 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				if ( ! empty( $meta_type ) ) {
 					$args[ $meta_row->meta_request_response ][ $meta_type ][ $meta_row->meta_key ] = $meta_row->meta_value;
 				}
-
 			}
 
 			$post_id = $this->insert( $args );
@@ -486,18 +478,17 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$wpdb->update(
 				$wpdb->posts,
 				array(
-					'post_date' => $log->time,
-					'post_date_gmt' => $log->time,
-					'post_modified' => $log->time,
+					'post_date'         => $log->time,
+					'post_date_gmt'     => $log->time,
+					'post_modified'     => $log->time,
 					'post_modified_gmt' => $log->time,
-					),
+				),
 				array(
 					'ID' => $post_id, // where clause
-					)
+				)
 			);
 
 			return $post_id;
-
 		}
 
 
@@ -506,15 +497,16 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 *
 		 * @return int
 		 */
-		static public function get_all_log_ids( ) {
+		public static function get_all_log_ids() {
 
-			$query = new WP_Query( array(
-				'update_post_term_cache' => false,
-				'update_post_meta_cache' => false,
-				'no_found_rows'          => true,
-				'post_type'              => WP_REST_API_Log_DB::POST_TYPE,
-				'fields'                 => 'ids',
-				'posts_per_page'         => -1,
+			$query = new WP_Query(
+				array(
+					'update_post_term_cache' => false,
+					'update_post_meta_cache' => false,
+					'no_found_rows'          => true,
+					'post_type'              => self::POST_TYPE,
+					'fields'                 => 'ids',
+					'posts_per_page'         => -1,
 				)
 			);
 
@@ -526,16 +518,14 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 *
 		 * @return void
 		 */
-		static public function purge_all_log_entries() {
+		public static function purge_all_log_entries() {
 
 			$post_ids = self::get_all_log_ids();
 
-			foreach( $post_ids as $post_id ) {
+			foreach ( $post_ids as $post_id ) {
 				wp_delete_post( $post_id, true );
 			}
 		}
-
-
 	} // end class
 
 }

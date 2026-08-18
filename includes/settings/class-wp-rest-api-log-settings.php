@@ -1,6 +1,8 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'restricted access' );
+}
 
 if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 
@@ -11,7 +13,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 		 *
 		 * @return void
 		 */
-		static public function plugins_loaded() {
+		public static function plugins_loaded() {
 			// admin menus
 			add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
 			add_action( 'admin_notices', array( __CLASS__, 'activation_admin_notice' ) );
@@ -27,7 +29,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 		 *
 		 * @return void
 		 */
-		static public function activation_admin_notice() {
+		public static function activation_admin_notice() {
 			if ( '1' === get_option( 'wp-rest-api-log-plugin-activated' ) ) {
 				?>
 					<div class="updated">
@@ -41,7 +43,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 		}
 
 
-		static public function deactivation_hook() {
+		public static function deactivation_hook() {
 			// placeholder in case we need deactivation code
 		}
 
@@ -50,10 +52,10 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 		 *
 		 * @return void
 		 */
-		static public function create_default_settings() {
+		public static function create_default_settings() {
 			// create default settings
 			add_option( WP_REST_API_Log_Settings_General::$settings_key, WP_REST_API_Log_Settings_General::get_default_settings(), '', $autoload = 'no' );
-			add_option( WP_REST_API_Log_Settings_Routes::$settings_key,  WP_REST_API_Log_Settings_Routes::get_default_settings(),  '', $autoload = 'no' );
+			add_option( WP_REST_API_Log_Settings_Routes::$settings_key, WP_REST_API_Log_Settings_Routes::get_default_settings(), '', $autoload = 'no' );
 		}
 
 		/**
@@ -61,7 +63,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 		 *
 		 * @return void
 		 */
-		static public function admin_menu() {
+		public static function admin_menu() {
 			add_options_page(
 				__( 'REST API Log Settings', 'wp-rest-api-log' ),
 				__( 'REST API Log', 'wp-rest-api-log' ),
@@ -69,7 +71,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 				self::$settings_page,
 				array( __CLASS__, 'options_page' ),
 				30
-				);
+			);
 		}
 
 		/**
@@ -77,18 +79,19 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 		 *
 		 * @return void
 		 */
-		static public function options_page() {
+		public static function options_page() {
 
-			$tab = self::current_tab(); ?>
+			$tab = self::current_tab();
+			?>
 			<div class="wrap">
 				<?php self::plugin_options_tabs(); ?>
 				<form method="post" action="options.php" class="options-form">
 					<?php settings_fields( $tab ); ?>
 					<?php do_settings_sections( $tab ); ?>
 					<?php
-						if ( WP_REST_API_Log_Settings_Help::$settings_key !== $tab ) {
-							submit_button( __( 'Save Changes' ), 'primary', 'submit', true );
-						}
+					if ( WP_REST_API_Log_Settings_Help::$settings_key !== $tab ) {
+						submit_button( __( 'Save Changes' ), 'primary', 'submit', true );
+					}
 					?>
 				</form>
 			</div>
@@ -99,7 +102,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 				do_action( 'wp-rest-api-log-settings-updated' );
 				flush_rewrite_rules();
 			}
-
 		}
 
 		/**
@@ -107,7 +109,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 		 *
 		 * @return string
 		 */
-		static private function current_tab() {
+		private static function current_tab() {
 			$current_tab = WP_REST_API_Log_Common::get_string_query_param( 'tab' );
 			return empty( $current_tab ) ? 'wp-rest-api-log-settings-general' : $current_tab;
 		}
@@ -117,7 +119,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 		 *
 		 * @return void
 		 */
-		static private function plugin_options_tabs() {
+		private static function plugin_options_tabs() {
 			$current_tab = self::current_tab();
 
 			echo '<h2>' . esc_html__( 'Settings' ) . ' &rsaquo; REST API Log</h2><h2 class="nav-tab-wrapper">';
@@ -131,7 +133,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 				$url = add_query_arg(
 					array(
 						'page' => urlencode( self::$settings_page ),
-						'tab' => urlencode( $tab_key ),
+						'tab'  => urlencode( $tab_key ),
 					),
 					admin_url( 'options-general.php' )
 				);
@@ -141,7 +143,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 				}
 
 				// Output the tab anchor tag.
-				printf( '<a class="nav-tab %1$s" href="%2$s">%3$s</a>',
+				printf(
+					'<a class="nav-tab %1$s" href="%2$s">%3$s</a>',
 					sanitize_html_class( $active ),
 					esc_url( $url ),
 					esc_html( $tab_caption )
@@ -150,8 +153,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 			}
 			echo '</h2>';
 		}
-
-
 	}
 
 }

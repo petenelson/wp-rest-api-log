@@ -1,16 +1,18 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'restricted access' );
+}
 
 if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 
 	class WP_REST_API_Log_Post_Type {
 
-		static public function plugins_loaded() {
+		public static function plugins_loaded() {
 			add_action( 'init', array( __CLASS__, 'register_custom_post_types' ) );
 		}
 
-		static public function register_custom_post_types() {
+		public static function register_custom_post_types() {
 
 			$args = self::get_post_type_args();
 
@@ -18,7 +20,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 		}
 
 
-		static public function get_post_type_labels() {
+		public static function get_post_type_labels() {
 
 			$labels = array(
 				'name'               => esc_html__( 'REST API Log Entries', 'wp-rest-api-log' ),
@@ -38,7 +40,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 		}
 
 
-		static public function get_post_type_args() {
+		public static function get_post_type_args() {
 
 			$args = array(
 				'labels'              => self::get_post_type_labels(),
@@ -57,13 +59,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 				'rewrite'             => false,
 				'map_meta_cap'        => false,
 				'capabilities'        => array(
-					'read_post'     => 'read_' . WP_REST_API_Log_DB::POST_TYPE,
-					'delete_post'   => 'delete_' . WP_REST_API_Log_DB::POST_TYPE,
-					'delete_posts'  => 'delete_' . WP_REST_API_Log_DB::POST_TYPE . 's',
-					'edit_posts'    => 'edit_' . WP_REST_API_Log_DB::POST_TYPE . 's',
-					'edit_post'     => 'edit_' . WP_REST_API_Log_DB::POST_TYPE,
-					'create_posts'  => 'create_' . WP_REST_API_Log_DB::POST_TYPE . 's',
-					),
+					'read_post'    => 'read_' . WP_REST_API_Log_DB::POST_TYPE,
+					'delete_post'  => 'delete_' . WP_REST_API_Log_DB::POST_TYPE,
+					'delete_posts' => 'delete_' . WP_REST_API_Log_DB::POST_TYPE . 's',
+					'edit_posts'   => 'edit_' . WP_REST_API_Log_DB::POST_TYPE . 's',
+					'edit_post'    => 'edit_' . WP_REST_API_Log_DB::POST_TYPE,
+					'create_posts' => 'create_' . WP_REST_API_Log_DB::POST_TYPE . 's',
+				),
 				'supports'            => array( 'title', 'author', 'excerpt' ),
 			);
 

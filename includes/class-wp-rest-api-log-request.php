@@ -1,6 +1,8 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'restricted access' );
+}
 
 if ( ! class_exists( 'WP_REST_API_Log_API_Request' ) ) {
 
@@ -17,11 +19,9 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request' ) ) {
 
 		private function load() {
 
-			$this->body_params     = parent::get_post_meta_array( 'body_params' );
-			$this->query_params    = parent::get_post_meta_array( 'query_params' );
-
+			$this->body_params  = parent::get_post_meta_array( 'body_params' );
+			$this->query_params = parent::get_post_meta_array( 'query_params' );
 		}
-
 	}
 
 }

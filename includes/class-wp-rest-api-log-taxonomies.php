@@ -1,12 +1,14 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'restricted access' );
+}
 
 if ( ! class_exists( 'WP_REST_API_Log_Taxonomies' ) ) {
 
 	class WP_REST_API_Log_Taxonomies {
 
-		static public function plugins_loaded() {
+		public static function plugins_loaded() {
 			add_action( 'init', array( __CLASS__, 'register_custom_taxonomies' ) );
 		}
 
@@ -15,22 +17,22 @@ if ( ! class_exists( 'WP_REST_API_Log_Taxonomies' ) ) {
 		 *
 		 * @return void
 		 */
-		static public function register_custom_taxonomies() {
+		public static function register_custom_taxonomies() {
 
 			$taxonomies = array(
 				WP_REST_API_Log_DB::TAXONOMY_METHOD => array(
-					'name'                => __( 'Method', 'wp-rest-api-log' ),
-					'singular_name'       => __( 'Methods', 'wp-rest-api-log' ),
+					'name'          => __( 'Method', 'wp-rest-api-log' ),
+					'singular_name' => __( 'Methods', 'wp-rest-api-log' ),
 				),
 
 				WP_REST_API_Log_DB::TAXONOMY_STATUS => array(
-					'name'                => __( 'Status', 'wp-rest-api-log' ),
-					'singular_name'       => __( 'Statuses', 'wp-rest-api-log' ),
+					'name'          => __( 'Status', 'wp-rest-api-log' ),
+					'singular_name' => __( 'Statuses', 'wp-rest-api-log' ),
 				),
 
 				WP_REST_API_Log_DB::TAXONOMY_SOURCE => array(
-					'name'                => __( 'Log Source', 'wp-rest-api-log' ),
-					'singular_name'       => __( 'Log Sources', 'wp-rest-api-log' ),
+					'name'          => __( 'Log Source', 'wp-rest-api-log' ),
+					'singular_name' => __( 'Log Sources', 'wp-rest-api-log' ),
 				),
 			);
 

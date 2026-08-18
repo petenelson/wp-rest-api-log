@@ -1,6 +1,8 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'restricted access' );
+}
 
 if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
@@ -11,15 +13,15 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 *
 		 * @var string|false
 		 */
-		static public $view_entry_hook = false;
+		public static $view_entry_hook = false;
 
 		/**
 		 * Wire up WordPress hooks and filters.
 		 *
 		 * @return void
 		 */
-		static public function plugins_loaded() {
-			add_filter( 'post_type_link',     array( __CLASS__, 'entry_permalink' ), 10, 2 );
+		public static function plugins_loaded() {
+			add_filter( 'post_type_link', array( __CLASS__, 'entry_permalink' ), 10, 2 );
 			add_filter( 'get_edit_post_link', array( __CLASS__, 'entry_permalink' ), 10, 2 );
 			add_action( 'admin_init', array( __CLASS__, 'register_scripts' ), 10 );
 			add_action( 'admin_init', array( __CLASS__, 'localize_script_data' ), 11 );
@@ -39,7 +41,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 *
 		 * @return void
 		 */
-		static public function admin_menu() {
+		public static function admin_menu() {
 
 			self::$view_entry_hook = add_submenu_page(
 				'',
@@ -47,7 +49,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 				'',
 				'read_' . WP_REST_API_Log_DB::POST_TYPE,
 				WP_REST_API_Log_Common::PLUGIN_NAME . '-view-entry',
-				array( __CLASS__, 'display_log_entry')
+				array( __CLASS__, 'display_log_entry' )
 			);
 
 			// The view entry page has no parent menu, so WordPress core never resolves
@@ -68,7 +70,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 					}
 				}
 			}
-
 		}
 
 
@@ -77,20 +78,20 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 *
 		 * @return void
 		 */
-		static public function register_scripts() {
+		public static function register_scripts() {
 
 			$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
 			// https://highlightjs.org/
 			$highlight_version = apply_filters( 'wp-rest-api-log-admin-highlight-js-version', '11.7.0' );
-			$highlight_style   = apply_filters( 'wp-rest-api-log-admin-highlight-js-style',   'default' );
+			$highlight_style   = apply_filters( 'wp-rest-api-log-admin-highlight-js-style', 'default' );
 
 			// https://github.com/zenorocha/clipboard.js
 			$clipboard_version = apply_filters( 'wp-rest-api-log-admin-clipboard-js-version', '2.0.11' );
 
-			wp_register_script( 'wp-rest-api-log-admin-highlight-js',  'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/highlight.min.js' );
-			wp_register_style( 'wp-rest-api-log-admin-highlight-js',  'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/styles/' . $highlight_style . '.min.css' );
-			wp_register_script( 'wp-rest-api-log-admin-clipboard-js',  'https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/' . $clipboard_version . '/clipboard.min.js' );
+			wp_register_script( 'wp-rest-api-log-admin-highlight-js', 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/highlight.min.js' );
+			wp_register_style( 'wp-rest-api-log-admin-highlight-js', 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/styles/' . $highlight_style . '.min.css' );
+			wp_register_script( 'wp-rest-api-log-admin-clipboard-js', 'https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/' . $clipboard_version . '/clipboard.min.js' );
 
 			wp_register_script( 'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'dist/js/admin.js', 'jquery', WP_REST_API_Log_Common::VERSION );
 			wp_register_style( 'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'dist/css/admin.css', '', WP_REST_API_Log_Common::VERSION );
@@ -101,14 +102,14 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 *
 		 * @return void
 		 */
-		static public function localize_script_data() {
+		public static function localize_script_data() {
 
 			$data = array(
-				'nonce'  => wp_create_nonce( 'wp_rest' ),
+				'nonce'     => wp_create_nonce( 'wp_rest' ),
 				'endpoints' => array(
 					'purge_entries' => rest_url( WP_REST_API_Log_Common::PLUGIN_NAME . '/batch-purge-all' ),
-					),
-				);
+				),
+			);
 
 			// Ensure admin URLs in SSL get pointed to SSL on the frontend.
 			if ( is_ssl() ) {
@@ -126,7 +127,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 *
 		 * @return void
 		 */
-		static public function set_view_entry_title() {
+		public static function set_view_entry_title() {
 			global $title;
 			$title = __( 'REST API Log Entry', 'wp-rest-api-log' );
 		}
@@ -136,7 +137,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 *
 		 * @return void
 		 */
-		static public function display_log_entry() {
+		public static function display_log_entry() {
 
 			include_once apply_filters( 'wp-rest-api-log-admin-view-entry-template', WP_REST_API_LOG_PATH . 'admin/partials/wp-rest-api-log-view-entry.php' );
 
@@ -150,13 +151,16 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 * @param  int|WP_Post $post      Post ID or object.
 		 * @return string
 		 */
-		static public function entry_permalink( $permalink, $post ) {
+		public static function entry_permalink( $permalink, $post ) {
 			$post = get_post( $post );
 			if ( WP_REST_API_Log_DB::POST_TYPE === $post->post_type ) {
-				$permalink = add_query_arg( array(
-					'page'  => WP_REST_API_Log_Common::PLUGIN_NAME . '-view-entry',
-					'id'    => urlencode( $post->ID ),
-					), admin_url( 'tools.php' ) );
+				$permalink = add_query_arg(
+					array(
+						'page' => WP_REST_API_Log_Common::PLUGIN_NAME . '-view-entry',
+						'id'   => urlencode( $post->ID ),
+					),
+					admin_url( 'tools.php' )
+				);
 			}
 			return $permalink;
 		}
@@ -173,7 +177,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 * @param  array $query Query args.
 		 * @return array
 		 */
-		static public function wp_link_query_args( $query ) {
+		public static function wp_link_query_args( $query ) {
 
 			if ( isset( $query['post_type'] ) && is_array( $query['post_type'] ) ) {
 				for ( $i = count( $query['post_type'] ) - 1; $i >= 0; $i-- ) {
@@ -199,7 +203,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 * @param  string $title
 		 * @return string
 		 */
-		static public function admin_title( $admin_title, $title ) {
+		public static function admin_title( $admin_title, $title ) {
 			return $admin_title;
 		}
 
@@ -211,7 +215,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 * @param array $caps    The requested capabilities.
 		 * @param array $args    Requested cap, user ID, and object ID.
 		 */
-		static public function add_admin_caps( $allcaps, $caps, $args ) {
+		public static function add_admin_caps( $allcaps, $caps, $args ) {
 
 			// Get the user
 			$user = get_userdata( $args[1] );
@@ -229,7 +233,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 					$allcaps[ $post_type->cap->edit_post ]         = true;
 					$allcaps[ $post_type->cap->delete_post ]       = true;
 				}
-
 			}
 
 			return $allcaps;
@@ -245,7 +248,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 *                            'Inactive', 'Recently Activated', 'Upgrade',
 		 *                            'Must-Use', 'Drop-ins', 'Search'.
 		 */
-		static public function plugin_action_links( $actions, $plugin_file, $plugin_data, $context ) {
+		public static function plugin_action_links( $actions, $plugin_file, $plugin_data, $context ) {
 
 			if ( is_plugin_active( $plugin_file ) && current_user_can( 'manage_options' ) ) {
 
@@ -254,19 +257,21 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 					'page',
 					rawurlencode( WP_REST_API_Log_Settings::$settings_page ),
 					admin_url( 'admin.php' )
-					);
+				);
 
 				// Add the anchor tag to the list of plugin links.
 				$new_actions = array(
-					'settings' => sprintf( '<a href="%1$s">%2$s</a>',
+					'settings' => sprintf(
+						'<a href="%1$s">%2$s</a>',
 						esc_url( $url ),
 						esc_html__( 'Settings' )
-						),
-					'log' => sprintf( '<a href="%1$s">%2$s</a>',
+					),
+					'log'      => sprintf(
+						'<a href="%1$s">%2$s</a>',
 						esc_url( admin_url( 'edit.php?post_type=wp-rest-api-log' ) ),
 						esc_html__( 'Log' )
-						)
-					);
+					),
+				);
 
 				$actions = array_merge( $actions, $new_actions );
 			}
@@ -279,13 +284,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 *
 		 * @return void
 		 */
-		static public function maybe_enqueue_scripts() {
+		public static function maybe_enqueue_scripts() {
 			$screen = get_current_screen();
 
 			$screen_ids = array(
 				'settings_page_wp-rest-api-log-settings',
 				'edit-wp-rest-api-log',
-				);
+			);
 
 			if ( in_array( $screen->id, $screen_ids ) ) {
 				self::enqueue_scripts();
@@ -297,14 +302,14 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 *
 		 * @return void
 		 */
-		static public function enqueue_scripts() {
+		public static function enqueue_scripts() {
 			wp_enqueue_script( 'wp-rest-api-log-admin-highlight-js' );
-			wp_enqueue_style(  'wp-rest-api-log-admin-highlight-js' );
+			wp_enqueue_style( 'wp-rest-api-log-admin-highlight-js' );
 
 			wp_enqueue_script( 'wp-rest-api-log-admin-clipboard-js' );
 
 			wp_enqueue_script( 'wp-rest-api-log-admin' );
-			wp_enqueue_style(  'wp-rest-api-log-admin' );
+			wp_enqueue_style( 'wp-rest-api-log-admin' );
 		}
 
 		/**
@@ -313,13 +318,15 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 * @param  array $args
 		 * @return void
 		 */
-		static public function display_entry_property_links( $args ) {
+		public static function display_entry_property_links( $args ) {
 
-			$args = wp_parse_args( $args, array(
-				'rr'               => '',
-				'property'         => '',
-				'download_urls'    => array(),
-				'entry'            => null,
+			$args = wp_parse_args(
+				$args,
+				array(
+					'rr'            => '',
+					'property'      => '',
+					'download_urls' => array(),
+					'entry'         => null,
 				)
 			);
 

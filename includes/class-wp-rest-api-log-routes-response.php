@@ -1,6 +1,8 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'restricted access' );
+}
 
 if ( ! class_exists( 'WP_REST_API_Log_Routes_Response' ) ) {
 
@@ -13,19 +15,14 @@ if ( ! class_exists( 'WP_REST_API_Log_Routes_Response' ) ) {
 			if ( is_array( $data ) ) {
 				$this->populate_response( $data );
 			}
-
 		}
 
 
 		private function populate_response( $data ) {
 
-			$this->routes = $data;
+			$this->routes           = $data;
 			$this->records_affected = count( $this->routes );
-
 		}
-
-
-
 	}
 
 }

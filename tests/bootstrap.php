@@ -24,7 +24,7 @@ class WP_REST_API_Log_Tests_Bootstrap {
 		}
 
 		// Load the Composer autoloader.
-		$this->plugin_root = dirname( dirname( __FILE__ ) );
+		$this->plugin_root = dirname( __DIR__ );
 		if ( ! file_exists( $this->plugin_root . '/vendor/autoload.php' ) ) {
 			throw new Exception(
 				'ERROR' . PHP_EOL . PHP_EOL .
@@ -36,7 +36,7 @@ class WP_REST_API_Log_Tests_Bootstrap {
 		// Give access to tests_add_filter() function.
 		require_once $wp_develop_dir . '/tests/phpunit/includes/functions.php';
 
-		tests_add_filter( 'muplugins_loaded', [ $this, 'manually_load_plugin' ] );
+		tests_add_filter( 'muplugins_loaded', array( $this, 'manually_load_plugin' ) );
 
 		// Start up the WP testing environment.
 		require $wp_develop_dir . '/tests/phpunit/includes/bootstrap.php';

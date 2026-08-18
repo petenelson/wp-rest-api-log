@@ -1,6 +1,8 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'restricted access' );
+}
 
 class WP_REST_API_Log_Activator {
 
@@ -11,9 +13,5 @@ class WP_REST_API_Log_Activator {
 
 		// add an option so we can show the activated admin notice
 		add_option( WP_REST_API_Log_Common::PLUGIN_NAME . '-plugin-activated', '1' );
-
 	}
-
-
-
 }

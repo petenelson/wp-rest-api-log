@@ -23,7 +23,7 @@ if ( ! defined( 'WP_REST_API_LOG_VERSION' ) ) {
 }
 
 if ( ! defined( 'WP_REST_API_LOG_ROOT' ) ) {
-	define( 'WP_REST_API_LOG_ROOT', trailingslashit( dirname( __FILE__ ) ) );
+	define( 'WP_REST_API_LOG_ROOT', trailingslashit( __DIR__ ) );
 }
 
 if ( ! defined( 'WP_REST_API_LOG_PATH' ) ) {
@@ -127,7 +127,7 @@ WP_REST_API_Log_Admin::plugins_loaded();
 /* Activation hook */
 register_activation_hook(
 	__FILE__,
-	function() {
+	function () {
 		require_once 'includes/class-wp-rest-api-log-activator.php';
 		WP_REST_API_Log_Activator::activate();
 	}

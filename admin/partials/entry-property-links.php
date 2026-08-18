@@ -1,5 +1,5 @@
 <?php
-$url = $args['download_urls'][ $args['rr'] ][ $args['property'] ];
+$url           = $args['download_urls'][ $args['rr'] ][ $args['property'] ];
 $data_property = $args['rr'] . '-' . $args['property'];
 ?>
 <p>

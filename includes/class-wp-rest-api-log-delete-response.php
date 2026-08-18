@@ -1,6 +1,8 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'restricted access' );
+}
 
 if ( ! class_exists( 'WP_REST_API_Log_Delete_Response' ) ) {
 
@@ -13,20 +15,15 @@ if ( ! class_exists( 'WP_REST_API_Log_Delete_Response' ) ) {
 			if ( is_object( $data ) ) {
 				$this->populate_response( $data );
 			}
-
 		}
 
 
 		private function populate_response( $data ) {
 
-			$this->args               = $data->args;
-			$this->older_than_date    = $data->older_than_date;
-			$this->records_affected   = $data->records_affected;
-
+			$this->args             = $data->args;
+			$this->older_than_date  = $data->older_than_date;
+			$this->records_affected = $data->records_affected;
 		}
-
-
 	}
 
 }
-

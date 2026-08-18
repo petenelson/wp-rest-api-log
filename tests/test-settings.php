@@ -2,7 +2,7 @@
 /**
  * Class WP_REST_API_Log_Test_Settings
  *
- * @package 
+ * @package
  */
 
 /**
@@ -18,7 +18,6 @@ class WP_REST_API_Log_Test_Settings extends WP_UnitTestCase {
 		$settings = WP_REST_API_Log_Settings_General::get_default_settings();
 		$this->assertNotEmpty( $settings );
 		$this->assertNotEmpty( $settings['logging-enabled'], 'logging-enabled is empty' );
-
 	}
 
 	/**
@@ -29,8 +28,5 @@ class WP_REST_API_Log_Test_Settings extends WP_UnitTestCase {
 		$settings = WP_REST_API_Log_Settings_Routes::get_default_settings();
 		$this->assertNotEmpty( $settings );
 		$this->assertNotEmpty( $settings['ignore-core-oembed'], 'ignore-core-oembed is empty' );
-
 	}
-
 }
-
