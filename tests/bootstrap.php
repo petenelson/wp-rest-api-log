@@ -1,19 +1,33 @@
 <?php
+/**
+ * PHPUnit bootstrap for the plugin's test suite.
+ *
+ * @package wp-rest-api-log
+ */
 
+/**
+ * Loads WordPress' test suite and the plugin under test.
+ */
 class WP_REST_API_Log_Tests_Bootstrap {
 
+	/**
+	 * Absolute path to the plugin directory.
+	 *
+	 * @var string
+	 */
 	protected $plugin_root = '';
 
 	/**
-	 * Setup the unit test environment
+	 * Sets up the unit test environment.
 	 *
+	 * @throws Exception When WP_DEVELOP_DIR is not set or Composer has not been run.
 	 * @return void
 	 */
 	public function bootstrap() {
 
-		// Run this in your shell to point to whever you cloned WP.
+		// Run this in your shell to point to wherever you cloned WordPress:
 		// git clone git@github.com:WordPress/wordpress-develop.git
-		// Example: export WP_DEVELOP_DIR="/Users/petenelson/projects/wordpress/wordpress-develop/"
+		// Example: export WP_DEVELOP_DIR="/Users/petenelson/projects/wordpress/wordpress-develop/".
 		$wp_develop_dir = getenv( 'WP_DEVELOP_DIR' );
 
 		if ( empty( $wp_develop_dir ) ) {
@@ -43,7 +57,9 @@ class WP_REST_API_Log_Tests_Bootstrap {
 	}
 
 	/**
-	 * Manually load the plugin being tested.
+	 * Manually loads the plugin being tested.
+	 *
+	 * @return void
 	 */
 	public function manually_load_plugin() {
 		require $this->plugin_root . '/wp-rest-api-log.php';

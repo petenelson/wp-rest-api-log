@@ -2,7 +2,7 @@
 /**
  * Class WP_REST_API_Log_Test_Settings
  *
- * @package
+ * @package wp-rest-api-log
  */
 
 /**
@@ -13,7 +13,7 @@ class WP_REST_API_Log_Test_Settings extends WP_UnitTestCase {
 	/**
 	 * Test that general has default settings
 	 */
-	function test_default_general_settings() {
+	public function test_default_general_settings() {
 
 		$settings = WP_REST_API_Log_Settings_General::get_default_settings();
 		$this->assertNotEmpty( $settings );
@@ -23,7 +23,7 @@ class WP_REST_API_Log_Test_Settings extends WP_UnitTestCase {
 	/**
 	 * Test that routes have default settings
 	 */
-	function test_default_routes_settings() {
+	public function test_default_routes_settings() {
 
 		$settings = WP_REST_API_Log_Settings_Routes::get_default_settings();
 		$this->assertNotEmpty( $settings );

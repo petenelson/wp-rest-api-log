@@ -2,7 +2,7 @@
 /**
  * Class WP_REST_API_Log_Test_Taxonomies
  *
- * @package
+ * @package wp-rest-api-log
  */
 
 /**
@@ -10,7 +10,12 @@
  */
 class WP_REST_API_Log_Test_Taxonomies extends WP_UnitTestCase {
 
-	function test_registered_taxonomies() {
+	/**
+	 * Tests that the plugin's taxonomies are registered.
+	 *
+	 * @return void
+	 */
+	public function test_registered_taxonomies() {
 
 		// Verify the taxonomies are registered.
 		$taxonomies = array(

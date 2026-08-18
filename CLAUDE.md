@@ -30,11 +30,19 @@ The test database (`wordpress_test`) must exist before running tests.
 
 ## Coding Standards
 
-Uses WordPress Coding Standards (WPCS) via `wp-coding-standards/wpcs`.
+Uses WordPress Coding Standards (WPCS) via `wp-coding-standards/wpcs`. The
+project ruleset lives in `phpcs.xml.dist`, so no arguments are needed.
 
 ```bash
-./vendor/bin/phpcs --standard=WordPress .
+# Check
+./vendor/bin/phpcs
+
+# Auto-fix what can be fixed
+./vendor/bin/phpcbf
 ```
+
+The codebase is currently clean with zero errors and zero warnings. Deviations
+from the standard are annotated inline with `phpcs:ignore` plus a reason.
 
 ## CI
 

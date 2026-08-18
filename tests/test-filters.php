@@ -2,7 +2,7 @@
 /**
  * Class WP_REST_API_Log_Test_Filters
  *
- * @package
+ * @package wp-rest-api-log
  */
 
 /**
@@ -11,6 +11,11 @@
 class WP_REST_API_Log_Test_Filters extends WP_UnitTestCase {
 
 
+	/**
+	 * Tests that route filters are converted to the expected regex.
+	 *
+	 * @return void
+	 */
 	public function test_convert_route_filter() {
 
 		// Just a path, adds start and end.
@@ -33,6 +38,11 @@ class WP_REST_API_Log_Test_Filters extends WP_UnitTestCase {
 		$this->assertEquals( '^..*\/wp\/v2\/$$', $route_regex );
 	}
 
+	/**
+	 * Tests that the available filter modes are returned.
+	 *
+	 * @return void
+	 */
 	public function test_filter_modes() {
 		$modes = WP_REST_API_Log_Filters::filter_modes();
 		$this->assertArrayHasKey( '', $modes );
@@ -40,6 +50,11 @@ class WP_REST_API_Log_Test_Filters extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'exclude_matches', $modes );
 	}
 
+	/**
+	 * Tests that every route is logged when no filters are set.
+	 *
+	 * @return void
+	 */
 	public function test_route_logging_all_routes() {
 
 		$option_key = 'wp-rest-api-log-settings-routes';
@@ -58,6 +73,11 @@ class WP_REST_API_Log_Test_Filters extends WP_UnitTestCase {
 	}
 
 
+	/**
+	 * Tests that only matching routes are logged in include mode.
+	 *
+	 * @return void
+	 */
 	public function test_route_logging_only_matched_routes() {
 
 		$option_key = 'wp-rest-api-log-settings-routes';
@@ -80,10 +100,10 @@ class WP_REST_API_Log_Test_Filters extends WP_UnitTestCase {
 		// Basic wildcard.
 		$this->assertTrue( WP_REST_API_Log_Filters::can_log_route( '/route/wildcard-route' ), '/route/wildcard-route' );
 
-		// Exact regex
+		// Exact regex.
 		$this->assertTrue( WP_REST_API_Log_Filters::can_log_route( '/route/regex-exact' ), '/route/regex-exact' );
 
-		// Wildcard regex
+		// Wildcard regex.
 		$this->assertTrue( WP_REST_API_Log_Filters::can_log_route( '/route/regex-wildcard/test' ), '/route/regex-wildcard/test' );
 
 		// Test non-matching routes.
@@ -94,6 +114,11 @@ class WP_REST_API_Log_Test_Filters extends WP_UnitTestCase {
 		$this->assertFalse( WP_REST_API_Log_Filters::can_log_route( '/wp/v2/posts' ), '/wp/v2/posts' );
 	}
 
+	/**
+	 * Tests that matching routes are skipped in exclude mode.
+	 *
+	 * @return void
+	 */
 	public function test_route_logging_excluded_matched_routes() {
 
 		$option_key = 'wp-rest-api-log-settings-routes';
@@ -116,10 +141,10 @@ class WP_REST_API_Log_Test_Filters extends WP_UnitTestCase {
 		// Basic wildcard.
 		$this->assertFalse( WP_REST_API_Log_Filters::can_log_route( '/route/wildcard-route' ), '/route/wildcard-route' );
 
-		// Exact regex
+		// Exact regex.
 		$this->assertFalse( WP_REST_API_Log_Filters::can_log_route( '/route/regex-exact' ), '/route/regex-exact' );
 
-		// Wildcard regex
+		// Wildcard regex.
 		$this->assertFalse( WP_REST_API_Log_Filters::can_log_route( '/route/regex-wildcard/test' ), '/route/regex-wildcard/test' );
 
 		// Test non-matching routes, should all be logged.
