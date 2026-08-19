@@ -138,7 +138,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 *
 		 * @var WP_Post
 		 */
-		private $_post; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore -- Retained for backwards compatibility.
+		private $current_post;
 
 
 		/**
@@ -153,7 +153,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			}
 
 			if ( is_object( $post ) ) {
-				$this->_post = $post;
+				$this->current_post = $post;
 				$this->load();
 			}
 		}
@@ -166,8 +166,8 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 */
 		private function load() {
 
-			$this->request  = new WP_REST_API_Log_API_Request( $this->_post );
-			$this->response = new WP_REST_API_Log_API_Response( $this->_post );
+			$this->request  = new WP_REST_API_Log_API_Request( $this->current_post );
+			$this->response = new WP_REST_API_Log_API_Response( $this->current_post );
 
 			$this->load_post_data();
 			$this->load_post_meta();
@@ -180,10 +180,10 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 * @return void
 		 */
 		private function load_post_data() {
-			$this->ID       = $this->_post->ID;
-			$this->route    = $this->_post->post_title;
-			$this->time     = $this->_post->post_date;
-			$this->time_gmt = $this->_post->post_date_gmt;
+			$this->ID       = $this->current_post->ID;
+			$this->route    = $this->current_post->post_title;
+			$this->time     = $this->current_post->post_date;
+			$this->time_gmt = $this->current_post->post_date_gmt;
 
 			if ( function_exists( 'rest_url' ) ) {
 				$this->_links['self']['href'] = rest_url( WP_REST_API_Log_Common::PLUGIN_NAME . '/entry/' . $this->ID );
@@ -197,7 +197,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 */
 		private function load_post_meta() {
 
-			$post_id = $this->_post->ID;
+			$post_id = $this->current_post->ID;
 
 			$this->ip_address           = get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_IP_ADDRESS, true );
 			$this->user                 = get_post_meta( $post_id, WP_REST_API_Log_DB::POST_META_REQUEST_USER, true );
@@ -211,7 +211,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 * @return void
 		 */
 		private function load_taxonomies() {
-			$post_id = $this->_post->ID;
+			$post_id = $this->current_post->ID;
 
 			$this->method = $this->get_first_term_name( $post_id, WP_REST_API_Log_DB::TAXONOMY_METHOD );
 			$this->status = $this->get_first_term_name( $post_id, WP_REST_API_Log_DB::TAXONOMY_STATUS );
