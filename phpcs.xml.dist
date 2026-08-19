@@ -35,8 +35,15 @@
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>
+			<!--
+			"default" is allowed alongside the plugin's own domain: a handful of
+			strings (Date, Title, Settings, Log, Yes, No, Save Changes)
+			intentionally reuse WordPress core's own translation of that string
+			rather than shipping a duplicate in the plugin's catalogue.
+			-->
 			<property name="text_domain" type="array">
 				<element value="wp-rest-api-log"/>
+				<element value="default"/>
 			</property>
 		</properties>
 	</rule>
