@@ -61,10 +61,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Help' ) ) {
 		/**
 		 * Renders the Help section contents.
 		 *
-		 * @param array $args Section arguments supplied by the Settings API.
 		 * @return void
 		 */
-		public static function section_header( $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Signature is fixed by the Settings API.
+		public static function section_header() {
 			include_once WP_REST_API_LOG_ROOT . 'admin/partials/admin-help.php';
 		}
 	}
