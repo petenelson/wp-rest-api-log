@@ -22,14 +22,14 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		 *
 		 * @var WP_REST_API_Log_Entry|null
 		 */
-		private $_post = null; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore -- Retained for backwards compatibility.
+		private $current_post = null;
 
 		/**
 		 * Post ID the cached log entry belongs to.
 		 *
 		 * @var int
 		 */
-		private $_post_id = 0; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore -- Retained for backwards compatibility.
+		private $current_post_id = 0;
 
 		/**
 		 * Hooks the list table customizations into WordPress.
@@ -198,11 +198,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		 * @return WP_REST_API_Log_Entry
 		 */
 		private function get_entry( $post_id ) {
-			if ( empty( $this->_post ) || $post_id !== $this->_post_id ) {
-				$this->_post    = new WP_REST_API_Log_Entry( $post_id );
-				$this->_post_id = $post_id;
+			if ( empty( $this->current_post ) || $post_id !== $this->current_post_id ) {
+				$this->current_post    = new WP_REST_API_Log_Entry( $post_id );
+				$this->current_post_id = $post_id;
 			}
-			return $this->_post;
+			return $this->current_post;
 		}
 
 		/**
