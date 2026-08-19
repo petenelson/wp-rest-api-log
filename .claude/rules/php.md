@@ -5,8 +5,8 @@ paths:
 
 # PHP Coding Rules
 
-* All PHP must follow [WordPress PHP Coding Standards](https://developer.wordpress.org/coding-standards/wordpress-coding-standards/php/).
-* Use short array syntax `[]` instead of `array()`.
+* All PHP must follow [WordPress PHP Coding Standards](https://developer.wordpress.org/coding-standards/wordpress-coding-standards/php/), enforced by `phpcs.xml.dist`.
+* Use long array syntax `array()` instead of `[]`. The `WordPress` standard disallows short array syntax.
 * Every PHP class will start with `WP_REST_API_Log` without a namespace.
 * PHP lives in `includes/`
 * When reading `$_POST`, `$_GET`, or `$_REQUEST` variables, always use `filter_var_array()` with appropriate filter constants and validation rules.

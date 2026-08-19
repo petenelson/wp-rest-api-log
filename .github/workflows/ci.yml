@@ -6,6 +6,32 @@ on:
     branches: [develop, main]
 
 jobs:
+  phpcs:
+    name: WordPress Coding Standards
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: cs2pr
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      # Rules, paths and exclusions all come from phpcs.xml.dist.
+      # PHPCS exits non-zero for warnings as well as errors, so this keeps the
+      # codebase at zero of both.
+      - name: Run PHPCS
+        run: ./vendor/bin/phpcs --report-full --report-checkstyle=./phpcs-report.xml
+
+      - name: Annotate PHPCS results on the pull request
+        if: ${{ failure() }}
+        run: cs2pr ./phpcs-report.xml
+
   phpunit:
     name: PHP ${{ matrix.php }} / WP ${{ matrix.wp }} / Multisite ${{ matrix.multisite }}
     runs-on: ubuntu-latest
@@ -28,7 +54,7 @@ jobs:
       fail-fast: false
       matrix:
         php: ['7.4', '8.2', '8.3']
-        wp: ['6.3', '6.4', '6.5', 'trunk']
+        wp: ['6.8', '6.9', '7.0', 'trunk']
         multisite: [0, 1]
 
     steps:
