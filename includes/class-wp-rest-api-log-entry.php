@@ -84,7 +84,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		/**
 		 * HTTP status of the request (from wp-rest-api-log-status taxonomy)
 		 *
-		 * @var int
+		 * @var string
 		 */
 		public $status;
 
