@@ -35,21 +35,21 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 		 *
 		 * @var string
 		 */
-		protected $_type; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore -- Retained for backwards compatibility.
+		protected $type;
 
 		/**
 		 * The underlying log entry post.
 		 *
 		 * @var WP_Post
 		 */
-		private $_post; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore -- Retained for backwards compatibility.
+		private $current_post;
 
 		/**
 		 * Cached post meta for the log entry post.
 		 *
 		 * @var array
 		 */
-		private $_meta; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore -- Retained for backwards compatibility.
+		private $meta;
 
 		/**
 		 * Loads one half of a log entry.
@@ -59,14 +59,14 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 		 */
 		public function __construct( $type, $post = null ) {
 
-			$this->_type = $type;
+			$this->type = $type;
 
 			if ( is_int( $post ) ) {
 				$post = get_post( $post );
 			}
 
 			if ( is_object( $post ) ) {
-				$this->_post = $post;
+				$this->current_post = $post;
 				$this->load();
 			}
 		}
@@ -78,7 +78,7 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 		 * @return void
 		 */
 		protected function set_type( $type ) {
-			$this->_type = $type;
+			$this->type = $type;
 		}
 
 
@@ -91,13 +91,13 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 
 			$this->headers = $this->get_post_meta_array( 'headers' );
 
-			if ( 'request' === $this->_type ) {
-				$this->body = get_post_meta( $this->_post->ID, '_request_body', true );
+			if ( 'request' === $this->type ) {
+				$this->body = get_post_meta( $this->current_post->ID, '_request_body', true );
 				if ( false === $this->body ) {
 					$this->body = '';
 				}
 			} else {
-				$this->body = $this->_post->post_content;
+				$this->body = $this->current_post->post_content;
 			}
 		}
 
@@ -112,24 +112,24 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 
 			$meta = array();
 
-			if ( ! is_object( $this->_post ) ) {
+			if ( ! is_object( $this->current_post ) ) {
 				return $meta;
 			}
 
-			if ( empty( $this->_meta ) ) {
-				$this->_meta = get_post_meta( $this->_post->ID );
+			if ( empty( $this->meta ) ) {
+				$this->meta = get_post_meta( $this->current_post->ID );
 			}
 
-			if ( empty( $this->_meta ) ) {
+			if ( empty( $this->meta ) ) {
 				return $meta;
 			}
 
 			// Loop through the post meta, find the keys for the array.
-			foreach ( $this->_meta as $key => $value ) {
+			foreach ( $this->meta as $key => $value ) {
 
 				// Example: _request_headers|Expires.
 				// Example: _request_headers|Content-type.
-				$look_for = "{$this->_type}_{$type}|";
+				$look_for = "{$this->type}_{$type}|";
 				$pos      = stripos( $key, $look_for );
 
 				if ( 0 === $pos ) {
