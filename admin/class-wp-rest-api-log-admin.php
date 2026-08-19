@@ -311,8 +311,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 				'edit-wp-rest-api-log',
 			);
 
-			// phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict -- Loose comparison retained to preserve existing behavior.
-			if ( in_array( $screen->id, $screen_ids ) ) {
+			if ( in_array( $screen->id, $screen_ids, true ) ) {
 				self::enqueue_scripts();
 			}
 		}
