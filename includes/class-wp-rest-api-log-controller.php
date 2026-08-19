@@ -394,10 +394,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		/**
 		 * Returns the distinct routes that have been logged.
 		 *
-		 * @param  WP_REST_Request $request The REST request.
 		 * @return WP_REST_Response
 		 */
-		public static function get_routes( WP_REST_Request $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Signature is fixed by the REST route callback.
+		public static function get_routes() {
 
 			global $wpdb;
 
