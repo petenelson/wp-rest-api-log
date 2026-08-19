@@ -148,10 +148,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 				// Build URL for tab.
 				$url = add_query_arg(
 					array(
-						// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode -- Retained to preserve the existing URL encoding.
-						'page' => urlencode( self::$settings_page ),
-						// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode -- Retained to preserve the existing URL encoding.
-						'tab'  => urlencode( $tab_key ),
+						'page' => rawurlencode( self::$settings_page ),
+						'tab'  => rawurlencode( $tab_key ),
 					),
 					admin_url( 'options-general.php' )
 				);

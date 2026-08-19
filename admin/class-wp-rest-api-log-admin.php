@@ -171,8 +171,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 				$permalink = add_query_arg(
 					array(
 						'page' => WP_REST_API_Log_Common::PLUGIN_NAME . '-view-entry',
-						// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode -- Retained to preserve the existing URL encoding.
-						'id'   => urlencode( $post->ID ),
+						'id'   => rawurlencode( $post->ID ),
 					),
 					admin_url( 'tools.php' )
 				);
