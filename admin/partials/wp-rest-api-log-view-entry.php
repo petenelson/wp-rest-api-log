@@ -22,8 +22,6 @@ $post_type_object = get_post_type_object( WP_REST_API_Log_DB::POST_TYPE );
 
 if ( ! current_user_can( $post_type_object->cap->read_post, $id ) ) {
 	wp_die(
-		// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string.
-		'<h1>' . esc_html__( 'Cheatin&#8217; uh?' ) . '</h1>' .
 		'<p>' . esc_html__( 'You are not allowed to read posts in this post type.', 'wp-rest-api-log' ) . '</p>',
 		403
 	);
