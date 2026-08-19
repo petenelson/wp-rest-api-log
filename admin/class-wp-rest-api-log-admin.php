@@ -240,8 +240,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			$user = get_userdata( $args[1] );
 
 			// Give the administrator role access to the custom post type.
-			// phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict -- Loose comparison retained to preserve existing behavior.
-			if ( ! empty( $user ) && ! empty( $user->roles ) && in_array( 'administrator', $user->roles ) ) {
+			if ( ! empty( $user ) && ! empty( $user->roles ) && in_array( 'administrator', $user->roles, true ) ) {
 
 				$post_type = get_post_type_object( WP_REST_API_Log_DB::POST_TYPE );
 
