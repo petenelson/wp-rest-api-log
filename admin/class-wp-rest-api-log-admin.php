@@ -35,7 +35,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			add_action( 'admin_init', array( __CLASS__, 'localize_script_data' ), 11 );
 			add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
 			add_filter( 'wp_link_query_args', array( __CLASS__, 'wp_link_query_args' ) );
-			add_filter( 'admin_title', array( __CLASS__, 'admin_title' ), 10, 2 );
+			add_filter( 'admin_title', array( __CLASS__, 'admin_title' ) );
 			add_filter( 'user_has_cap', array( __CLASS__, 'add_admin_caps' ), 10, 3 );
 			add_filter( 'plugin_action_links_' . WP_REST_API_LOG_BASENAME, array( __CLASS__, 'plugin_action_links' ), 10, 4 );
 			add_action( 'current_screen', array( __CLASS__, 'maybe_enqueue_scripts' ) );
@@ -220,10 +220,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 		 * screen, so core's own title-building logic handles it.
 		 *
 		 * @param  string $admin_title The page title, with extra context added.
-		 * @param  string $title       The original page title.
 		 * @return string
 		 */
-		public static function admin_title( $admin_title, $title ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Signature is fixed by the filter.
+		public static function admin_title( $admin_title ) {
 			return $admin_title;
 		}
 
