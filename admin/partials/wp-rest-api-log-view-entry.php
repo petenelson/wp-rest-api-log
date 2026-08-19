@@ -85,7 +85,7 @@ $download_urls = WP_REST_API_Log_Controller::get_download_urls( $entry );
 
 			<div class="inside">
 				<ul>
-					<li><?php esc_html_e( 'Date' ); // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string. ?>: <?php echo esc_html( $entry->time ); ?></li>
+					<li><?php esc_html_e( 'Date', 'default' ); ?>: <?php echo esc_html( $entry->time ); ?></li>
 					<li><?php esc_html_e( 'Source', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->source ); ?></li>
 					<li><?php esc_html_e( 'Method', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->method ); ?></li>
 					<li><?php esc_html_e( 'Status', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->status ); ?></li>
