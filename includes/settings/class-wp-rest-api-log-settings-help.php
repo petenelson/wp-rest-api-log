@@ -50,10 +50,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Help' ) ) {
 		/**
 		 * Registers the Help settings section.
 		 *
-		 * @param string $title Section title supplied by the admin_init hook.
 		 * @return void
 		 */
-		public static function register_help_settings( $title ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Signature is fixed by the admin_init callback.
+		public static function register_help_settings() {
 
 			add_settings_section( 'help', '', array( __CLASS__, 'section_header' ), self::$settings_key );
 		}
