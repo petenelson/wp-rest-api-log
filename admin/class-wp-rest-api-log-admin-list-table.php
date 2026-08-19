@@ -96,11 +96,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 			$columns['method'] = 'Method';
 			$columns           = array(
 				'cb'         => '<input type="checkbox" />',
-				// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string.
-				'date'       => __( 'Date' ),
+				'date'       => __( 'Date', 'default' ),
 				'method'     => __( 'Method', 'wp-rest-api-log' ),
-				// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string.
-				'title'      => __( 'Title' ),
+				'title'      => __( 'Title', 'default' ),
 				'status'     => __( 'Status', 'wp-rest-api-log' ),
 				'elapsed'    => __( 'Elapsed Time', 'wp-rest-api-log' ),
 				'length'     => __( 'Response Length', 'wp-rest-api-log' ),

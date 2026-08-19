@@ -392,8 +392,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Base' ) ) {
 				esc_attr( "{$key}[{$name}]" ),
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static markup with no dynamic content.
 				$checked_yes,
-				// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string.
-				esc_html__( 'Yes' )
+				esc_html__( 'Yes', 'default' )
 			);
 			printf(
 				"<label><input id='%1\$s' name='%2\$s'  type='radio' value='0' %3\$s/>%4\$s</label> ",
@@ -401,8 +400,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Base' ) ) {
 				esc_attr( "{$key}[{$name}]" ),
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static markup with no dynamic content.
 				$checked_no,
-				// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string.
-				esc_html__( 'No' )
+				esc_html__( 'No', 'default' )
 			);
 			echo '</div>';
 

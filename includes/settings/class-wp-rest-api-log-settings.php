@@ -106,8 +106,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 					<?php do_settings_sections( $tab ); ?>
 					<?php
 					if ( WP_REST_API_Log_Settings_Help::$settings_key !== $tab ) {
-						// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string.
-						submit_button( __( 'Save Changes' ), 'primary', 'submit', true );
+						submit_button( __( 'Save Changes', 'default' ), 'primary', 'submit', true );
 					}
 					?>
 				</form>
@@ -139,8 +138,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 		private static function plugin_options_tabs() {
 			$current_tab = self::current_tab();
 
-			// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string.
-			echo '<h2>' . esc_html__( 'Settings' ) . ' &rsaquo; REST API Log</h2><h2 class="nav-tab-wrapper">';
+			echo '<h2>' . esc_html__( 'Settings', 'default' ) . ' &rsaquo; REST API Log</h2><h2 class="nav-tab-wrapper">';
 
 			$tabs = apply_filters( 'wp-rest-api-log-settings-tabs', array() );
 

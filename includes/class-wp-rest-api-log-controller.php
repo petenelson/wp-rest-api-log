@@ -480,7 +480,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 			$response = array(
 				'entries_left'           => $query->found_posts,
 				// translators: %s: formatted number of log entries still to be migrated.
-				'entries_left_formatted' => sprintf( __( '%s entries remaining...' ), number_format( $query->found_posts ) ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Text domain omitted since 1.0; adding it would change which catalogue is used.
+				'entries_left_formatted' => sprintf( __( '%s entries remaining...', 'wp-rest-api-log' ), number_format( $query->found_posts ) ),
 			);
 
 			return rest_ensure_response( $response );

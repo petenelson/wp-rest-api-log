@@ -285,14 +285,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 					'settings' => sprintf(
 						'<a href="%1$s">%2$s</a>',
 						esc_url( $url ),
-						// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string.
-						esc_html__( 'Settings' )
+						esc_html__( 'Settings', 'default' )
 					),
 					'log'      => sprintf(
 						'<a href="%1$s">%2$s</a>',
 						esc_url( admin_url( 'edit.php?post_type=wp-rest-api-log' ) ),
-						// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- Intentionally reuses WordPress core's translation of this string.
-						esc_html__( 'Log' )
+						esc_html__( 'Log', 'default' )
 					),
 				);
 
