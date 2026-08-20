@@ -364,7 +364,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		 */
 		public static function validate_entry_id( $id ) {
 			if ( $id < 1 ) {
-				return invalid_entry_id_error( $id );
+				return self::invalid_entry_id_error( $id );
 			} else {
 
 				// Verify that the entry exists.
