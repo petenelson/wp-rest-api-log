@@ -558,7 +558,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		/**
 		 * Returns a list of all log entry IDs in the database.
 		 *
-		 * @return int
+		 * @return int[]
 		 */
 		public static function get_all_log_ids() {
 
@@ -573,7 +573,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				)
 			);
 
-			return $query->posts;
+			// The 'ids' field returns IDs, but cast them so the type is guaranteed.
+			return array_map( 'absint', $query->posts );
 		}
 
 		/**
