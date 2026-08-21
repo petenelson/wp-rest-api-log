@@ -173,18 +173,24 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		/**
 		 * Gets old REST API Log record IDs.
 		 *
-		 * @param  int $days_old How many days back to go.
+		 * Passing 0 selects every entry up to the current time. Pass null to
+		 * fall back to the configured retention window instead.
+		 *
+		 * @param  int|null $days_old How many days back to go, or null to use the setting.
 		 * @return array
 		 */
-		public static function get_old_log_ids( $days_old ) {
+		public static function get_old_log_ids( $days_old = null ) {
 
-			if ( empty( $days_old ) && 0 !== $days_old ) {
+			if ( null === $days_old ) {
 				$days_old = WP_REST_API_Log_Settings_General::setting_get( 'general', 'purge-days' );
+
+				// A blank retention setting means all entries are kept.
+				if ( empty( $days_old ) ) {
+					return array();
+				}
 			}
 
-			if ( empty( $days_old ) && 0 !== $days_old ) {
-				return array();
-			}
+			$days_old = absint( $days_old );
 
 			$db   = new WP_REST_API_Log_DB();
 			$args = array(
