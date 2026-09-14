@@ -113,6 +113,22 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			$post_content            = str_replace( '\n', PHP_EOL, $post_content );
 			$args['request']['body'] = str_replace( '\n', PHP_EOL, $args['request']['body'] );
 
+			// Redact sensitive header values before the entry is stored. This
+			// happens here rather than at the REST API hook so that every
+			// source firing the insert action is covered.
+			$headers = WP_REST_API_Log_Headers::instance();
+
+			$args['request']['headers']  = $headers->redact_headers(
+				isset( $args['request']['headers'] ) ? $args['request']['headers'] : array(),
+				'request',
+				$args['request']
+			);
+			$args['response']['headers'] = $headers->redact_headers(
+				isset( $args['response']['headers'] ) ? $args['response']['headers'] : array(),
+				'response',
+				$args['response']
+			);
+
 			// Allow filtering.
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- self::plugin_name() is the "wp-rest-api-log-entries" prefix.
 			$args = apply_filters( self::plugin_name() . '-pre-insert', $args );
