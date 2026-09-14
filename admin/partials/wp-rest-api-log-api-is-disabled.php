@@ -1,3 +1,11 @@
+<?php
+/**
+ * Admin notice shown when the REST API is not available.
+ *
+ * @package wp-rest-api-log
+ */
+
+?>
 <div class="wrap wp-rest-api-log-wrap">
 
 	<h2><?php esc_html_e( 'WP REST API Log', 'wp-rest-api-log' ); ?></h2>
