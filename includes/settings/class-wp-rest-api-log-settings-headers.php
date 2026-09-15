@@ -105,14 +105,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Headers' ) ) {
 
 			add_settings_section( $section, '', array( __CLASS__, 'section_header' ), $key );
 
-			$description = '
-				<p class="description">' . esc_html__( 'One header name per line. Matching is case-insensitive and treats dashes and underscores as the same character.', 'wp-rest-api-log' ) . '</p>
-				<p class="description">' . sprintf(
-					/* translators: %s: the text stored in place of the header value. */
-					esc_html__( 'The header name is still logged, but its value is replaced with %s.', 'wp-rest-api-log' ),
-					'<code>' . esc_html( WP_REST_API_Log_Headers::REDACTED ) . '</code>'
-				) . '</p>';
-
 			add_settings_field(
 				'redacted-request-headers',
 				__( 'Redacted Request Headers', 'wp-rest-api-log' ),
@@ -122,7 +114,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Headers' ) ) {
 				array(
 					'key'     => $key,
 					'name'    => 'redacted-request-headers',
-					'after'   => $description,
 					'default' => $defaults['redacted-request-headers'],
 				)
 			);
@@ -136,7 +127,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Headers' ) ) {
 				array(
 					'key'     => $key,
 					'name'    => 'redacted-response-headers',
-					'after'   => $description,
 					'default' => $defaults['redacted-response-headers'],
 				)
 			);
@@ -151,6 +141,17 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Headers' ) ) {
 			?>
 			<p>
 				<?php esc_html_e( 'Request and response headers can contain sensitive information such as cookies, API keys and bearer tokens. The values of the headers listed below are redacted before a log entry is saved.', 'wp-rest-api-log' ); ?>
+			</p>
+			<p>
+				<?php
+				esc_html_e( 'One header name per line. Matching is case-insensitive and treats dashes and underscores as the same character.', 'wp-rest-api-log' );
+				echo ' ';
+				printf(
+					/* translators: %s: the text stored in place of the header value. */
+					esc_html__( 'The header name is still logged, but its value is replaced with %s.', 'wp-rest-api-log' ),
+					'<code>' . esc_html( WP_REST_API_Log_Headers::REDACTED ) . '</code>'
+				);
+				?>
 			</p>
 			<?php
 		}
