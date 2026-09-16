@@ -39,7 +39,7 @@ Roadmap
 
 == Changelog ==
 
-= v1.7.3 =
+= v1.7.3 (DATE PLACEHOLDER) =
 * Added a Headers settings tab that redacts the values of sensitive request and response headers, such as Authorization, Cookie and Set-Cookie, before a log entry is saved
 
 = v1.7.2 July 23, 2026 =
