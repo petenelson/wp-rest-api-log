@@ -24,11 +24,17 @@ foreach ( $wp_rest_api_log_tables as $wp_rest_api_log_table_name ) {
 }
 
 
+// The plugin is not loaded during uninstall, so the option names cannot be
+// read from the settings classes and are listed here instead.
 $wp_rest_api_log_options = array(
 	'wp-rest-api-log-meta-dbversion',
 	'wp-rest-api-log-entries-dbversion',
 	'wp-rest-api-log-settings-general',
+	'wp-rest-api-log-settings-routes',
 	'wp-rest-api-log-settings-headers',
+	'wp-rest-api-log-settings-elasticpress',
+	'wp-rest-api-log-plugin-activated',
+	'wp-rest-api-log-db-notice-dismissed',
 );
 
 foreach ( $wp_rest_api_log_options as $wp_rest_api_log_option ) {
