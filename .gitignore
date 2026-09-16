@@ -7,3 +7,8 @@ npm-debug.log
 /admin/css/*.map
 /admin/js/*.js
 /release
+tmp
+.phpunit.result.cache
+phpcs-report.xml
+.DS_Store
+.claude/skills

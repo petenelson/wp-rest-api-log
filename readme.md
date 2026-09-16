@@ -1,16 +1,15 @@
 # REST API Log #
-**Contributors:** [gungeekatx](https://profiles.wordpress.org/gungeekatx)  
+**Contributors:** [gungeekatx](https://profiles.wordpress.org/gungeekatx/)  
 **Tags:** wp rest api, rest api, wp api, api, json, json api, log, logging, elasticpress, elasticsearch  
 **Donate link:** https://github.com/petenelson/wp-rest-api-log  
 **Requires at least:** 4.7  
-**Tested up to:** 5.1  
-**Stable tag:** 1.6.7  
+**Tested up to:** 7.0.2  
+**Stable tag:** 1.7.2  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
 [![Code Climate](https://codeclimate.com/github/petenelson/wp-rest-api-log/badges/gpa.svg)](https://codeclimate.com/github/petenelson/wp-rest-api-log)
 [![Travis CI](https://travis-ci.org/petenelson/wp-rest-api-log.svg)](https://travis-ci.org/petenelson/wp-rest-api-log)
-
 
 WordPress plugin to log REST API requests and responses
 
@@ -42,6 +41,31 @@ Roadmap
 
 
 ## Changelog ##
+
+### v1.7.2 July 23, 2026 ###
+* Changed "show_in_rest" to false for the wp-rest-api-log custom post type
+* Fixed array_walk_recursive callback signature for PHP 8.0 compatibility (props the-csaba)
+* Fixed PHP deprecation notice caused by a null page title when viewing a log entry
+
+### v1.7.1 July 20, 2026 ###
+* Added additional security check to REST download endpoint (props alisalive)
+* Fixed PHP 8 deprecation notice for submenu page (props BrianHenryIE)
+* Fixed echo bug when viewing an invalid log entry ID (props DAnn2012)
+
+### v1.7.0 May 8, 2023 ###
+* Fixed bugs related to Method and Status filtering.
+* Removed deprecated FILTER_SANITIZE_STRING calls.
+* Updated highlight.js version
+* Updated clipboard.js version
+
+### v1.6.9 September 9, 2022 ###
+* Updated highlight.js version
+* Updated clipboard.js version
+
+### v1.6.8 October 30, 2020 ###
+* Updated the Purge All Entries functionality in the admin to purge batches of 25 at a time.
+* Updated CLI purge command with a progress bar.
+* Fixed ClipboardJS error (props itowhid06)
 
 ### v1.6.7 March 31, 2019 ###
 * Added admin notice about running the plugin on a production server
@@ -125,9 +149,10 @@ Roadmap
 
 ## Upgrade Notice ##
 
-### v1.6.7 March 31, 2019 ###
-* Added admin notice about running the plugin on a production server
-* Set the default purge days to 7
+### v1.7.0 May 8, 2023 ###
+* Fixed bugs related to Method and Status filtering.
+* Removed deprecated FILTER_SANITIZE_STRING calls.
+* Updated highlight.js version
 * Updated clipboard.js version
 
 ## Frequently Asked Questions ##
