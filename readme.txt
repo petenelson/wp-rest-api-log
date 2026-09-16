@@ -41,8 +41,6 @@ Roadmap
 
 = v1.7.3 =
 * Added a Headers settings tab that redacts the values of sensitive request and response headers, such as Authorization, Cookie and Set-Cookie, before a log entry is saved
-* Fixed uninstall leaving the Routes and ElasticPress settings behind in the options table
-* PLACEHOLDER
 
 = v1.7.2 July 23, 2026 =
 * Changed "show_in_rest" to false for the wp-rest-api-log custom post type
