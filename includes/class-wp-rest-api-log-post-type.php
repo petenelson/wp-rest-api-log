@@ -81,7 +81,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 				'show_in_menu'        => 'tools.php',
 				'show_in_admin_bar'   => false,
 				'show_in_nav_menus'   => false,
-				'publicly_queryable'  => true,
+
+				// Log entries contain full request and response bodies, which can
+				// include credentials. This must stay false so WP::parse_request()
+				// drops "?post_type=wp-rest-api-log" on front end requests.
+				'publicly_queryable'  => false,
+
 				'exclude_from_search' => true,
 				'has_archive'         => false,
 				'query_var'           => false,
