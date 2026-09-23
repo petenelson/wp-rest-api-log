@@ -47,6 +47,11 @@ class WP_REST_API_Log_Test_Post_Type extends WP_UnitTestCase {
 			)
 		);
 
+		// Not viewable keeps entries out of oEmbed responses. WP 6.8+ also
+		// blocks them through the "embeddable" arg, which defaults to "public".
+		$this->assertFalse( is_post_type_viewable( WP_REST_API_Log_DB::POST_TYPE ) );
+		$this->assertFalse( get_oembed_response_data( $post_id, 600 ) );
+
 		$this->go_to( '/?post_type=' . WP_REST_API_Log_DB::POST_TYPE . '&p=' . $post_id );
 
 		$this->assertTrue( is_404() );

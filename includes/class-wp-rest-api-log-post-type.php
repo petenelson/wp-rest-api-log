@@ -84,7 +84,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 
 				// Log entries contain full request and response bodies, which can
 				// include credentials. This must stay false so WP::parse_request()
-				// drops "?post_type=wp-rest-api-log" on front end requests.
+				// drops "?post_type=wp-rest-api-log" on front end requests, and so
+				// oEmbed responses skip entries on WP versions before 6.8.
 				'publicly_queryable'  => false,
 
 				'exclude_from_search' => true,

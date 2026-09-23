@@ -76,6 +76,24 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 				unset( $actions['edit'] );
 				unset( $actions['inline hide-if-no-js'] );
 
+				// Core only adds "View" for viewable post types, and log entries
+				// are not publicly queryable. The permalink is filtered to the
+				// admin entry viewer.
+				if ( ! isset( $actions['view'] ) && 'trash' !== $post->post_status ) {
+					$actions = array_merge(
+						array(
+							'view' => sprintf(
+								'<a href="%s" rel="bookmark" aria-label="%s">%s</a>',
+								esc_url( get_permalink( $post ) ),
+								/* translators: %s: Post title. */
+								esc_attr( sprintf( __( 'View &#8220;%s&#8221;', 'default' ), _draft_or_post_title( $post ) ) ),
+								__( 'View', 'default' )
+							),
+						),
+						$actions
+					);
+				}
+
 				wp_enqueue_script( 'wp-rest-api-log-admin' );
 
 			}
