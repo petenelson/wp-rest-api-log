@@ -52,7 +52,24 @@ class WP_REST_API_Log_Test_Post_Type extends WP_UnitTestCase {
 		$this->assertFalse( is_post_type_viewable( WP_REST_API_Log_DB::POST_TYPE ) );
 		$this->assertFalse( get_oembed_response_data( $post_id, 600 ) );
 
-		$this->go_to( '/?post_type=' . WP_REST_API_Log_DB::POST_TYPE . '&p=' . $post_id );
+		// Simulate a real front-end request instead of using go_to(). go_to()
+		// passes the query string to WP::main() as extra query vars, which
+		// restores private vars such as post_type after core strips them for
+		// post types that aren't publicly queryable.
+		$query = array(
+			'post_type' => WP_REST_API_Log_DB::POST_TYPE,
+			'p'         => (string) $post_id,
+		);
+
+		$_GET                   = $query;
+		$_SERVER['REQUEST_URI'] = '/?' . http_build_query( $query );
+
+		$GLOBALS['wp_the_query'] = new WP_Query();
+		$GLOBALS['wp_query']     = $GLOBALS['wp_the_query'];
+		$GLOBALS['wp']           = new WP();
+		$GLOBALS['wp']->main();
+
+		$_GET = array();
 
 		$this->assertTrue( is_404() );
 		$this->assertEmpty( $GLOBALS['wp_query']->posts );
