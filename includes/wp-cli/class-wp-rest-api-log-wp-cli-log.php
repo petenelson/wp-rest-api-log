@@ -210,7 +210,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 			return;
 		}
 
-		$count = absint( ! empty( $positional_args[0] ) ? $positional_args[0] : 100 );
+		$count = absint( isset( $positional_args[0] ) ? $positional_args[0] : 100 );
 		$days  = absint( isset( $assoc_args['days'] ) ? $assoc_args['days'] : 30 );
 
 		if ( empty( $count ) ) {
