@@ -206,7 +206,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 		}
 
 		$count = absint( ! empty( $positional_args[0] ) ? $positional_args[0] : 100 );
-		$days  = absint( ! empty( $assoc_args['days'] ) ? $assoc_args['days'] : 30 );
+		$days  = absint( isset( $assoc_args['days'] ) ? $assoc_args['days'] : 30 );
 
 		if ( empty( $count ) ) {
 			WP_CLI::Error( 'Please provide a count greater than zero.' );
