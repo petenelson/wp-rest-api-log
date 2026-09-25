@@ -150,6 +150,9 @@ Roadmap
 
 == Upgrade Notice ==
 
+= v1.7.3 September 25, 2026 =
+* Sensitive request and response headers, such as Authorization, Cookie and Set-Cookie, are now redacted before log entries are saved. Existing log entries are not changed.
+
 = v1.7.0 May 8, 2023 =
 * Fixed bugs related to Method and Status filtering.
 * Removed deprecated FILTER_SANITIZE_STRING calls.
