@@ -12,7 +12,6 @@
 
 # Files
 .*
-badges.md
 CLAUDE.md
 composer.json
 composer.lock
