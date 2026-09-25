@@ -463,7 +463,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 			$entry = self::get_entry( $request['id'] );
 
-			add_filter( 'rest_pre_serve_request', array( __CLASS__, 'download_json_pre_serve_request' ), 10, 4 );
+			add_filter( 'rest_pre_serve_request', array( __CLASS__, 'download_json_pre_serve_request' ), 10, 3 );
 
 			return rest_ensure_response(
 				array(
@@ -476,15 +476,14 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		/**
 		 * Filter hook to download entry properties as a file.
 		 *
-		 * @param bool                      $served   Whether the request has already been served.
-		 * @param WP_HTTP_ResponseInterface $response Result to send to the client. Usually a WP_REST_Response.
-		 * @param WP_REST_Request           $request  Request used to generate the response.
-		 * @param WP_REST_Server            $server   Server instance.
+		 * @param bool             $served   Whether the request has already been served.
+		 * @param WP_HTTP_Response $response Result to send to the client. Usually a WP_REST_Response.
+		 * @param WP_REST_Request  $request  Request used to generate the response.
 		 * @return bool
 		 */
-		public static function download_json_pre_serve_request( $served, $response, $request, $server ) {
+		public static function download_json_pre_serve_request( $served, $response, $request ) {
 
-			$data = $server->response_to_data( $response, false );
+			$data = $response->get_data();
 
 			// Is this a download request?
 			if ( is_array( $data ) && ! empty( $data['wp-rest-api-log-download'] ) && ! empty( $data['entry'] ) ) {
