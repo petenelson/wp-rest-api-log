@@ -130,6 +130,9 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 	 *     wp rest-api-log purge 90
 	 *
 	 * @synopsis [<days_old>] [--dry-run]
+	 *
+	 * @param array $positional_args Positional arguments passed to the command.
+	 * @param array $assoc_args      Associative arguments passed to the command.
 	 */
 	public function purge( $positional_args, $assoc_args = array() ) {
 
@@ -144,7 +147,6 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 		$number_deleted = 0;
 
 		$progress = \WP_CLI\Utils\make_progress_bar( sprintf( 'Deleting %d old log entries', $count ), $count );
-
 
 		// Turn off term counting.
 		wp_defer_term_counting( true );
@@ -185,6 +187,9 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 	 *     wp rest-api-log generate 5000 --days=60
 	 *
 	 * @synopsis [<count>] [--days=<days>]
+	 *
+	 * @param array $positional_args Positional arguments passed to the command.
+	 * @param array $assoc_args      Associative arguments passed to the command.
 	 */
 	public function generate( $positional_args, $assoc_args = array() ) {
 
@@ -237,12 +242,12 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 				'status'               => $status,
 				'request'              => array(
 					'body' => self::random_request_body( $method ),
-					),
-				'response'              => array(
+				),
+				'response'             => array(
 					'body' => self::random_response_body( $status ),
-					),
+				),
 				'milliseconds'         => wp_rand( 5, 1500 ),
-				);
+			);
 
 			$post_id = $db->insert( $args );
 
@@ -250,6 +255,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 
 				global $wpdb;
 
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- wp_insert_post() always sets post_modified to the current time, so backdating needs a direct update; the post cache is cleared below.
 				$wpdb->update(
 					$wpdb->posts,
 					array(
@@ -257,10 +263,10 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 						'post_date_gmt'     => get_gmt_from_date( $time ),
 						'post_modified'     => $time,
 						'post_modified_gmt' => get_gmt_from_date( $time ),
-						),
+					),
 					array(
-						'ID' => $post_id, // where clause
-						)
+						'ID' => $post_id, // Where clause.
+					)
 				);
 
 				// The direct update bypasses the object cache, which still holds the insert-time dates.
@@ -299,7 +305,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 			429 => 2,
 			500 => 2,
 			503 => 1,
-			);
+		);
 
 		$roll       = wp_rand( 1, 100 );
 		$cumulative = 0;
@@ -329,7 +335,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 			'PATCH'   => 4,
 			'DELETE'  => 5,
 			'OPTIONS' => 3,
-			);
+		);
 
 		$roll       = wp_rand( 1, 100 );
 		$cumulative = 0;
@@ -366,7 +372,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 			'/wp/v2/search',
 			'/wp-rest-api-log/v1/entries',
 			'/oembed/1.0/embed',
-			);
+		);
 
 		return $routes[ array_rand( $routes ) ];
 	}
@@ -391,7 +397,12 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 		static $logins = null;
 
 		if ( null === $logins ) {
-			$users  = get_users( array( 'fields' => 'user_login', 'number' => 20 ) );
+			$users  = get_users(
+				array(
+					'fields' => 'user_login',
+					'number' => 20,
+				)
+			);
 			$logins = ! empty( $users ) ? $users : array( '' );
 		}
 
@@ -401,19 +412,19 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 	/**
 	 * Generates a random timestamp within the past number of days.
 	 *
-	 * @param  int $days
-	 * @return string
+	 * @param  int $days Number of past days the timestamp can fall within.
+	 * @return string Local site time in MySQL format.
 	 */
 	private static function random_time( $days ) {
 		$seconds_ago = wp_rand( 0, max( 0, $days ) * DAY_IN_SECONDS );
-		return gmdate( 'Y-m-d H:i:s', current_time( 'timestamp' ) - $seconds_ago );
+		return wp_date( 'Y-m-d H:i:s', time() - $seconds_ago );
 	}
 
 	/**
 	 * Builds a sample request body, empty for methods that typically
 	 * don't send one.
 	 *
-	 * @param  string $method
+	 * @param  string $method HTTP method of the sample request.
 	 * @return string
 	 */
 	private static function random_request_body( $method ) {
@@ -428,7 +439,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 	/**
 	 * Builds a sample response body appropriate for the given status code.
 	 *
-	 * @param  int $status
+	 * @param  int $status HTTP status code of the sample response.
 	 * @return array
 	 */
 	private static function random_response_body( $status ) {
@@ -438,12 +449,12 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 				'code'    => 'rest_sample_error',
 				'message' => sprintf( 'Sample error response for status %d.', $status ),
 				'data'    => array( 'status' => $status ),
-				);
+			);
 		}
 
 		return array(
 			'id'    => wp_rand( 1, 1000 ),
 			'title' => 'Sample response body',
-			);
+		);
 	}
 }
