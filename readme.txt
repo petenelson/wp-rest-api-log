@@ -39,8 +39,7 @@ Roadmap
 
 == Changelog ==
 
-= v1.7.3 =
-* Fixed a security issue where log entries could be read by unauthenticated visitors on the front end. The wp-rest-api-log post type is no longer publicly queryable.
+= v1.7.3 September 25, 2026 =
 * Added a Headers settings tab that redacts the values of sensitive request and response headers, such as Authorization, Cookie and Set-Cookie, before a log entry is saved
 
 = v1.7.2 July 23, 2026 =
