@@ -198,7 +198,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			// Store status code.
 			$args['status'] = absint( $args['status'] );
-			wp_set_post_terms( $post_id, $args['status'], self::TAXONOMY_STATUS );
+			wp_set_post_terms( $post_id, (string) $args['status'], self::TAXONOMY_STATUS );
 
 			// Store the source.
 			wp_set_post_terms( $post_id, $args['source'], self::TAXONOMY_SOURCE );
