@@ -40,7 +40,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 			return ( ( (float) $usec + (float) $sec ) ) * 1000;
 		}
 
-
 		/**
 		 * Returns the HTTP methods the plugin will log.
 		 *
@@ -48,9 +47,8 @@ if ( ! class_exists( 'WP_REST_API_Log_Common' ) ) {
 		 */
 		public static function valid_methods() {
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- self::PLUGIN_NAME is the "wp-rest-api-log" prefix.
-			return apply_filters( self::PLUGIN_NAME . '-valid-methods', array( 'GET', 'POST', 'PUT', 'PATCH', 'DELETE' ) );
+			return apply_filters( self::PLUGIN_NAME . '-valid-methods', array( 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS' ) );
 		}
-
 
 		/**
 		 * Determines whether an HTTP method should be logged.
