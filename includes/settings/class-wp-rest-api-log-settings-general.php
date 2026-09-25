@@ -74,7 +74,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 
 			$section = 'general';
 
-			add_settings_section( $section, '', null, $key );
+			add_settings_section( $section, '', '__return_null', $key );
 
 			add_settings_field(
 				'logging-enabled',
