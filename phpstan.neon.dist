@@ -1,5 +1,8 @@
 parameters:
 	level: 5
+	# Analyze against the minimum PHP version in the plugin header, not the
+	# PHP version running PHPStan.
+	phpVersion: 70400
 	paths:
 		- admin
 		- includes
