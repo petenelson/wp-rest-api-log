@@ -31,9 +31,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Headers' ) ) {
 		/**
 		 * Single instance of this class.
 		 *
-		 * @var WP_REST_API_Log_Headers
+		 * @var WP_REST_API_Log_Headers|null
 		 */
-		private static $instance;
+		private static $instance = null;
 
 		/**
 		 * Gets the single instance of this class.
@@ -98,11 +98,14 @@ if ( ! class_exists( 'WP_REST_API_Log_Headers' ) ) {
 		/**
 		 * Replaces the values of sensitive headers with a placeholder.
 		 *
-		 * @param  array  $headers             Header values keyed by header name.
+		 * @param  mixed  $headers             Header values keyed by header name.
+		 *                                     Any source can fire the insert
+		 *                                     action, so non-arrays are
+		 *                                     returned unchanged.
 		 * @param  string $type                Either "request" or "response".
 		 * @param  mixed  $request_or_response Optional. The request or response
 		 *                                     being logged, for context.
-		 * @return array Headers with sensitive values replaced.
+		 * @return mixed Headers with sensitive values replaced.
 		 */
 		public function redact_headers( $headers, $type, $request_or_response = null ) {
 
