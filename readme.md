@@ -167,8 +167,8 @@ You can go into Settings > ElasticPress to enable logging for requests & respons
 ## Screenshots ##
 
 ### 1. Sample list of log entries ###
-![Sample list of log entries](https://raw.githubusercontent.com/petenelson/wp-rest-api-log/master/assets/screenshot-1.png)
+![Sample list of log entries](https://raw.githubusercontent.com/petenelson/wp-rest-api-log/master/.wordpress-org/screenshot-1.png)
 
 ### 2. Sample log entry details ###
-![Sample log entry details](https://raw.githubusercontent.com/petenelson/wp-rest-api-log/master/assets/screenshot-2.png)
+![Sample log entry details](https://raw.githubusercontent.com/petenelson/wp-rest-api-log/master/.wordpress-org/screenshot-2.png)
 
