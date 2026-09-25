@@ -171,7 +171,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 				$permalink = add_query_arg(
 					array(
 						'page' => WP_REST_API_Log_Common::PLUGIN_NAME . '-view-entry',
-						'id'   => rawurlencode( $post->ID ),
+						'id'   => $post->ID,
 					),
 					admin_url( 'tools.php' )
 				);
