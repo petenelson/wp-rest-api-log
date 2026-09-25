@@ -34,7 +34,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			add_action( 'admin_init', array( __CLASS__, 'create_purge_cron' ) );
 
 			// Handler for cron job.
-			add_action( 'wp-rest-api-log-purge-old-records', array( __CLASS__, 'purge_old_records' ) );
+			add_action( 'wp-rest-api-log-purge-old-records', array( __CLASS__, 'purge_old_records_from_cron' ) );
 
 			/*
 			Kept for local development reference: overrides the current user
@@ -208,11 +208,21 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		}
 
 		/**
+		 * Purges old log entries from the scheduled cron event, which has no
+		 * use for the returned count.
+		 *
+		 * @return void
+		 */
+		public static function purge_old_records_from_cron() {
+			self::purge_old_records();
+		}
+
+		/**
 		 * Purges old REST API Log records.
 		 *
 		 * @param  int     $days_old How many days back to go.
 		 * @param  boolean $dry_run  Whether this is a dry run.
-		 * @return int|void Number of entries deleted, or nothing when no age is configured.
+		 * @return int Number of entries deleted, or 0 when no age is configured.
 		 */
 		public static function purge_old_records( $days_old = false, $dry_run = false ) {
 
@@ -222,7 +232,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 			$days_old = absint( $days_old );
 			if ( empty( $days_old ) ) {
-				return;
+				return 0;
 			}
 
 			$ids = self::get_old_log_ids( $days_old );
