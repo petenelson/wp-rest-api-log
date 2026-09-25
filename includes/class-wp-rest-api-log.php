@@ -220,11 +220,11 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		/**
 		 * Purges old REST API Log records.
 		 *
-		 * @param  int     $days_old How many days back to go.
-		 * @param  boolean $dry_run  Whether this is a dry run.
+		 * @param  int|null $days_old How many days back to go, or null to use the setting.
+		 * @param  boolean  $dry_run  Whether this is a dry run.
 		 * @return int Number of entries deleted, or 0 when no age is configured.
 		 */
-		public static function purge_old_records( $days_old = false, $dry_run = false ) {
+		public static function purge_old_records( $days_old = null, $dry_run = false ) {
 
 			if ( empty( $days_old ) ) {
 				$days_old = WP_REST_API_Log_Settings_General::setting_get( 'general', 'purge-days' );
