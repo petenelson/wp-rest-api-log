@@ -41,7 +41,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			add_action( 'current_screen', array( __CLASS__, 'maybe_enqueue_scripts' ) );
 
 			// Custom actions for out plugin.
-			add_action( 'wp-rest-api-log-entry-property-links', array( __CLASS__, 'display_entry_property_links' ), 10, 3 );
+			add_action( 'wp-rest-api-log-entry-property-links', array( __CLASS__, 'display_entry_property_links' ) );
 		}
 
 		/**
