@@ -291,8 +291,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					foreach ( $args[ $response ][ $type ] as $key => $value ) {
 
 						if ( is_array( $value ) &&
-							1 === count( $value ) &&
-							'headers' === $type ) {
+							1 === count( $value ) ) {
 							$value = reset( $value );
 						}
 
