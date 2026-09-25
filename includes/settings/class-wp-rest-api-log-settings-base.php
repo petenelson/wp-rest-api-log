@@ -305,11 +305,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Base' ) ) {
 		 * @param  array $args {
 		 *     Field arguments.
 		 *
-		 *     @type string $name  Setting name within the group.
-		 *     @type string $key   Option name holding the settings group.
-		 *     @type int    $rows  Number of rows.
-		 *     @type int    $cols  Number of columns.
-		 *     @type string $after Markup appended after the field.
+		 *     @type string $name    Setting name within the group.
+		 *     @type string $key     Option name holding the settings group.
+		 *     @type int    $rows    Number of rows.
+		 *     @type int    $cols    Number of columns.
+		 *     @type string $after   Markup appended after the field.
+		 *     @type string $default Value shown when the setting has never been saved.
 		 * }
 		 * @return void
 		 */
@@ -318,11 +319,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Base' ) ) {
 			$args = wp_parse_args(
 				$args,
 				array(
-					'name'  => '',
-					'key'   => '',
-					'rows'  => 10,
-					'cols'  => 40,
-					'after' => '',
+					'name'    => '',
+					'key'     => '',
+					'rows'    => 10,
+					'cols'    => 40,
+					'after'   => '',
+					'default' => '',
 				)
 			);
 
@@ -332,8 +334,10 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_Base' ) ) {
 			$cols  = $args['cols'];
 			$after = $args['after'];
 
+			// A setting saved as an empty string is kept as-is; the default is
+			// only used when the setting has never been saved.
 			$option = get_option( $key );
-			$value  = isset( $option[ $name ] ) ? $option[ $name ] : '';
+			$value  = isset( $option[ $name ] ) ? $option[ $name ] : $args['default'];
 
 			printf(
 				'<div><textarea id="%1$s" name="%2$s" rows="%3$s" cols="%4$s">%5$s</textarea></div>',

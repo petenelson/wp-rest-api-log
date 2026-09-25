@@ -4,12 +4,12 @@
  * Description: Logs requests and responses for the REST API
  * Author: Pete Nelson
  * Author URI: https://petenelson.io
- * Version: 1.7.2
+ * Version: 1.7.3
  * Plugin URI: https://github.com/petenelson/wp-rest-api-log
  * Text Domain: wp-rest-api-log
  * Domain Path: /languages
  * License: GPL2+
- * Requires: PHP 7.4
+ * Requires PHP: 7.4
  *
  * @package wp-rest-api-log
  */
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'WP_REST_API_LOG_VERSION' ) ) {
-	define( 'WP_REST_API_LOG_VERSION', '1.7.2' );
+	define( 'WP_REST_API_LOG_VERSION', '1.7.3' );
 }
 
 if ( ! defined( 'WP_REST_API_LOG_ROOT' ) ) {
@@ -59,10 +59,12 @@ $wp_rest_api_log_includes = array(
 	'includes/class-' . $wp_rest_api_log_class_file . '-routes-response.php',
 	'includes/class-' . $wp_rest_api_log_class_file . '-elasticpress.php',
 	'includes/class-' . $wp_rest_api_log_class_file . '-filters.php',
+	'includes/class-' . $wp_rest_api_log_class_file . '-headers.php',
 	'includes/class-' . $wp_rest_api_log_class_file . '.php',
 	'includes/settings/class-' . $wp_rest_api_log_class_file . '-settings-base.php',
 	'includes/settings/class-' . $wp_rest_api_log_class_file . '-settings-general.php',
 	'includes/settings/class-' . $wp_rest_api_log_class_file . '-settings-routes.php',
+	'includes/settings/class-' . $wp_rest_api_log_class_file . '-settings-headers.php',
 	'includes/settings/class-' . $wp_rest_api_log_class_file . '-settings-elasticpress.php',
 	'includes/settings/class-' . $wp_rest_api_log_class_file . '-settings-help.php',
 	'includes/settings/class-' . $wp_rest_api_log_class_file . '-settings.php',
@@ -125,6 +127,7 @@ WP_REST_API_Log::plugins_loaded();
 WP_REST_API_Log_Settings::plugins_loaded();
 WP_REST_API_Log_Settings_General::plugins_loaded();
 WP_REST_API_Log_Settings_Routes::plugins_loaded();
+WP_REST_API_Log_Settings_Headers::plugins_loaded();
 WP_REST_API_Log_Settings_ElasticPress::plugins_loaded();
 WP_REST_API_Log_Settings_Help::plugins_loaded();
 WP_REST_API_Log_Post_Type::plugins_loaded();

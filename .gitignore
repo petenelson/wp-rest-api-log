@@ -11,3 +11,4 @@ tmp
 .phpunit.result.cache
 phpcs-report.xml
 .DS_Store
+.claude/skills
