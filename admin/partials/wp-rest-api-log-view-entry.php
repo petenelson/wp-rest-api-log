@@ -1,15 +1,27 @@
 <?php
+/**
+ * Admin template that renders a single REST API log entry.
+ *
+ * Included by WP_REST_API_Log_Admin::display_log_entry(), so every variable
+ * declared here is scoped to that method rather than to the global scope.
+ * PHPCS analyses this file on its own and cannot see the enclosing method,
+ * which is why the scope-related sniffs are disabled below.
+ *
+ * @package wp-rest-api-log
+ */
+
+// phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited -- Included inside a method; these variables are method-scoped.
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are method-scoped.
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'restricted access' );
 }
 
-$id = absint( filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT ) );
+$id               = absint( filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT ) );
 $post_type_object = get_post_type_object( WP_REST_API_Log_DB::POST_TYPE );
 
 if ( ! current_user_can( $post_type_object->cap->read_post, $id ) ) {
 	wp_die(
-		'<h1>' . esc_html__( 'Cheatin&#8217; uh?' ) . '</h1>' .
 		'<p>' . esc_html__( 'You are not allowed to read posts in this post type.', 'wp-rest-api-log' ) . '</p>',
 		403
 	);
@@ -36,21 +48,22 @@ $body_content = ! empty( $entry->request->body ) ? $entry->request->body : '';
 if ( 'ElasticPress' === $entry->source ) {
 	// These request bodies are base64 encoded JSON.
 	if ( ! empty( $body_content ) ) {
-		$body_object = json_decode( base64_decode( $body_content ) );
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Decoding a logged ElasticPress request body, not obfuscated code.
+		$body_object  = json_decode( base64_decode( $body_content ) );
 		$body_content = '';
 	}
 }
 
 $json_display_options = array(
-	'request' => array(
+	'request'  => array(
 		'headers'      => ! empty( $entry->request->headers ) ? JSON_PRETTY_PRINT : 0,
 		'query_params' => ! empty( $entry->request->query_params ) ? JSON_PRETTY_PRINT : 0,
 		'body_params'  => ! empty( $entry->request->body_params ) ? JSON_PRETTY_PRINT : 0,
-		),
+	),
 	'response' => array(
-		'headers'      => ! empty( $entry->response->headers ) ? JSON_PRETTY_PRINT : 0,
-		),
-	);
+		'headers' => ! empty( $entry->response->headers ) ? JSON_PRETTY_PRINT : 0,
+	),
+);
 
 $json_display_options = apply_filters( 'wp-rest-api-log-json-display-options', $json_display_options, $entry );
 
@@ -59,7 +72,7 @@ $classes = apply_filters( 'wp-rest-api-log-entry-display-classes', array( 'wrap'
 $download_urls = WP_REST_API_Log_Controller::get_download_urls( $entry );
 
 ?>
-<div class="<?php echo implode( ' ', array_map( 'esc_attr',  $classes ) ); ?>" id="wp-rest-api-log-entry">
+<div class="<?php echo implode( ' ', array_map( 'esc_attr', $classes ) ); ?>" id="wp-rest-api-log-entry">
 
 	<h1><?php esc_html_e( 'Route:', 'wp-rest-api-log' ); ?> <?php echo esc_html( $entry->route ); ?></h1>
 
@@ -72,7 +85,7 @@ $download_urls = WP_REST_API_Log_Controller::get_download_urls( $entry );
 
 			<div class="inside">
 				<ul>
-					<li><?php esc_html_e( 'Date' ); ?>: <?php echo esc_html( $entry->time ); ?></li>
+					<li><?php esc_html_e( 'Date', 'default' ); ?>: <?php echo esc_html( $entry->time ); ?></li>
 					<li><?php esc_html_e( 'Source', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->source ); ?></li>
 					<li><?php esc_html_e( 'Method', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->method ); ?></li>
 					<li><?php esc_html_e( 'Status', 'wp-rest-api-log' ); ?>: <?php echo esc_html( $entry->status ); ?></li>
@@ -92,13 +105,17 @@ $download_urls = WP_REST_API_Log_Controller::get_download_urls( $entry );
 		<div class="postbox request-headers">
 			<h3 class="hndle"><span><?php esc_html_e( 'Request Headers', 'wp-rest-api-log' ); ?></span></h3>
 			<div class="inside">
-				<?php do_action( 'wp-rest-api-log-entry-property-links', array(
-						'rr' => 'request',
-						'property' => 'headers',
+				<?php
+				do_action(
+					'wp-rest-api-log-entry-property-links',
+					array(
+						'rr'            => 'request',
+						'property'      => 'headers',
 						'download_urls' => $download_urls,
-						'entry' => $entry,
+						'entry'         => $entry,
 					)
-				); ?>
+				);
+				?>
 				<pre><code class="json"><?php echo esc_html( wp_json_encode( $entry->request->headers, $json_display_options['request']['headers'] ) ); ?></code></pre>
 			</div>
 		</div>
@@ -108,13 +125,17 @@ $download_urls = WP_REST_API_Log_Controller::get_download_urls( $entry );
 		<div class="postbox querystring-parameters request-query_params">
 			<h3 class="hndle"><span><?php esc_html_e( 'Query Parameters', 'wp-rest-api-log' ); ?></span></h3>
 			<div class="inside">
-				<?php do_action( 'wp-rest-api-log-entry-property-links', array(
-						'rr' => 'request',
-						'property' => 'query_params',
+				<?php
+				do_action(
+					'wp-rest-api-log-entry-property-links',
+					array(
+						'rr'            => 'request',
+						'property'      => 'query_params',
 						'download_urls' => $download_urls,
-						'entry' => $entry,
+						'entry'         => $entry,
 					)
-				); ?>
+				);
+				?>
 				<pre><code class="json"><?php echo esc_html( wp_json_encode( $entry->request->query_params, $json_display_options['request']['query_params'] ) ); ?></code></pre>
 			</div>
 		</div>
@@ -124,19 +145,18 @@ $download_urls = WP_REST_API_Log_Controller::get_download_urls( $entry );
 		<div class="postbox body-parameters request-body_params">
 			<h3 class="hndle"><span><?php esc_html_e( 'Body Parameters', 'wp-rest-api-log' ); ?></span></h3>
 			<div class="inside">
-				<?php do_action( 'wp-rest-api-log-entry-property-links', array(
-						'rr' => 'request',
-						'property' => 'body_params',
+				<?php
+				do_action(
+					'wp-rest-api-log-entry-property-links',
+					array(
+						'rr'            => 'request',
+						'property'      => 'body_params',
 						'download_urls' => $download_urls,
-						'entry' => $entry,
+						'entry'         => $entry,
 					)
-				); ?>
-				<pre><code class="json"><?php
-					echo esc_html( wp_json_encode(
-						$entry->request->body_params,
-						$json_display_options['request']['body_params']
-					) );
-					?></code></pre>
+				);
+				?>
+				<pre><code class="json"><?php echo esc_html( wp_json_encode( $entry->request->body_params, $json_display_options['request']['body_params'] ) ); ?></code></pre>
 			</div>
 		</div>
 
@@ -148,25 +168,33 @@ $download_urls = WP_REST_API_Log_Controller::get_download_urls( $entry );
 				<h3 class="hndle"><span><?php esc_html_e( 'Body Content', 'wp-rest-api-log' ); ?></span></h3>
 				<?php if ( ! empty( $body_object ) ) : ?>
 					<div class="inside">
-						<?php do_action( 'wp-rest-api-log-entry-property-links', array(
-								'rr' => 'request',
-								'property' => 'body',
+						<?php
+						do_action(
+							'wp-rest-api-log-entry-property-links',
+							array(
+								'rr'            => 'request',
+								'property'      => 'body',
 								'download_urls' => $download_urls,
-								'entry' => $entry,
+								'entry'         => $entry,
 							)
-						); ?>
+						);
+						?>
 						<pre><code class="json"><?php echo esc_html( wp_json_encode( $body_object, JSON_PRETTY_PRINT ) ); ?></code></pre>
 					</div>
 				<?php endif; ?>
 				<?php if ( ! empty( $body_content ) ) : ?>
 					<div class="inside">
-						<?php do_action( 'wp-rest-api-log-entry-property-links', array(
-								'rr' => 'request',
-								'property' => 'body',
+						<?php
+						do_action(
+							'wp-rest-api-log-entry-property-links',
+							array(
+								'rr'            => 'request',
+								'property'      => 'body',
 								'download_urls' => $download_urls,
-								'entry' => $entry,
+								'entry'         => $entry,
 							)
-						); ?>
+						);
+						?>
 						<pre><code><?php echo esc_html( $body_content ); ?></code></pre>
 					</div>
 				<?php endif; ?>
@@ -178,13 +206,17 @@ $download_urls = WP_REST_API_Log_Controller::get_download_urls( $entry );
 		<div class="postbox response-headers response-headers">
 			<h3 class="hndle"><span><?php esc_html_e( 'Response Headers', 'wp-rest-api-log' ); ?></span></h3>
 			<div class="inside">
-				<?php do_action( 'wp-rest-api-log-entry-property-links', array(
-						'rr' => 'response',
-						'property' => 'headers',
+				<?php
+				do_action(
+					'wp-rest-api-log-entry-property-links',
+					array(
+						'rr'            => 'response',
+						'property'      => 'headers',
 						'download_urls' => $download_urls,
-						'entry' => $entry,
+						'entry'         => $entry,
 					)
-				); ?>
+				);
+				?>
 				<pre><code class="json"><?php echo esc_html( wp_json_encode( $entry->response->headers, $json_display_options['response']['headers'] ) ); ?></code></pre>
 			</div>
 		</div>
@@ -194,13 +226,17 @@ $download_urls = WP_REST_API_Log_Controller::get_download_urls( $entry );
 		<div class="postbox response-body">
 			<h3 class="hndle"><span><?php esc_html_e( 'Response Body', 'wp-rest-api-log' ); ?></span></h3>
 			<div class="inside">
-				<?php do_action( 'wp-rest-api-log-entry-property-links', array(
-						'rr' => 'response',
-						'property' => 'body',
+				<?php
+				do_action(
+					'wp-rest-api-log-entry-property-links',
+					array(
+						'rr'            => 'response',
+						'property'      => 'body',
 						'download_urls' => $download_urls,
-						'entry' => $entry,
+						'entry'         => $entry,
 					)
-				); ?>
+				);
+				?>
 				<pre><code><?php echo esc_html( $entry->response->body ); ?></code></pre>
 			</div>
 		</div>

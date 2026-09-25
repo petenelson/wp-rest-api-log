@@ -1,16 +1,36 @@
 <?php
+/**
+ * Registers the custom post type used to store log entries.
+ *
+ * @package wp-rest-api-log
+ */
 
-if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'restricted access' );
+}
 
 if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 
+	/**
+	 * Registers and configures the log entry post type.
+	 */
 	class WP_REST_API_Log_Post_Type {
 
-		static public function plugins_loaded() {
+		/**
+		 * Hooks the post type registration into WordPress.
+		 *
+		 * @return void
+		 */
+		public static function plugins_loaded() {
 			add_action( 'init', array( __CLASS__, 'register_custom_post_types' ) );
 		}
 
-		static public function register_custom_post_types() {
+		/**
+		 * Registers the log entry post type.
+		 *
+		 * @return void
+		 */
+		public static function register_custom_post_types() {
 
 			$args = self::get_post_type_args();
 
@@ -18,7 +38,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 		}
 
 
-		static public function get_post_type_labels() {
+		/**
+		 * Returns the labels used by the log entry post type.
+		 *
+		 * @return array Post type labels, filterable via
+		 *               "wp-rest-api-log-post-type-labels".
+		 */
+		public static function get_post_type_labels() {
 
 			$labels = array(
 				'name'               => esc_html__( 'REST API Log Entries', 'wp-rest-api-log' ),
@@ -38,7 +64,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 		}
 
 
-		static public function get_post_type_args() {
+		/**
+		 * Returns the registration arguments for the log entry post type.
+		 *
+		 * @return array Post type arguments, filterable via
+		 *               "wp-rest-api-log-register-post-type".
+		 */
+		public static function get_post_type_args() {
 
 			$args = array(
 				'labels'              => self::get_post_type_labels(),
@@ -49,7 +81,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 				'show_in_menu'        => 'tools.php',
 				'show_in_admin_bar'   => false,
 				'show_in_nav_menus'   => false,
-				'publicly_queryable'  => true,
+
+				// Log entries contain full request and response bodies, which can
+				// include credentials. This must stay false so WP::parse_request()
+				// drops "?post_type=wp-rest-api-log" on front end requests, and so
+				// oEmbed responses skip entries on WP versions before 6.8.
+				'publicly_queryable'  => false,
+
 				'exclude_from_search' => true,
 				'has_archive'         => false,
 				'query_var'           => false,
@@ -57,13 +95,13 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 				'rewrite'             => false,
 				'map_meta_cap'        => false,
 				'capabilities'        => array(
-					'read_post'     => 'read_' . WP_REST_API_Log_DB::POST_TYPE,
-					'delete_post'   => 'delete_' . WP_REST_API_Log_DB::POST_TYPE,
-					'delete_posts'  => 'delete_' . WP_REST_API_Log_DB::POST_TYPE . 's',
-					'edit_posts'    => 'edit_' . WP_REST_API_Log_DB::POST_TYPE . 's',
-					'edit_post'     => 'edit_' . WP_REST_API_Log_DB::POST_TYPE,
-					'create_posts'  => 'create_' . WP_REST_API_Log_DB::POST_TYPE . 's',
-					),
+					'read_post'    => 'read_' . WP_REST_API_Log_DB::POST_TYPE,
+					'delete_post'  => 'delete_' . WP_REST_API_Log_DB::POST_TYPE,
+					'delete_posts' => 'delete_' . WP_REST_API_Log_DB::POST_TYPE . 's',
+					'edit_posts'   => 'edit_' . WP_REST_API_Log_DB::POST_TYPE . 's',
+					'edit_post'    => 'edit_' . WP_REST_API_Log_DB::POST_TYPE,
+					'create_posts' => 'create_' . WP_REST_API_Log_DB::POST_TYPE . 's',
+				),
 				'supports'            => array( 'title', 'author', 'excerpt' ),
 			);
 
