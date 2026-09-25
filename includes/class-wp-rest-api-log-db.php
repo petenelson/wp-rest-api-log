@@ -34,7 +34,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 * @return void
 		 */
 		public function plugins_loaded() {
-			add_action( WP_REST_API_Log_Common::PLUGIN_NAME . '-insert', array( $this, 'insert' ), 10, 4 );
+			add_action( WP_REST_API_Log_Common::PLUGIN_NAME . '-insert', array( $this, 'insert_from_action' ) );
 
 			// Adds where statement when searching for routes.
 			add_filter( 'posts_where', array( $this, 'add_where_route' ), 10, 2 );
@@ -53,6 +53,17 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			return WP_REST_API_Log_Common::PLUGIN_NAME . '-entries';
 		}
 
+
+		/**
+		 * Inserts a log entry from the insert action, which has no use for
+		 * the returned post ID.
+		 *
+		 * @param  array $args Log entry data.
+		 * @return void
+		 */
+		public function insert_from_action( $args ) {
+			$this->insert( $args );
+		}
 
 		/**
 		 * Inserts a REST API log custom post type record and corresponding
