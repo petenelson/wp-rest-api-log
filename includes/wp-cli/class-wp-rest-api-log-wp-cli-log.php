@@ -323,11 +323,12 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 	private static function random_method() {
 
 		$weighted = array(
-			'GET'    => 65,
-			'POST'   => 20,
-			'PUT'    => 6,
-			'PATCH'  => 4,
-			'DELETE' => 5,
+			'GET'     => 62,
+			'POST'    => 20,
+			'PUT'     => 6,
+			'PATCH'   => 4,
+			'DELETE'  => 5,
+			'OPTIONS' => 3,
 			);
 
 		$roll       = wp_rand( 1, 100 );
