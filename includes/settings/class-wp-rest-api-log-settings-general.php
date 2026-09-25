@@ -228,7 +228,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings_General' ) ) {
 		public static function dismiss_db_notice() {
 			$key = 'wp-rest-api-log-db-notice-dismissed';
 			delete_option( $key );
-			add_option( $key, '1', '', 'no' );
+			add_option( $key, '1', '', false );
 		}
 	}
 
