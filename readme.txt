@@ -3,7 +3,7 @@ Contributors: gungeekatx
 Tags: rest api, json, logging, elasticpress, elasticsearch
 Donate link: https://github.com/petenelson/wp-rest-api-log
 Requires at least: 4.7
-Tested up to: 7.0.3
+Tested up to: 7.1.2
 Stable tag: 1.7.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -39,8 +39,8 @@ Roadmap
 
 == Changelog ==
 
-= v1.7.3 =
-* Fixed a security issue where log entries could be read by unauthenticated visitors on the front end. The wp-rest-api-log post type is no longer publicly queryable.
+= v1.7.3 September 25, 2026 =
+* Added a Headers settings tab that redacts the values of sensitive request and response headers, such as Authorization, Cookie and Set-Cookie, before a log entry is saved
 
 = v1.7.2 July 23, 2026 =
 * Changed "show_in_rest" to false for the wp-rest-api-log custom post type

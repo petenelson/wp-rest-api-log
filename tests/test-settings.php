@@ -29,4 +29,15 @@ class WP_REST_API_Log_Test_Settings extends WP_UnitTestCase {
 		$this->assertNotEmpty( $settings );
 		$this->assertNotEmpty( $settings['ignore-core-oembed'], 'ignore-core-oembed is empty' );
 	}
+
+	/**
+	 * Test that headers have default settings
+	 */
+	public function test_default_headers_settings() {
+
+		$settings = WP_REST_API_Log_Settings_Headers::get_default_settings();
+		$this->assertNotEmpty( $settings );
+		$this->assertNotEmpty( $settings['redacted-request-headers'], 'redacted-request-headers is empty' );
+		$this->assertNotEmpty( $settings['redacted-response-headers'], 'redacted-response-headers is empty' );
+	}
 }
