@@ -1,462 +1,371 @@
-# Copyright (C) 2017 Pete Nelson
+# Copyright (C) 2026 Pete Nelson
 # This file is distributed under the GPL2+.
 msgid ""
 msgstr ""
-"Project-Id-Version: REST API Log 1.6.0\n"
+"Project-Id-Version: REST API Log 1.7.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-rest-api-log\n"
-"POT-Creation-Date: 2017-03-09 20:23:50+00:00\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2017-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"X-Generator: grunt-wp-i18n 0.5.4\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-09-25T16:29:51+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: wp-rest-api-log\n"
 
-#: admin/class-wp-rest-api-log-admin-list-table.php:56
-#: admin/partials/wp-rest-api-log-view-entry.php:73
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin-list-table.php:56
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:71
-msgid "Date"
-msgstr ""
-
-#: admin/class-wp-rest-api-log-admin-list-table.php:57
-#: admin/class-wp-rest-api-log-admin-list-table.php:122
-#: admin/partials/wp-rest-api-log-view-entry.php:75
-#: includes/class-wp-rest-api-log-post-type.php:82
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin-list-table.php:57
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin-list-table.php:122
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:73
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-post-type.php:82
-msgid "Method"
-msgstr ""
-
-#: admin/class-wp-rest-api-log-admin-list-table.php:58
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin-list-table.php:58
-msgid "Title"
-msgstr ""
-
-#: admin/class-wp-rest-api-log-admin-list-table.php:59
-#: admin/class-wp-rest-api-log-admin-list-table.php:137
-#: admin/partials/wp-rest-api-log-view-entry.php:76
-#: includes/class-wp-rest-api-log-post-type.php:104
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin-list-table.php:59
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin-list-table.php:137
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:74
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-post-type.php:104
-msgid "Status"
-msgstr ""
-
-#: admin/class-wp-rest-api-log-admin-list-table.php:60
-#: admin/partials/wp-rest-api-log-view-entry.php:77
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin-list-table.php:60
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:75
-msgid "Elapsed Time"
-msgstr ""
-
-#: admin/class-wp-rest-api-log-admin-list-table.php:61
-#: admin/partials/wp-rest-api-log-view-entry.php:78
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin-list-table.php:61
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:76
-msgid "Response Length"
-msgstr ""
-
-#: admin/class-wp-rest-api-log-admin-list-table.php:62
-#: admin/partials/wp-rest-api-log-view-entry.php:80
-#: includes/settings/class-wp-rest-api-log-settings-general.php:75
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin-list-table.php:62
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:78
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-general.php:75
-msgid "IP Address"
-msgstr ""
-
-#: admin/class-wp-rest-api-log-admin-list-table.php:63
-#: admin/partials/wp-rest-api-log-view-entry.php:79
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin-list-table.php:63
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:77
-msgid "User"
-msgstr ""
-
-#: admin/class-wp-rest-api-log-admin-list-table.php:123
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin-list-table.php:123
-msgid "All Methods"
-msgstr ""
-
-#: admin/class-wp-rest-api-log-admin-list-table.php:138
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin-list-table.php:138
-msgid "All Statuses"
-msgstr ""
-
-#: admin/class-wp-rest-api-log-admin-list-table.php:152
-#: admin/partials/wp-rest-api-log-view-entry.php:74
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin-list-table.php:152
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:72
-msgid "Source"
-msgstr ""
-
-#: admin/class-wp-rest-api-log-admin-list-table.php:153
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin-list-table.php:153
-msgid "All Sources"
-msgstr ""
-
-#: admin/class-wp-rest-api-log-admin.php:39
-#: includes/class-wp-rest-api-log-post-type.php:26
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin.php:27
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-post-type.php:26
-msgid "REST API Log Entries"
-msgstr ""
-
-#. Plugin Name of the plugin/theme
+#. Plugin Name of the plugin
+#: wp-rest-api-log.php
+#: admin/class-wp-rest-api-log-admin.php:74
+#: includes/settings/class-wp-rest-api-log-settings.php:86
 msgid "REST API Log"
 msgstr ""
 
-#: admin/class-wp-rest-api-log-admin.php:177
-#: includes/class-wp-rest-api-log-post-type.php:27
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin.php:142
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-post-type.php:27
-msgid "REST API Log Entry"
-msgstr ""
-
-#: admin/class-wp-rest-api-log-admin.php:239
-#: includes/settings/class-wp-rest-api-log-settings.php:115
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin.php:204
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings.php:115
-msgid "Settings"
-msgstr ""
-
-#: admin/class-wp-rest-api-log-admin.php:243
-#: release/wp-rest-api-log/admin/class-wp-rest-api-log-admin.php:208
-msgid "Log"
-msgstr ""
-
-#: admin/partials/admin-help.php:7
-#: release/wp-rest-api-log/admin/partials/admin-help.php:7
-msgid "Contact"
-msgstr ""
-
-#: admin/partials/admin-help.php:9
-#: release/wp-rest-api-log/admin/partials/admin-help.php:9
-msgid "E-Mail"
-msgstr ""
-
-#: admin/partials/admin-help.php:10
-#: release/wp-rest-api-log/admin/partials/admin-help.php:10
-msgid "Twitter"
-msgstr ""
-
-#: admin/partials/admin-help.php:11
-#: release/wp-rest-api-log/admin/partials/admin-help.php:11
-msgid "GitHub"
-msgstr ""
-
-#: admin/partials/entry-property-links.php:6
-msgid "Download"
-msgstr ""
-
-#: admin/partials/entry-property-links.php:7
-msgid "Copy"
-msgstr ""
-
-#: admin/partials/wp-rest-api-log-api-is-disabled.php:3
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-api-is-disabled.php:3
-msgid "WP REST API Log"
-msgstr ""
-
-#: admin/partials/wp-rest-api-log-api-is-disabled.php:6
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-api-is-disabled.php:6
-msgid "The WP REST API is not enabled"
-msgstr ""
-
-#: admin/partials/wp-rest-api-log-view-entry.php:10
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:10
-msgid "Cheatin&#8217; uh?"
-msgstr ""
-
-#: admin/partials/wp-rest-api-log-view-entry.php:11
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:11
-msgid "You are not allowed to read posts in this post type."
-msgstr ""
-
-#: admin/partials/wp-rest-api-log-view-entry.php:22
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:22
-msgid "Invalid WP REST API Log Entry ID"
-msgstr ""
-
-#: admin/partials/wp-rest-api-log-view-entry.php:62
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:60
-msgid "Route:"
-msgstr ""
-
-#: admin/partials/wp-rest-api-log-view-entry.php:69
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:67
-msgid "Details"
-msgstr ""
-
-#: admin/partials/wp-rest-api-log-view-entry.php:82
-#: includes/settings/class-wp-rest-api-log-settings-general.php:76
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:80
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-general.php:76
-msgid "HTTP X Forwarded For"
-msgstr ""
-
-#: admin/partials/wp-rest-api-log-view-entry.php:91
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:89
-msgid "Request Headers"
-msgstr ""
-
-#: admin/partials/wp-rest-api-log-view-entry.php:107
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:96
-msgid "Query Parameters"
-msgstr ""
-
-#: admin/partials/wp-rest-api-log-view-entry.php:123
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:103
-msgid "Body Parameters"
-msgstr ""
-
-#: admin/partials/wp-rest-api-log-view-entry.php:141
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:112
-msgid "Body Content"
-msgstr ""
-
-#: admin/partials/wp-rest-api-log-view-entry.php:172
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:125
-msgid "Response Headers"
-msgstr ""
-
-#: admin/partials/wp-rest-api-log-view-entry.php:188
-msgid "Response Body"
-msgstr ""
-
-#: includes/class-wp-rest-api-log-controller.php:219
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-controller.php:141
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-controller.php:149
-msgid "Invalid REST API Log ID %d."
-msgstr ""
-
-#: includes/class-wp-rest-api-log-filters.php:14
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-filters.php:14
-msgid "All"
-msgstr ""
-
-#: includes/class-wp-rest-api-log-filters.php:15
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-filters.php:15
-msgid "Only Matching Filters"
-msgstr ""
-
-#: includes/class-wp-rest-api-log-filters.php:16
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-filters.php:16
-msgid "Exclude Matching Filters"
-msgstr ""
-
-#: includes/class-wp-rest-api-log-post-type.php:28
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-post-type.php:28
-msgid "Add New REST API Log Entries"
-msgstr ""
-
-#: includes/class-wp-rest-api-log-post-type.php:29
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-post-type.php:29
-msgid "Add New REST API Log Entry"
-msgstr ""
-
-#: includes/class-wp-rest-api-log-post-type.php:30
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-post-type.php:30
-msgid "New REST API Log Entry"
-msgstr ""
-
-#: includes/class-wp-rest-api-log-post-type.php:31
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-post-type.php:31
-msgid "Edit Publication Page"
-msgstr ""
-
-#: includes/class-wp-rest-api-log-post-type.php:32
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-post-type.php:32
-msgid "View REST API Log Entry"
-msgstr ""
-
-#: includes/class-wp-rest-api-log-post-type.php:33
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-post-type.php:33
-msgid "All REST API Log Entries"
-msgstr ""
-
-#: includes/class-wp-rest-api-log-post-type.php:34
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-post-type.php:34
-msgid "Search Entries"
-msgstr ""
-
-#: includes/class-wp-rest-api-log-post-type.php:35
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-post-type.php:35
-msgid "No REST API Log Entries found"
-msgstr ""
-
-#: includes/class-wp-rest-api-log-post-type.php:36
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-post-type.php:36
-msgid "No REST API Log Entries found in Trash"
-msgstr ""
-
-#: includes/class-wp-rest-api-log-post-type.php:83
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-post-type.php:83
-msgid "Methods"
-msgstr ""
-
-#: includes/class-wp-rest-api-log-post-type.php:105
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-post-type.php:105
-msgid "Statuses"
-msgstr ""
-
-#: includes/class-wp-rest-api-log-post-type.php:110
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-post-type.php:110
-msgid "Log Source"
-msgstr ""
-
-#: includes/class-wp-rest-api-log-post-type.php:111
-#: release/wp-rest-api-log/includes/class-wp-rest-api-log-post-type.php:111
-msgid "Log Sources"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-base.php:54
-#: includes/settings/class-wp-rest-api-log-settings-general.php:19
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-base.php:54
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-general.php:19
-msgid "General"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-base.php:235
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-base.php:235
-msgid "Yes"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-base.php:236
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-base.php:236
-msgid "No"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-elasticpress.php:19
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-elasticpress.php:19
-msgid "ElasticPress"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-elasticpress.php:40
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-elasticpress.php:40
-msgid "Log ElasticPress API Calls"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-general.php:40
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-general.php:40
-msgid "Enabled"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-general.php:50
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-general.php:50
-msgid "Purge All %1$s Entries Now"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-general.php:54
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-general.php:54
-msgid "Days to Retain Old Entries"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-general.php:59
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-general.php:59
-msgid ""
-"Entries older than this will be automatically cleaned up, leave blank to "
-"keep all entries. %1$s"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-general.php:68
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-general.php:68
-msgid "IP Address Display"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-general.php:73
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-general.php:73
-msgid "Sets the IP address displayed in the list of log entries."
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-help.php:19
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-help.php:19
-msgid "Help"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-routes.php:28
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-routes.php:28
-msgid "Routes"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-routes.php:61
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-routes.php:61
-msgid "Ignore core oEmbed"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-routes.php:68
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-routes.php:68
-msgid "Built-in /oembed/1.0/embed route"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-routes.php:74
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-routes.php:74
-msgid "Route Logging Mode"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-routes.php:89
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-routes.php:89
-msgid "Route Filters"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-routes.php:97
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-routes.php:97
-msgid "One route per line, examples"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-routes.php:99
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-routes.php:99
-msgid "Exact Match"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-routes.php:100
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-routes.php:100
-msgid "Wildcard Match"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-routes.php:101
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-routes.php:101
-msgid "Regex"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings-routes.php:103
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings-routes.php:103
-msgid "Regex matches must start with ^"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings.php:35
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings.php:35
-msgid ""
-"<strong>REST API Log activated!</strong> Please <a href=\"%s\">visit the "
-"Settings page</a> to customize the settings."
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings.php:66
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings.php:66
-msgid "REST API Log Settings"
-msgstr ""
-
-#: includes/settings/class-wp-rest-api-log-settings.php:90
-#: release/wp-rest-api-log/includes/settings/class-wp-rest-api-log-settings.php:90
-msgid "Save Changes"
-msgstr ""
-
-#: release/wp-rest-api-log/admin/partials/wp-rest-api-log-view-entry.php:132
-msgid "Response"
-msgstr ""
-
-#. Plugin URI of the plugin/theme
+#. Plugin URI of the plugin
+#: wp-rest-api-log.php
 msgid "https://github.com/petenelson/wp-rest-api-log"
 msgstr ""
 
-#. Description of the plugin/theme
+#. Description of the plugin
+#: wp-rest-api-log.php
 msgid "Logs requests and responses for the REST API"
 msgstr ""
 
-#. Author of the plugin/theme
+#. Author of the plugin
+#: wp-rest-api-log.php
 msgid "Pete Nelson"
+msgstr ""
+
+#. Author URI of the plugin
+#: wp-rest-api-log.php
+msgid "https://petenelson.io"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:118
+#: admin/partials/wp-rest-api-log-view-entry.php:90
+#: includes/class-wp-rest-api-log-taxonomies.php:37
+msgid "Method"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:120
+#: admin/partials/wp-rest-api-log-view-entry.php:91
+#: includes/class-wp-rest-api-log-taxonomies.php:42
+msgid "Status"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:121
+#: admin/partials/wp-rest-api-log-view-entry.php:92
+msgid "Elapsed Time"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:122
+#: admin/partials/wp-rest-api-log-view-entry.php:93
+msgid "Response Length"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:123
+#: admin/partials/wp-rest-api-log-view-entry.php:95
+#: includes/settings/class-wp-rest-api-log-settings-general.php:127
+msgid "IP Address"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin-list-table.php:124
+#: admin/partials/wp-rest-api-log-view-entry.php:94
+msgid "User"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin.php:56
+#: includes/class-wp-rest-api-log-post-type.php:50
+msgid "REST API Log Entries"
+msgstr ""
+
+#: admin/class-wp-rest-api-log-admin.php:146
+#: includes/class-wp-rest-api-log-post-type.php:51
+msgid "REST API Log Entry"
+msgstr ""
+
+#: admin/partials/admin-help.php:15
+msgid "Contact"
+msgstr ""
+
+#: admin/partials/admin-help.php:17
+msgid "E-Mail"
+msgstr ""
+
+#: admin/partials/admin-help.php:18
+msgid "Twitter"
+msgstr ""
+
+#: admin/partials/admin-help.php:19
+msgid "GitHub"
+msgstr ""
+
+#: admin/partials/entry-property-links.php:17
+msgid "Download"
+msgstr ""
+
+#: admin/partials/entry-property-links.php:18
+msgid "Copy"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-api-is-disabled.php:11
+msgid "WP REST API Log"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-api-is-disabled.php:14
+msgid "The WP REST API is not enabled"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:25
+msgid "You are not allowed to read posts in this post type."
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:36
+msgid "Invalid WP REST API Log Entry ID"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:77
+msgid "Route:"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:84
+msgid "Details"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:89
+msgid "Source"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:97
+#: includes/settings/class-wp-rest-api-log-settings-general.php:128
+msgid "HTTP X Forwarded For"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:106
+msgid "Request Headers"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:126
+msgid "Query Parameters"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:146
+msgid "Body Parameters"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:168
+msgid "Body Content"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:207
+msgid "Response Headers"
+msgstr ""
+
+#: admin/partials/wp-rest-api-log-view-entry.php:227
+msgid "Response Body"
+msgstr ""
+
+#. translators: %d: the requested log entry ID.
+#: includes/class-wp-rest-api-log-controller.php:309
+#, php-format
+msgid "Invalid REST API Log ID %d."
+msgstr ""
+
+#. translators: %s: formatted number of log entries still to be migrated.
+#: includes/class-wp-rest-api-log-controller.php:482
+#, php-format
+msgid "%s entries remaining..."
+msgstr ""
+
+#: includes/class-wp-rest-api-log-filters.php:25
+msgid "All"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-filters.php:26
+msgid "Only Matching Filters"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-filters.php:27
+msgid "Exclude Matching Filters"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-post-type.php:52
+msgid "Add New REST API Log Entries"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-post-type.php:53
+msgid "Add New REST API Log Entry"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-post-type.php:54
+msgid "New REST API Log Entry"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-post-type.php:55
+msgid "Edit REST API Log Entry"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-post-type.php:56
+msgid "View REST API Log Entry"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-post-type.php:57
+msgid "All REST API Log Entries"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-post-type.php:58
+msgid "Search Entries"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-post-type.php:59
+msgid "No REST API Log Entries found"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-post-type.php:60
+msgid "No REST API Log Entries found in Trash"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-taxonomies.php:38
+msgid "Methods"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-taxonomies.php:43
+msgid "Statuses"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-taxonomies.php:47
+msgid "Log Source"
+msgstr ""
+
+#: includes/class-wp-rest-api-log-taxonomies.php:48
+msgid "Log Sources"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-base.php:99
+#: includes/settings/class-wp-rest-api-log-settings-general.php:47
+msgid "General"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-elasticpress.php:45
+msgid "ElasticPress"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-elasticpress.php:78
+msgid "Log ElasticPress API Calls"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-general.php:81
+msgid "Enabled"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-general.php:96
+msgid "Days to Retain Old Entries"
+msgstr ""
+
+#. translators: %1$s: HTML markup for the "purge entries" button.
+#: includes/settings/class-wp-rest-api-log-settings-general.php:106
+#, php-format
+msgid "Entries older than this will be automatically cleaned up, leave blank to keep all entries. %1$s"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-general.php:117
+msgid "IP Address Display"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-general.php:125
+msgid "Sets the IP address displayed in the list of log entries."
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-general.php:165
+msgid "Use caution when using this plugin on a production site with a large amount of REST API traffic. It logs a large amount of data and can greatly increase the size of your database."
+msgstr ""
+
+#. translators: Prompt for purging a number of log entries.
+#: includes/settings/class-wp-rest-api-log-settings-general.php:208
+#, php-format
+msgid "Purge All %1$s Entries Now"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-general.php:212
+msgid "Purging entries..."
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-headers.php:44
+msgid "Headers"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-headers.php:110
+msgid "Redacted Request Headers"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-headers.php:123
+msgid "Redacted Response Headers"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-headers.php:143
+msgid "Request and response headers can contain sensitive information such as cookies, API keys and bearer tokens. The values of the headers listed below are redacted before a log entry is saved."
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-headers.php:147
+msgid "One header name per line. Matching is case-insensitive and treats dashes and underscores as the same character."
+msgstr ""
+
+#. translators: %s: the text stored in place of the header value.
+#: includes/settings/class-wp-rest-api-log-settings-headers.php:151
+#, php-format
+msgid "The header name is still logged, but its value is replaced with %s."
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-help.php:45
+msgid "Help"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-routes.php:43
+msgid "Routes"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-routes.php:76
+msgid "Ignore core oEmbed"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-routes.php:83
+msgid "Built-in /oembed/1.0/embed route"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-routes.php:89
+msgid "Route Logging Mode"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-routes.php:104
+msgid "Route Filters"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-routes.php:112
+msgid "One route per line, examples"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-routes.php:114
+msgid "Exact Match"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-routes.php:115
+msgid "Wildcard Match"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-routes.php:116
+msgid "Regex"
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings-routes.php:118
+msgid "Regex matches must start with ^"
+msgstr ""
+
+#. translators: %s: URL of the plugin settings page.
+#: includes/settings/class-wp-rest-api-log-settings.php:47
+#, php-format
+msgid "<strong>REST API Log activated!</strong> Please <a href=\"%s\">visit the Settings page</a> to customize the settings."
+msgstr ""
+
+#: includes/settings/class-wp-rest-api-log-settings.php:85
+msgid "REST API Log Settings"
 msgstr ""

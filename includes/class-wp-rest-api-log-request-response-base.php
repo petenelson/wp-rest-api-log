@@ -1,6 +1,13 @@
 <?php
+/**
+ * Shared base class for the request and response halves of a log entry.
+ *
+ * @package wp-rest-api-log
+ */
 
-if ( ! defined( 'ABSPATH' ) ) die( 'restricted access' );
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'restricted access' );
+}
 
 if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 
@@ -9,72 +16,121 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 	 */
 	class WP_REST_API_Log_API_Request_Response_Base {
 
+		/**
+		 * Raw body content.
+		 *
+		 * @var string
+		 */
 		public $body;
+
+		/**
+		 * HTTP headers, keyed by header name.
+		 *
+		 * @var array
+		 */
 		public $headers;
 
-		protected $_type;
+		/**
+		 * Which half of the entry this object represents: "request" or "response".
+		 *
+		 * @var string
+		 */
+		protected $type;
 
-		private $_post;
-		private $_meta;
+		/**
+		 * The underlying log entry post.
+		 *
+		 * @var WP_Post
+		 */
+		private $current_post;
 
+		/**
+		 * Cached post meta for the log entry post.
+		 *
+		 * @var array
+		 */
+		private $meta;
+
+		/**
+		 * Loads one half of a log entry.
+		 *
+		 * @param string           $type Either "request" or "response".
+		 * @param WP_Post|int|null $post Log entry post object or ID.
+		 */
 		public function __construct( $type, $post = null ) {
 
-			$this->_type = $type;
+			$this->type = $type;
 
 			if ( is_int( $post ) ) {
 				$post = get_post( $post );
 			}
 
 			if ( is_object( $post ) ) {
-				$this->_post = $post;
+				$this->current_post = $post;
 				$this->load();
 			}
 		}
 
+		/**
+		 * Sets which half of the entry this object represents.
+		 *
+		 * @param  string $type Either "request" or "response".
+		 * @return void
+		 */
 		protected function set_type( $type ) {
-			$this->_type = $type;
+			$this->type = $type;
 		}
 
 
+		/**
+		 * Loads the headers and body for this half of the entry.
+		 *
+		 * @return void
+		 */
 		private function load() {
 
-			$this->headers   = $this->get_post_meta_array( 'headers' );
+			$this->headers = $this->get_post_meta_array( 'headers' );
 
-			if ( 'request' === $this->_type ) {
-				$this->body = get_post_meta( $this->_post->ID, '_request_body', true );
-				if ( false === $this->body) {
+			if ( 'request' === $this->type ) {
+				$this->body = get_post_meta( $this->current_post->ID, '_request_body', true );
+				if ( false === $this->body ) {
 					$this->body = '';
 				}
 			} else {
-				$this->body = $this->_post->post_content;
+				$this->body = $this->current_post->post_content;
 			}
-
 		}
 
 
+		/**
+		 * Collects a group of pipe-delimited post meta values into an array.
+		 *
+		 * @param  string $type Meta group name, for example "headers".
+		 * @return array Meta values keyed by their name.
+		 */
 		protected function get_post_meta_array( $type ) {
 
 			$meta = array();
 
-			if ( ! is_object( $this->_post ) ) {
+			if ( ! is_object( $this->current_post ) ) {
 				return $meta;
 			}
 
-			if ( empty( $this->_meta ) ) {
-				$this->_meta = get_post_meta( $this->_post->ID );
+			if ( empty( $this->meta ) ) {
+				$this->meta = get_post_meta( $this->current_post->ID );
 			}
 
-			if ( empty( $this->_meta ) ) {
+			if ( empty( $this->meta ) ) {
 				return $meta;
 			}
 
-			// loop through the post meta, find the keys for the array
-			foreach ( $this->_meta as $key => $value ) {
+			// Loop through the post meta, find the keys for the array.
+			foreach ( $this->meta as $key => $value ) {
 
-				// ex: _request_headers|Expires
-				// ex: _request_headers|Content-type
-				$look_for = "{$this->_type}_{$type}|";
-				$pos = stripos( $key, $look_for );
+				// Example: _request_headers|Expires.
+				// Example: _request_headers|Content-type.
+				$look_for = "{$this->type}_{$type}|";
+				$pos      = stripos( $key, $look_for );
 
 				if ( 0 === $pos ) {
 
@@ -85,42 +141,37 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 					} else {
 						$meta[ $meta_name ] = maybe_unserialize( $value );
 					}
-
-
 				}
-
 			}
 
 			return $meta;
-
 		}
 
 		/**
 		 * Runs esc_html() on various fields for display in the admin.
 		 *
-		 * @param  object $entry REST API Log Entry
+		 * @param  object $entry REST API Log Entry.
 		 * @return object
 		 */
-		static public function esc_html_fields( $entry ) {
+		public static function esc_html_fields( $entry ) {
 
 			// Get the list of request fiels.
 			$request_fields = array(
 				'query_params',
 				'headers',
-				);
+			);
 
 			$request_fields = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-esc-html-request-fields', $request_fields );
-
 
 			// Get the list of response fiels.
 			$response_fields = array(
 				'headers',
-				);
+			);
 
 			$response_fields = apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-esc-html-response-fields', $response_fields );
 
 			// Run esc_html on the request fields.
-			foreach( $request_fields as $field ) {
+			foreach ( $request_fields as $field ) {
 				if ( is_array( $entry->request->$field ) ) {
 					array_walk_recursive(
 						$entry->request->$field,
@@ -134,7 +185,7 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 			}
 
 			// Run esc_html on the response fields.
-			foreach( $response_fields  as $field ) {
+			foreach ( $response_fields  as $field ) {
 				if ( is_array( $entry->response->$field ) ) {
 					array_walk_recursive(
 						$entry->response->$field,
@@ -148,10 +199,7 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 			}
 
 			return $entry;
-
 		}
-
-
 	}
 
 }
