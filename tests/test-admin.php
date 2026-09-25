@@ -10,6 +10,8 @@
  */
 class WP_REST_API_Log_Test_Admin extends WP_UnitTestCase {
 
+	use WP_REST_API_Log_Test_Hooks;
+
 	/**
 	 * Administrator user ID.
 	 *
@@ -68,13 +70,22 @@ class WP_REST_API_Log_Test_Admin extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_hooks_are_registered() {
-		$this->assertSame( 10, has_filter( 'post_type_link', array( 'WP_REST_API_Log_Admin', 'entry_permalink' ) ) );
-		$this->assertSame( 10, has_filter( 'get_edit_post_link', array( 'WP_REST_API_Log_Admin', 'entry_permalink' ) ) );
-		$this->assertSame( 10, has_action( 'admin_init', array( 'WP_REST_API_Log_Admin', 'register_scripts' ) ) );
-		$this->assertSame( 11, has_action( 'admin_init', array( 'WP_REST_API_Log_Admin', 'localize_script_data' ) ) );
-		$this->assertSame( 10, has_filter( 'user_has_cap', array( 'WP_REST_API_Log_Admin', 'add_admin_caps' ) ) );
-		$this->assertSame( 10, has_filter( 'plugin_action_links_' . WP_REST_API_LOG_BASENAME, array( 'WP_REST_API_Log_Admin', 'plugin_action_links' ) ) );
-		$this->assertSame( 10, has_action( 'wp-rest-api-log-entry-property-links', array( 'WP_REST_API_Log_Admin', 'display_entry_property_links' ) ) );
+		$this->assert_registers_hooks(
+			array( 'WP_REST_API_Log_Admin', 'plugins_loaded' ),
+			array(
+				array( 'post_type_link', array( 'WP_REST_API_Log_Admin', 'entry_permalink' ), 10 ),
+				array( 'get_edit_post_link', array( 'WP_REST_API_Log_Admin', 'entry_permalink' ), 10 ),
+				array( 'admin_init', array( 'WP_REST_API_Log_Admin', 'register_scripts' ), 10 ),
+				array( 'admin_init', array( 'WP_REST_API_Log_Admin', 'localize_script_data' ), 11 ),
+				array( 'admin_menu', array( 'WP_REST_API_Log_Admin', 'admin_menu' ), 10 ),
+				array( 'wp_link_query_args', array( 'WP_REST_API_Log_Admin', 'wp_link_query_args' ), 10 ),
+				array( 'admin_title', array( 'WP_REST_API_Log_Admin', 'admin_title' ), 10 ),
+				array( 'user_has_cap', array( 'WP_REST_API_Log_Admin', 'add_admin_caps' ), 10 ),
+				array( 'plugin_action_links_' . WP_REST_API_LOG_BASENAME, array( 'WP_REST_API_Log_Admin', 'plugin_action_links' ), 10 ),
+				array( 'current_screen', array( 'WP_REST_API_Log_Admin', 'maybe_enqueue_scripts' ), 10 ),
+				array( 'wp-rest-api-log-entry-property-links', array( 'WP_REST_API_Log_Admin', 'display_entry_property_links' ), 10 ),
+			)
+		);
 	}
 
 	/**

@@ -10,6 +10,8 @@
  */
 class WP_REST_API_Log_Test_Settings_Screens extends WP_UnitTestCase {
 
+	use WP_REST_API_Log_Test_Hooks;
+
 	/**
 	 * Administrator user ID.
 	 *
@@ -62,15 +64,42 @@ class WP_REST_API_Log_Test_Settings_Screens extends WP_UnitTestCase {
 	 */
 	public function test_hooks_are_registered() {
 
-		$this->assertSame( 10, has_action( 'admin_menu', array( 'WP_REST_API_Log_Settings', 'admin_menu' ) ) );
-		$this->assertSame( 10, has_action( 'admin_notices', array( 'WP_REST_API_Log_Settings', 'activation_admin_notice' ) ) );
-		$this->assertSame( 10, has_action( 'admin_init', array( 'WP_REST_API_Log_Settings_General', 'register_general_settings' ) ) );
-		$this->assertSame( 10, has_action( 'admin_notices', array( 'WP_REST_API_Log_Settings_General', 'display_db_notice' ) ) );
-		$this->assertSame( 10, has_action( 'wp_ajax_wp-rest-api-log-db-notice-dismiss', array( 'WP_REST_API_Log_Settings_General', 'dismiss_db_notice' ) ) );
-		$this->assertSame( 10, has_action( 'admin_init', array( 'WP_REST_API_Log_Settings_Routes', 'register_routes_settings' ) ) );
-		$this->assertSame( 10, has_action( 'admin_init', array( 'WP_REST_API_Log_Settings_Headers', 'register_headers_settings' ) ) );
-		$this->assertSame( 10, has_action( 'admin_init', array( 'WP_REST_API_Log_Settings_ElasticPress', 'register_elasticpress_settings' ) ) );
-		$this->assertSame( 10, has_action( 'admin_init', array( 'WP_REST_API_Log_Settings_Help', 'register_help_settings' ) ) );
+		$this->assert_registers_hooks(
+			array( 'WP_REST_API_Log_Settings', 'plugins_loaded' ),
+			array(
+				array( 'admin_menu', array( 'WP_REST_API_Log_Settings', 'admin_menu' ), 10 ),
+				array( 'admin_notices', array( 'WP_REST_API_Log_Settings', 'activation_admin_notice' ), 10 ),
+				array( 'wp-rest-api-log-setting-is-enabled', array( 'WP_REST_API_Log_Settings', 'filter_setting_is_enabled' ), 10 ),
+				array( 'wp-rest-api-log-setting-get', array( 'WP_REST_API_Log_Settings', 'setting_get' ), 10 ),
+			)
+		);
+
+		$this->assert_registers_hooks(
+			array( 'WP_REST_API_Log_Settings_General', 'plugins_loaded' ),
+			array(
+				array( 'admin_init', array( 'WP_REST_API_Log_Settings_General', 'register_general_settings' ), 10 ),
+				array( 'wp-rest-api-log-settings-tabs', array( 'WP_REST_API_Log_Settings_General', 'add_tab' ), 10 ),
+				array( 'admin_notices', array( 'WP_REST_API_Log_Settings_General', 'display_db_notice' ), 10 ),
+				array( 'wp_ajax_wp-rest-api-log-db-notice-dismiss', array( 'WP_REST_API_Log_Settings_General', 'dismiss_db_notice' ), 10 ),
+			)
+		);
+
+		$tabs = array(
+			'WP_REST_API_Log_Settings_Routes'       => 'register_routes_settings',
+			'WP_REST_API_Log_Settings_Headers'      => 'register_headers_settings',
+			'WP_REST_API_Log_Settings_ElasticPress' => 'register_elasticpress_settings',
+			'WP_REST_API_Log_Settings_Help'         => 'register_help_settings',
+		);
+
+		foreach ( $tabs as $class_name => $register_method ) {
+			$this->assert_registers_hooks(
+				array( $class_name, 'plugins_loaded' ),
+				array(
+					array( 'admin_init', array( $class_name, $register_method ), 10 ),
+					array( 'wp-rest-api-log-settings-tabs', array( $class_name, 'add_tab' ), 10 ),
+				)
+			);
+		}
 	}
 
 	/**

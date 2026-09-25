@@ -10,6 +10,8 @@
  */
 class WP_REST_API_Log_Test_REST_API_Log extends WP_UnitTestCase {
 
+	use WP_REST_API_Log_Test_Hooks;
+
 	/**
 	 * Sets up each test with logging turned on.
 	 *
@@ -82,10 +84,15 @@ class WP_REST_API_Log_Test_REST_API_Log extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_plugins_loaded_adds_hooks() {
-		$this->assertSame( 9999, has_filter( 'rest_pre_serve_request', array( 'WP_REST_API_Log', 'log_rest_api_response' ) ) );
-		$this->assertSame( 10, has_filter( 'wp-rest-api-log-bypass-insert', array( 'WP_REST_API_Log', 'bypass_common_routes' ) ) );
-		$this->assertSame( 10, has_action( 'admin_init', array( 'WP_REST_API_Log', 'create_purge_cron' ) ) );
-		$this->assertSame( 10, has_action( 'wp-rest-api-log-purge-old-records', array( 'WP_REST_API_Log', 'purge_old_records' ) ) );
+		$this->assert_registers_hooks(
+			array( 'WP_REST_API_Log', 'plugins_loaded' ),
+			array(
+				array( 'rest_pre_serve_request', array( 'WP_REST_API_Log', 'log_rest_api_response' ), 9999 ),
+				array( 'wp-rest-api-log-bypass-insert', array( 'WP_REST_API_Log', 'bypass_common_routes' ), 10 ),
+				array( 'admin_init', array( 'WP_REST_API_Log', 'create_purge_cron' ), 10 ),
+				array( 'wp-rest-api-log-purge-old-records', array( 'WP_REST_API_Log', 'purge_old_records' ), 10 ),
+			)
+		);
 	}
 
 	/**

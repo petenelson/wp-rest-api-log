@@ -19,7 +19,7 @@ class WP_REST_API_Log_Test_WP_CLI extends WP_UnitTestCase {
 	protected $command;
 
 	/**
-	 * Loads the WP-CLI stand-ins and registers the commands.
+	 * Loads the WP-CLI stand-ins and the command class.
 	 *
 	 * @param WP_UnitTest_Factory $factory Test factory.
 	 * @return void
@@ -27,7 +27,7 @@ class WP_REST_API_Log_Test_WP_CLI extends WP_UnitTestCase {
 	public static function wpSetUpBeforeClass( $factory ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Signature is fixed by the test case.
 		require_once __DIR__ . '/stubs/wp-cli.php';
 		require_once __DIR__ . '/stubs/wp-cli-utils.php';
-		require WP_REST_API_LOG_PATH . 'includes/wp-cli/setup.php';
+		require_once WP_REST_API_LOG_PATH . 'includes/wp-cli/class-wp-rest-api-log-wp-cli-log.php';
 	}
 
 	/**
@@ -92,6 +92,11 @@ class WP_REST_API_Log_Test_WP_CLI extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_command_is_registered() {
+
+		WP_CLI::$commands = array();
+
+		require WP_REST_API_LOG_PATH . 'includes/wp-cli/setup.php';
+
 		$this->assertSame( 'WP_REST_API_Log_WP_CLI_Log', WP_CLI::$commands['rest-api-log'] );
 	}
 

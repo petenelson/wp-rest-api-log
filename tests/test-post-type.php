@@ -10,6 +10,8 @@
  */
 class WP_REST_API_Log_Test_Post_Type extends WP_UnitTestCase {
 
+	use WP_REST_API_Log_Test_Hooks;
+
 	/**
 	 * Tests that the log entry post type is registered and is kept away from
 	 * the front end.
@@ -129,6 +131,11 @@ class WP_REST_API_Log_Test_Post_Type extends WP_UnitTestCase {
 
 		$this->assertSame( 'Filtered Entries', $post_type->labels->name );
 		$this->assertFalse( $post_type->show_in_menu );
-		$this->assertSame( 10, has_action( 'init', array( 'WP_REST_API_Log_Post_Type', 'register_custom_post_types' ) ) );
+		$this->assert_registers_hooks(
+			array( 'WP_REST_API_Log_Post_Type', 'plugins_loaded' ),
+			array(
+				array( 'init', array( 'WP_REST_API_Log_Post_Type', 'register_custom_post_types' ), 10 ),
+			)
+		);
 	}
 }

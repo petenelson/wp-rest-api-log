@@ -10,6 +10,8 @@
  */
 class WP_REST_API_Log_Test_Controller extends WP_UnitTestCase {
 
+	use WP_REST_API_Log_Test_Hooks;
+
 	/**
 	 * Administrator user ID.
 	 *
@@ -119,8 +121,13 @@ class WP_REST_API_Log_Test_Controller extends WP_UnitTestCase {
 		$this->assertArrayHasKey( '/wp-rest-api-log/entry/(?P<id>[\d]+)/(?P<rr>request)/(?P<property>body_params)/download', $routes );
 		$this->assertArrayHasKey( '/wp-rest-api-log/entry/(?P<id>[\d]+)/(?P<rr>response)/(?P<property>headers)/download', $routes );
 
-		$this->assertSame( 10, has_action( 'rest_api_init', array( 'WP_REST_API_Log_Controller', 'register_rest_routes' ) ) );
-		$this->assertSame( 10, has_action( 'rest_api_init', array( 'WP_REST_API_Log_Controller', 'register_download_routes' ) ) );
+		$this->assert_registers_hooks(
+			array( 'WP_REST_API_Log_Controller', 'plugins_loaded' ),
+			array(
+				array( 'rest_api_init', array( 'WP_REST_API_Log_Controller', 'register_rest_routes' ), 10 ),
+				array( 'rest_api_init', array( 'WP_REST_API_Log_Controller', 'register_download_routes' ), 10 ),
+			)
+		);
 	}
 
 	/**

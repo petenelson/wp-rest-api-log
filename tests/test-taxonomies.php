@@ -10,6 +10,8 @@
  */
 class WP_REST_API_Log_Test_Taxonomies extends WP_UnitTestCase {
 
+	use WP_REST_API_Log_Test_Hooks;
+
 	/**
 	 * Tests that the plugin's taxonomies are registered.
 	 *
@@ -88,6 +90,11 @@ class WP_REST_API_Log_Test_Taxonomies extends WP_UnitTestCase {
 			array( WP_REST_API_Log_DB::TAXONOMY_METHOD, WP_REST_API_Log_DB::TAXONOMY_STATUS, WP_REST_API_Log_DB::TAXONOMY_SOURCE ),
 			$filtered
 		);
-		$this->assertSame( 10, has_action( 'init', array( 'WP_REST_API_Log_Taxonomies', 'register_custom_taxonomies' ) ) );
+		$this->assert_registers_hooks(
+			array( 'WP_REST_API_Log_Taxonomies', 'plugins_loaded' ),
+			array(
+				array( 'init', array( 'WP_REST_API_Log_Taxonomies', 'register_custom_taxonomies' ), 10 ),
+			)
+		);
 	}
 }

@@ -47,6 +47,9 @@ class WP_REST_API_Log_Tests_Bootstrap {
 		}
 		$autoloader = require_once $this->plugin_root . '/vendor/autoload.php';
 
+		// Shared test helpers.
+		require_once __DIR__ . '/includes/trait-wp-rest-api-log-test-hooks.php';
+
 		// Give access to tests_add_filter() function.
 		require_once $wp_develop_dir . '/tests/phpunit/includes/functions.php';
 

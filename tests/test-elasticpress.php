@@ -10,6 +10,8 @@
  */
 class WP_REST_API_Log_Test_ElasticPress extends WP_UnitTestCase {
 
+	use WP_REST_API_Log_Test_Hooks;
+
 	/**
 	 * Option name storing the ElasticPress tab settings.
 	 *
@@ -69,8 +71,13 @@ class WP_REST_API_Log_Test_ElasticPress extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_hooks_are_registered() {
-		$this->assertSame( 10, has_action( 'ep_add_query_log', 'WP_REST_API_Log_ElasticPress::log_query' ) );
-		$this->assertSame( 10, has_filter( 'ep_post_sync_kill', 'WP_REST_API_Log_ElasticPress::sync_kill' ) );
+		$this->assert_registers_hooks(
+			array( 'WP_REST_API_Log_ElasticPress', 'plugins_loaded' ),
+			array(
+				array( 'ep_add_query_log', 'WP_REST_API_Log_ElasticPress::log_query', 10 ),
+				array( 'ep_post_sync_kill', 'WP_REST_API_Log_ElasticPress::sync_kill', 10 ),
+			)
+		);
 	}
 
 	/**
