@@ -1,6 +1,6 @@
 {
 	"name": "wp-rest-api-log",
-	"version": "1.6.9",
+	"version": "1.7.3",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/petenelson/wp-rest-api-log.git"
