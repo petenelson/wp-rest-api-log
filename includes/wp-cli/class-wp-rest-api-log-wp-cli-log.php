@@ -263,6 +263,9 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 						)
 				);
 
+				// The direct update bypasses the object cache, which still holds the insert-time dates.
+				clean_post_cache( $post_id );
+
 			}
 
 			$progress->tick();
