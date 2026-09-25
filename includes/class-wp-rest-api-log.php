@@ -242,7 +242,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			// Turn off term counting.
 			wp_defer_term_counting( true );
 
-			if ( ! empty( $ids ) && is_array( $ids ) ) {
+			if ( ! empty( $ids ) ) {
 				foreach ( $ids as $id ) {
 					if ( ! $dry_run ) {
 						wp_delete_post( $id, true );
