@@ -232,4 +232,35 @@ class WP_REST_API_Log_Test_DB_Migration extends WP_UnitTestCase {
 
 		$this->assertSame( array(), $ids );
 	}
+
+	/**
+	 * Tests the "wp rest-api-log migrate" command, run against stand-ins for
+	 * the WP-CLI classes.
+	 *
+	 * @return void
+	 */
+	public function test_wp_cli_migrate() {
+
+		require_once __DIR__ . '/stubs/wp-cli.php';
+		require_once __DIR__ . '/stubs/wp-cli-utils.php';
+		require_once WP_REST_API_LOG_PATH . 'includes/wp-cli/class-wp-rest-api-log-wp-cli-log.php';
+
+		WP_CLI::$messages                        = array();
+		WP_REST_API_Log_Test_Progress_Bar::$bars = array();
+
+		$this->insert_legacy_log( array( 'route' => '/first' ) );
+		$this->insert_legacy_log( array( 'route' => '/second' ) );
+
+		$command = new WP_REST_API_Log_WP_CLI_Log();
+		$command->migrate();
+
+		$this->assertSame( array( 'success', 'Log entries migrated' ), end( WP_CLI::$messages ) );
+		$this->assertSame( 'Migrating 2 entries:', WP_REST_API_Log_Test_Progress_Bar::$bars[0]->message );
+		$this->assertSame( 2, WP_REST_API_Log_Test_Progress_Bar::$bars[0]->ticks );
+		$this->assertCount( 2, WP_REST_API_Log_DB::get_all_log_ids() );
+
+		// Running it again finds nothing left to migrate.
+		$command->migrate();
+		$this->assertSame( array( 'line', 'There are no more log entries that need to be migrated.' ), end( WP_CLI::$messages ) );
+	}
 }
