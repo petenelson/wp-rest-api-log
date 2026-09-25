@@ -41,6 +41,7 @@ Roadmap
 
 = v1.7.3 September 25, 2026 =
 * Added a Headers settings tab that redacts the values of sensitive request and response headers, such as Authorization, Cookie and Set-Cookie, before a log entry is saved
+* Added logging for OPTIONS requests (props thejamescollins)
 
 = v1.7.2 July 23, 2026 =
 * Changed "show_in_rest" to false for the wp-rest-api-log custom post type
