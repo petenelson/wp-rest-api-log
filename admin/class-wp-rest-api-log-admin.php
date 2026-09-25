@@ -181,16 +181,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 
 
 		/**
-		 * Returns the plugin slug used for menu and page names.
-		 *
-		 * @return string
-		 */
-		private function plugin_name() {
-			return WP_REST_API_Log_Common::PLUGIN_NAME . '-admin';
-		}
-
-
-		/**
 		 * Removes the wp-rest-api-log post type from the link query args
 		 *
 		 * @param  array $query Query args.
