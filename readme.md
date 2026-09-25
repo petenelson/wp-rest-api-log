@@ -46,6 +46,8 @@ Roadmap
 * Added a Headers settings tab that redacts the values of sensitive request and response headers, such as Authorization, Cookie and Set-Cookie, before a log entry is saved
 * Added logging for OPTIONS requests (props thejamescollins)
 * Prevent single log entries from being returned by the core REST endpoint
+* Added `wp rest-api-log generate` WP-CLI command for creating sample log entries in non-production environments
+* Deferred term counting during `wp rest-api-log purge` and `generate` for faster bulk deletes and inserts
 
 ### v1.7.2 July 23, 2026 ###
 * Changed "show_in_rest" to false for the wp-rest-api-log custom post type
