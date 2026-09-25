@@ -40,7 +40,7 @@ Roadmap
 == Changelog ==
 
 = v1.7.3 =
-* PLACEHOLDER
+* Fixed a security issue where log entries could be read by unauthenticated visitors on the front end. The wp-rest-api-log post type is no longer publicly queryable.
 
 = v1.7.2 July 23, 2026 =
 * Changed "show_in_rest" to false for the wp-rest-api-log custom post type
