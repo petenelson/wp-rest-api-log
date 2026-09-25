@@ -80,7 +80,7 @@ class WP_REST_API_Log_Filters {
 
 		// Get the route filters.
 		$route_filters = apply_filters( 'wp-rest-api-log-setting-get', 'routes', 'route-filters' );
-		$route_filters = array_values( array_map( 'trim', explode( "\n", $route_filters ) ) );
+		$route_filters = array_filter( array_map( 'trim', explode( "\n", $route_filters ) ) );
 
 		// If we're set to exclude matching filters, but we have no filters,
 		// then the route can be logged.
@@ -90,10 +90,6 @@ class WP_REST_API_Log_Filters {
 
 		// Loop through the filters and apply each one to the route.
 		foreach ( $route_filters as $route_filter ) {
-			if ( empty( $route_filter ) ) {
-				continue;
-			}
-
 			$regex = self::route_to_regex( $route_filter );
 
 			// preg_match() returns 1 if the pattern matches given subject,
