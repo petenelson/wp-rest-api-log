@@ -138,7 +138,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		public function custom_column( $column, $post_id ) {
 			$entry = $this->get_entry( $post_id );
 
-			if ( ! empty( $entry ) ) {
+			if ( ! empty( $entry->ID ) ) {
 
 				switch ( $column ) {
 					case 'method':
