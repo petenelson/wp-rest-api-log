@@ -6,7 +6,12 @@
  * @package WP_REST_API_Log
  */
 
-define( 'WP_REST_API_LOG_VERSION', '1.7.2' );
+// Read the version from the main plugin file so this never drifts from it.
+// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Runs in PHPStan's bootstrap, where WordPress is not loaded.
+$wp_rest_api_log_main_file = file_get_contents( __DIR__ . '/../wp-rest-api-log.php' );
+preg_match( "/define\(\s*'WP_REST_API_LOG_VERSION',\s*'([^']+)'\s*\)/", $wp_rest_api_log_main_file, $wp_rest_api_log_version );
+
+define( 'WP_REST_API_LOG_VERSION', $wp_rest_api_log_version[1] );
 define( 'WP_REST_API_LOG_ROOT', __DIR__ . '/../' );
 define( 'WP_REST_API_LOG_PATH', __DIR__ . '/../' );
 define( 'WP_REST_API_LOG_URL', 'https://example.com/wp-content/plugins/wp-rest-api-log/' );
