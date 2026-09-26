@@ -47,7 +47,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		 * @return void
 		 */
 		public function admin_init() {
-			$post_type = WP_REST_API_Log_Db::POST_TYPE;
+			$post_type = WP_REST_API_Log_DB::POST_TYPE;
 
 			add_filter( 'post_row_actions', array( $this, 'post_row_actions' ), 10, 2 );
 			add_filter( "manage_edit-{$post_type}_columns", array( $this, 'custom_columns' ) );
@@ -70,7 +70,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		 */
 		public function post_row_actions( $actions, $post ) {
 
-			if ( WP_REST_API_Log_Db::POST_TYPE === $post->post_type ) {
+			if ( WP_REST_API_Log_DB::POST_TYPE === $post->post_type ) {
 
 				// Turn off items.
 				unset( $actions['edit'] );
@@ -138,7 +138,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		public function custom_column( $column, $post_id ) {
 			$entry = $this->get_entry( $post_id );
 
-			if ( ! empty( $entry ) ) {
+			if ( ! empty( $entry->ID ) ) {
 
 				switch ( $column ) {
 					case 'method':
@@ -185,7 +185,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 		 * @param string $post_type The post type.
 		 */
 		public function add_dropdowns( $post_type ) {
-			if ( WP_REST_API_Log_Db::POST_TYPE === $post_type ) {
+			if ( WP_REST_API_Log_DB::POST_TYPE === $post_type ) {
 				foreach ( $this->get_dropdown_taxonomies() as $taxonomy ) {
 					WP_REST_API_Log_Common::dropdown_terms( $taxonomy );
 				}
@@ -245,7 +245,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 				if ( function_exists( 'get_current_screen' ) ) {
 					$screen = get_current_screen();
 
-					if ( 'edit-' . WP_REST_API_Log_Db::POST_TYPE !== $screen->id ) {
+					if ( 'edit-' . WP_REST_API_Log_DB::POST_TYPE !== $screen->id ) {
 						return;
 					}
 				}

@@ -70,9 +70,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Settings' ) ) {
 		 */
 		public static function create_default_settings() {
 			// Create default settings.
-			add_option( WP_REST_API_Log_Settings_General::$settings_key, WP_REST_API_Log_Settings_General::get_default_settings(), '', $autoload = 'no' );
-			add_option( WP_REST_API_Log_Settings_Routes::$settings_key, WP_REST_API_Log_Settings_Routes::get_default_settings(), '', $autoload = 'no' );
-			add_option( WP_REST_API_Log_Settings_Headers::$settings_key, WP_REST_API_Log_Settings_Headers::get_default_settings(), '', $autoload = 'no' );
+			add_option( WP_REST_API_Log_Settings_General::$settings_key, WP_REST_API_Log_Settings_General::get_default_settings(), '', false );
+			add_option( WP_REST_API_Log_Settings_Routes::$settings_key, WP_REST_API_Log_Settings_Routes::get_default_settings(), '', false );
+			add_option( WP_REST_API_Log_Settings_Headers::$settings_key, WP_REST_API_Log_Settings_Headers::get_default_settings(), '', false );
 		}
 
 		/**

@@ -40,9 +40,9 @@ if ( ! class_exists( 'WP_REST_API_Log_API_Request_Response_Base' ) ) {
 		/**
 		 * The underlying log entry post.
 		 *
-		 * @var WP_Post
+		 * @var WP_Post|null
 		 */
-		private $current_post;
+		private $current_post = null;
 
 		/**
 		 * Cached post meta for the log entry post.

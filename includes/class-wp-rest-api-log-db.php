@@ -34,7 +34,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 * @return void
 		 */
 		public function plugins_loaded() {
-			add_action( WP_REST_API_Log_Common::PLUGIN_NAME . '-insert', array( $this, 'insert' ), 10, 4 );
+			add_action( WP_REST_API_Log_Common::PLUGIN_NAME . '-insert', array( $this, 'insert_from_action' ) );
 
 			// Adds where statement when searching for routes.
 			add_filter( 'posts_where', array( $this, 'add_where_route' ), 10, 2 );
@@ -53,6 +53,17 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			return WP_REST_API_Log_Common::PLUGIN_NAME . '-entries';
 		}
 
+
+		/**
+		 * Inserts a log entry from the insert action, which has no use for
+		 * the returned post ID.
+		 *
+		 * @param  array $args Log entry data.
+		 * @return void
+		 */
+		public function insert_from_action( $args ) {
+			$this->insert( $args );
+		}
 
 		/**
 		 * Inserts a REST API log custom post type record and corresponding
@@ -187,7 +198,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			// Store status code.
 			$args['status'] = absint( $args['status'] );
-			wp_set_post_terms( $post_id, $args['status'], self::TAXONOMY_STATUS );
+			wp_set_post_terms( $post_id, (string) $args['status'], self::TAXONOMY_STATUS );
 
 			// Store the source.
 			wp_set_post_terms( $post_id, $args['source'], self::TAXONOMY_SOURCE );
@@ -280,8 +291,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 					foreach ( $args[ $response ][ $type ] as $key => $value ) {
 
 						if ( is_array( $value ) &&
-							1 === count( $value ) &&
-							'headers' === $type ) {
+							1 === count( $value ) ) {
 							$value = reset( $value );
 						}
 
@@ -574,7 +584,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		/**
 		 * Returns a list of all log entry IDs in the database.
 		 *
-		 * @return int
+		 * @return int[]
 		 */
 		public static function get_all_log_ids() {
 
@@ -589,7 +599,8 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				)
 			);
 
-			return $query->posts;
+			// The 'ids' field returns IDs, but cast them so the type is guaranteed.
+			return array_map( 'absint', $query->posts );
 		}
 
 		/**
