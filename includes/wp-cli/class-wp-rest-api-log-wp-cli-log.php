@@ -21,7 +21,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 	 */
 	public function enable() {
 
-		WP_REST_API_Log_Settings_General::change_enabled_setting( 'general', 'logging-enabled', true, 'WP_REST_API_Log_Settings_General::sanitize_settings' );
+		WP_REST_API_Log_Settings_General::change_enabled_setting( 'general', 'logging-enabled', true );
 
 		$option = get_option( WP_REST_API_Log_Settings_General::$settings_key );
 
@@ -43,7 +43,7 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 	 */
 	public function disable() {
 
-		WP_REST_API_Log_Settings_General::change_enabled_setting( 'general', 'logging-enabled', false, 'WP_REST_API_Log_Settings_General::sanitize_settings' );
+		WP_REST_API_Log_Settings_General::change_enabled_setting( 'general', 'logging-enabled', false );
 
 		$option = get_option( WP_REST_API_Log_Settings_General::$settings_key );
 
@@ -136,7 +136,8 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 	 */
 	public function purge( $positional_args, $assoc_args = array() ) {
 
-		$days_old = absint( ! empty( $positional_args[0] ) ? $positional_args[0] : 0 );
+		// Null tells get_old_log_ids() to use the configured retention window.
+		$days_old = isset( $positional_args[0] ) ? absint( $positional_args[0] ) : null;
 		$dry_run  = ! empty( $assoc_args['dry-run'] );
 
 		WP_CLI::Line( 'Getting old REST API log entries...' );

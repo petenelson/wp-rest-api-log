@@ -154,4 +154,34 @@ class WP_REST_API_Log_Test_Filters extends WP_UnitTestCase {
 		$this->assertTrue( WP_REST_API_Log_Filters::can_log_route( '/route/regexwildcard' ), '/route/regexwildcard' );
 		$this->assertTrue( WP_REST_API_Log_Filters::can_log_route( '/wp/v2/posts' ), '/wp/v2/posts' );
 	}
+
+	/**
+	 * Tests that blank lines in the route filters are ignored.
+	 *
+	 * @return void
+	 */
+	public function test_route_logging_ignores_blank_filters() {
+
+		update_option(
+			'wp-rest-api-log-settings-routes',
+			array(
+				'route-log-matching-mode' => 'log_matches',
+				'route-filters'           => "\n  \n/wp/v2/posts\n",
+			)
+		);
+
+		$this->assertTrue( WP_REST_API_Log_Filters::can_log_route( '/wp/v2/posts' ) );
+		$this->assertFalse( WP_REST_API_Log_Filters::can_log_route( '/wp/v2/users' ) );
+
+		// Only blank lines in exclude mode logs every route.
+		update_option(
+			'wp-rest-api-log-settings-routes',
+			array(
+				'route-log-matching-mode' => 'exclude_matches',
+				'route-filters'           => "\n\n",
+			)
+		);
+
+		$this->assertTrue( WP_REST_API_Log_Filters::can_log_route( '/wp/v2/users' ) );
+	}
 }

@@ -106,22 +106,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 				)
 			);
 
-			register_rest_route(
-				WP_REST_API_Log_Common::PLUGIN_NAME,
-				'/entry',
-				array(
-					'methods'             => array( WP_REST_Server::DELETABLE ),
-					'callback'            => array( __CLASS__, 'delete_items' ),
-					'permission_callback' => array( __CLASS__, 'delete_items_permissions_check' ),
-					'args'                => array( // TODO: refactor delete, this won't work with $_REQUESTs.
-						'older-than-seconds' => array(
-							'sanitize_callback' => 'absint',  // TODO: add validate callback.
-							'default'           => DAY_IN_SECONDS * 30,
-						),
-					),
-				)
-			);
-
 			// Route to delete all log entries.
 			register_rest_route(
 				WP_REST_API_Log_Common::PLUGIN_NAME,
@@ -364,7 +348,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		 */
 		public static function validate_entry_id( $id ) {
 			if ( $id < 1 ) {
-				return invalid_entry_id_error( $id );
+				return self::invalid_entry_id_error( $id );
 			} else {
 
 				// Verify that the entry exists.
@@ -411,22 +395,6 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 			return rest_ensure_response( $routes );
 		}
 
-
-		/**
-		 * Deletes log entries older than the requested age.
-		 *
-		 * @param  WP_REST_Request $request The REST request.
-		 * @return WP_REST_Response
-		 */
-		public static function delete_items( WP_REST_Request $request ) {
-			// TODO: refactor.
-			$args = array(
-				'older_than_seconds' => $request['older-than-seconds'],
-			);
-
-			$db = new WP_REST_API_Log_DB();
-			return rest_ensure_response( new WP_REST_API_Log_Delete_Response( $db->delete( $args ) ) );
-		}
 
 		/**
 		 * Handler to purge all log entries.
@@ -495,7 +463,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 			$entry = self::get_entry( $request['id'] );
 
-			add_filter( 'rest_pre_serve_request', array( __CLASS__, 'download_json_pre_serve_request' ), 10, 4 );
+			add_filter( 'rest_pre_serve_request', array( __CLASS__, 'download_json_pre_serve_request' ), 10, 3 );
 
 			return rest_ensure_response(
 				array(
@@ -508,15 +476,14 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		/**
 		 * Filter hook to download entry properties as a file.
 		 *
-		 * @param bool                      $served   Whether the request has already been served.
-		 * @param WP_HTTP_ResponseInterface $response Result to send to the client. Usually a WP_REST_Response.
-		 * @param WP_REST_Request           $request  Request used to generate the response.
-		 * @param WP_REST_Server            $server   Server instance.
+		 * @param bool             $served   Whether the request has already been served.
+		 * @param WP_HTTP_Response $response Result to send to the client. Usually a WP_REST_Response.
+		 * @param WP_REST_Request  $request  Request used to generate the response.
 		 * @return bool
 		 */
-		public static function download_json_pre_serve_request( $served, $response, $request, $server ) {
+		public static function download_json_pre_serve_request( $served, $response, $request ) {
 
-			$data = $server->response_to_data( $response, false );
+			$data = $response->get_data();
 
 			// Is this a download request?
 			if ( is_array( $data ) && ! empty( $data['wp-rest-api-log-download'] ) && ! empty( $data['entry'] ) ) {

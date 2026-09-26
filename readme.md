@@ -4,7 +4,7 @@
 **Donate link:** https://github.com/petenelson/wp-rest-api-log  
 **Requires at least:** 4.7  
 **Tested up to:** 7.1.2  
-**Stable tag:** 1.7.3  
+**Stable tag:** 1.7.4  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -38,6 +38,13 @@ Roadmap
 
 
 ## Changelog ##
+
+### v1.7.4 TBD ###
+* Fixed `wp rest-api-log purge` without a days argument deleting every log entry instead of using the configured retention period
+* Fixed a fatal error when requesting a log entry with an ID of 0
+* Removed the `DELETE /wp-rest-api-log/entry` REST endpoint, which could only cause a fatal error
+* Fixed the admin script not declaring its jQuery dependency
+* Added PHPStan static analysis and expanded PHPUnit test coverage to about 88%
 
 ### v1.7.3 September 25, 2026 ###
 * Added a Headers settings tab that redacts the values of sensitive request and response headers, such as Authorization, Cookie and Set-Cookie, before a log entry is saved
@@ -153,8 +160,8 @@ Roadmap
 
 ## Upgrade Notice ##
 
-### v1.7.3 September 25, 2026 ###
-* Sensitive request and response headers, such as Authorization, Cookie and Set-Cookie, are now redacted before log entries are saved. Existing log entries are not changed.
+### v1.7.4 TBD ###
+* The unused `DELETE /wp-rest-api-log/entry` REST endpoint has been removed. `wp rest-api-log purge` without a days argument now uses the retention period from the plugin settings instead of deleting every entry.
 
 ## Frequently Asked Questions ##
 
