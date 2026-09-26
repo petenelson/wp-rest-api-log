@@ -90,7 +90,7 @@ class WP_REST_API_Log_Test_REST_API_Log extends WP_UnitTestCase {
 				array( 'rest_pre_serve_request', array( 'WP_REST_API_Log', 'log_rest_api_response' ), 9999 ),
 				array( 'wp-rest-api-log-bypass-insert', array( 'WP_REST_API_Log', 'bypass_common_routes' ), 10 ),
 				array( 'admin_init', array( 'WP_REST_API_Log', 'create_purge_cron' ), 10 ),
-				array( 'wp-rest-api-log-purge-old-records', array( 'WP_REST_API_Log', 'purge_old_records' ), 10 ),
+				array( 'wp-rest-api-log-purge-old-records', array( 'WP_REST_API_Log', 'purge_old_records_from_cron' ), 10 ),
 			)
 		);
 	}
@@ -306,24 +306,18 @@ class WP_REST_API_Log_Test_REST_API_Log extends WP_UnitTestCase {
 
 		// Without a number of days, the purge-days setting is used.
 		WP_REST_API_Log_Settings_Base::change_setting( 'general', 'purge-days', '7' );
-		$this->assertEqualSets( array( $old, $oldest ), WP_REST_API_Log::get_old_log_ids( false ) );
+		$this->assertEqualSets( array( $old, $oldest ), WP_REST_API_Log::get_old_log_ids() );
 
 		// Nothing is returned when no retention period is set.
 		WP_REST_API_Log_Settings_Base::change_setting( 'general', 'purge-days', '' );
-		$this->assertSame( array(), WP_REST_API_Log::get_old_log_ids( false ) );
+		$this->assertSame( array(), WP_REST_API_Log::get_old_log_ids() );
 
 		$this->assertInstanceOf( 'WP_Post', get_post( $recent ) );
 	}
 
 	/**
-	 * Documents that a zero day count selects every entry instead of using
-	 * the configured retention period.
-	 *
-	 * Bug: WP_REST_API_Log::get_old_log_ids() skips the purge-days setting
-	 * when $days_old is the integer 0. "wp rest-api-log purge" without a
-	 * days argument passes absint( 0 ), so it deletes every entry older than
-	 * the current minute, even though its help text says it defaults to the
-	 * plugin setting.
+	 * Tests that a zero day count selects every entry, ignoring the
+	 * purge-days setting. Only null falls back to the setting.
 	 *
 	 * @return void
 	 */
@@ -334,7 +328,6 @@ class WP_REST_API_Log_Test_REST_API_Log extends WP_UnitTestCase {
 		$recent = $this->insert_entry( $this->days_ago( 1 ) );
 		$old    = $this->insert_entry( $this->days_ago( 10 ) );
 
-		// Current behavior: the one day old entry is included.
 		$this->assertEqualSets( array( $recent, $old ), WP_REST_API_Log::get_old_log_ids( 0 ) );
 	}
 
@@ -364,7 +357,24 @@ class WP_REST_API_Log_Test_REST_API_Log extends WP_UnitTestCase {
 
 		// Nothing happens when no retention period is set.
 		WP_REST_API_Log_Settings_Base::change_setting( 'general', 'purge-days', '' );
-		$this->assertNull( WP_REST_API_Log::purge_old_records() );
+		$this->assertSame( 0, WP_REST_API_Log::purge_old_records() );
+		$this->assertInstanceOf( 'WP_Post', get_post( $recent ) );
+	}
+
+	/**
+	 * Tests that the purge cron event uses the purge-days setting.
+	 *
+	 * @return void
+	 */
+	public function test_purge_old_records_from_cron() {
+
+		$recent = $this->insert_entry( $this->days_ago( 1 ) );
+		$old    = $this->insert_entry( $this->days_ago( 10 ) );
+
+		WP_REST_API_Log_Settings_Base::change_setting( 'general', 'purge-days', '5' );
+		do_action( 'wp-rest-api-log-purge-old-records' );
+
+		$this->assertNull( get_post( $old ) );
 		$this->assertInstanceOf( 'WP_Post', get_post( $recent ) );
 	}
 }

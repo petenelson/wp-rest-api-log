@@ -162,7 +162,6 @@ class WP_REST_API_Log_Test_ElasticPress extends WP_UnitTestCase {
 	public function test_log_query_skipped() {
 
 		WP_REST_API_Log_ElasticPress::log_query( array() );
-		WP_REST_API_Log_ElasticPress::log_query( 'not an array' );
 
 		$skipped_urls = array(
 			'http://localhost:9200/_stats/indexing',

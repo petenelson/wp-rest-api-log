@@ -210,17 +210,12 @@ class WP_REST_API_Log_Test_WP_CLI extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Documents that purging without a number of days deletes every entry.
-	 *
-	 * Bug: the help text says "wp rest-api-log purge" defaults to the
-	 * purge-days setting, but the command passes absint( 0 ) to
-	 * WP_REST_API_Log::get_old_log_ids(), which only reads the setting for
-	 * values other than the integer 0. Every entry older than the current
-	 * minute is deleted.
+	 * Tests that purging without a number of days uses the purge-days
+	 * setting, as the command's help text says.
 	 *
 	 * @return void
 	 */
-	public function test_purge_without_days_deletes_everything() {
+	public function test_purge_without_days_uses_setting() {
 
 		WP_REST_API_Log_Settings_Base::change_setting( 'general', 'purge-days', '7' );
 
@@ -229,9 +224,8 @@ class WP_REST_API_Log_Test_WP_CLI extends WP_UnitTestCase {
 
 		$this->command->purge( array() );
 
-		// Current behavior: the one day old entry is deleted too.
-		$this->assertSame( array( 'success', '2 entries purged' ), $this->last_message() );
-		$this->assertNull( get_post( $recent ) );
+		$this->assertSame( array( 'success', '1 entries purged' ), $this->last_message() );
+		$this->assertInstanceOf( 'WP_Post', get_post( $recent ) );
 		$this->assertNull( get_post( $old ) );
 	}
 

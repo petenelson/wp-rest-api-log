@@ -115,7 +115,7 @@ class WP_REST_API_Log_Test_Controller extends WP_UnitTestCase {
 
 		$this->assertArrayHasKey( '/wp-rest-api-log/entries', $routes );
 		$this->assertArrayHasKey( '/wp-rest-api-log/entry/(?P<id>[\d]+)', $routes );
-		$this->assertArrayHasKey( '/wp-rest-api-log/entry', $routes );
+		$this->assertArrayNotHasKey( '/wp-rest-api-log/entry', $routes );
 		$this->assertArrayHasKey( '/wp-rest-api-log/batch-purge-all', $routes );
 		$this->assertArrayHasKey( '/wp-rest-api-log/routes', $routes );
 		$this->assertArrayHasKey( '/wp-rest-api-log/entry/(?P<id>[\d]+)/(?P<rr>request)/(?P<property>body_params)/download', $routes );
@@ -267,20 +267,16 @@ class WP_REST_API_Log_Test_Controller extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Documents that an entry ID below 1 causes a fatal error.
-	 *
-	 * Bug: WP_REST_API_Log_Controller::validate_entry_id() calls
-	 * invalid_entry_id_error() as a global function instead of
-	 * self::invalid_entry_id_error(), so a request such as
-	 * GET /wp-rest-api-log/entry/0 ends with "Call to undefined function".
+	 * Tests that an entry ID below 1 is rejected with a 404 error.
 	 *
 	 * @return void
 	 */
-	public function test_validate_entry_id_below_one_is_fatal() {
-		$this->expectException( 'Error' );
-		$this->expectExceptionMessage( 'invalid_entry_id_error' );
+	public function test_validate_entry_id_below_one_returns_error() {
+		$error = WP_REST_API_Log_Controller::validate_entry_id( 0 );
 
-		WP_REST_API_Log_Controller::validate_entry_id( 0 );
+		$this->assertWPError( $error );
+		$this->assertSame( 'invalid_entry_id', $error->get_error_code() );
+		$this->assertSame( array( 'status' => 404 ), $error->get_error_data() );
 	}
 
 	/**
@@ -412,22 +408,18 @@ class WP_REST_API_Log_Test_Controller extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Documents that deleting entries by age causes a fatal error.
-	 *
-	 * Bug: WP_REST_API_Log_Controller::delete_items() calls
-	 * WP_REST_API_Log_DB::delete(), which does not exist, so
-	 * DELETE /wp-rest-api-log/entry ends with "Call to undefined method".
+	 * Tests that the orphaned DELETE /entry endpoint is no longer available.
 	 *
 	 * @return void
 	 */
-	public function test_delete_items_is_fatal() {
-		$this->expectException( 'Error' );
-		$this->expectExceptionMessage( 'WP_REST_API_Log_DB::delete()' );
+	public function test_delete_entry_route_is_removed() {
+		wp_set_current_user( self::$admin_id );
 
-		$request = new WP_REST_Request( 'DELETE', '/wp-rest-api-log/entry' );
-		$request->set_param( 'older-than-seconds', 60 );
+		$response = $this->dispatch( 'DELETE', '/wp-rest-api-log/entry', array( 'older-than-seconds' => 60 ) );
 
-		WP_REST_API_Log_Controller::delete_items( $request );
+		$this->assertSame( 404, $response->get_status() );
+		$this->assertSame( 'rest_no_route', $response->get_data()['code'] );
+		$this->assertFalse( method_exists( 'WP_REST_API_Log_Controller', 'delete_items' ) );
 	}
 
 	/**

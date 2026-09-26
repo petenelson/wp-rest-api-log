@@ -250,27 +250,11 @@ class WP_REST_API_Log_Test_Entry extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests the delete and routes response objects.
+	 * Tests the routes response object.
 	 *
 	 * @return void
 	 */
 	public function test_api_response_objects() {
-
-		$delete = new WP_REST_API_Log_Delete_Response(
-			(object) array(
-				'args'             => array( 'older_than_seconds' => 60 ),
-				'older_than_date'  => '2020-01-01 00:00:00',
-				'records_affected' => 3,
-			)
-		);
-
-		$this->assertSame( array( 'older_than_seconds' => 60 ), $delete->args );
-		$this->assertSame( '2020-01-01 00:00:00', $delete->older_than_date );
-		$this->assertSame( 3, $delete->records_affected );
-
-		$empty_delete = new WP_REST_API_Log_Delete_Response();
-		$this->assertSame( 0, $empty_delete->records_affected );
-		$this->assertSame( '', $empty_delete->older_than_date );
 
 		$routes = new WP_REST_API_Log_Routes_Response( array( '/wp/v2/posts', '/wp/v2/users' ) );
 		$this->assertSame( array( '/wp/v2/posts', '/wp/v2/users' ), $routes->routes );

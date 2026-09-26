@@ -75,9 +75,24 @@ class WP_REST_API_Log_Test_DB extends WP_UnitTestCase {
 		$db = new WP_REST_API_Log_DB();
 		$db->plugins_loaded();
 
-		$this->assertSame( 10, has_action( 'wp-rest-api-log-insert', array( $db, 'insert' ) ) );
+		$this->assertSame( 10, has_action( 'wp-rest-api-log-insert', array( $db, 'insert_from_action' ) ) );
 		$this->assertSame( 10, has_filter( 'posts_where', array( $db, 'add_where_route' ) ) );
 		$this->assertSame( 10, has_filter( 'posts_where', array( $db, 'add_where_post_id' ) ) );
+	}
+
+	/**
+	 * Tests that the insert action wrapper stores an entry.
+	 *
+	 * @return void
+	 */
+	public function test_insert_from_action() {
+		$db = new WP_REST_API_Log_DB();
+
+		$this->assertNull( $db->insert_from_action( array( 'route' => '/wp/v2/posts' ) ) );
+
+		$ids = WP_REST_API_Log_DB::get_all_log_ids();
+		$this->assertCount( 1, $ids );
+		$this->assertSame( '/wp/v2/posts', get_post( $ids[0] )->post_title );
 	}
 
 	/**
