@@ -2,16 +2,26 @@
 /**
  * Class WP_REST_API_Log_Test_Custom_Tables
  *
- * @package
+ * @package wp-rest-api-log
  */
 
 /**
- * Sample test case.
+ * Tests for storing log entries in custom database tables.
  */
 class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 
-	private $_registered = false;
+	/**
+	 * Whether the Advanced settings have been registered.
+	 *
+	 * @var bool
+	 */
+	private $registered = false;
 
+	/**
+	 * Turns on the custom tables setting.
+	 *
+	 * @return void
+	 */
 	public function enable_custom_tables() {
 		update_option(
 			'wp-rest-api-log-settings-advanced',
@@ -21,6 +31,11 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 		);
 	}
 
+	/**
+	 * Turns off the custom tables setting.
+	 *
+	 * @return void
+	 */
 	public function disable_custom_tables() {
 		update_option(
 			'wp-rest-api-log-settings-advanced',
@@ -30,18 +45,33 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 		);
 	}
 
+	/**
+	 * Registers the Advanced settings once per test case instance.
+	 *
+	 * @return void
+	 */
 	public function register_settings() {
-		if ( ! $this->_registered ) {
+		if ( ! $this->registered ) {
 			WP_REST_API_Log_Settings_Advanced::register_advanced_settings();
-			$this->_registered = true;
+			$this->registered = true;
 		}
 	}
 
+	/**
+	 * Registers the Advanced settings before each test.
+	 *
+	 * @return void
+	 */
 	public function set_up() {
 		parent::set_up();
 		$this->register_settings();
 	}
 
+	/**
+	 * Switches back to the default tables after each test.
+	 *
+	 * @return void
+	 */
 	public function tear_down() {
 		// Always return to the default tables, even when a test fails
 		// part way through, so later tests don't run on the custom tables.
@@ -49,10 +79,20 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 		parent::tear_down();
 	}
 
+	/**
+	 * Tests the default custom table prefix.
+	 *
+	 * @return void
+	 */
 	public function test_get_custom_table_prefix() {
 		$this->assertSame( 'rest_api_log_', WP_REST_API_Log_DB::get_custom_table_prefix() );
 	}
 
+	/**
+	 * Tests that the custom tables setting can be turned on and off.
+	 *
+	 * @return void
+	 */
 	public function test_use_custom_tables() {
 
 		$this->assertFalse( WP_REST_API_Log_DB::use_custom_tables() );
@@ -64,6 +104,12 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 		$this->assertFalse( WP_REST_API_Log_DB::use_custom_tables() );
 	}
 
+	/**
+	 * Tests switching $wpdb to the custom tables and back, and that the
+	 * tables are created.
+	 *
+	 * @return void
+	 */
 	public function test_switch_custom_tables() {
 		global $wpdb;
 
@@ -92,7 +138,8 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 		// temporary tables, which SHOW TABLES doesn't list, so select from
 		// each one instead: get_var() returns null for a missing table.
 		foreach ( WP_REST_API_Log_DB::get_custom_table_names() as $table_name ) {
-			$this->assertNotNull( $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" ), $table_name );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Checks the table exists; there is no API for this.
+			$this->assertNotNull( $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table_name ) ), $table_name );
 		}
 
 		// Switch back to default tables.
@@ -102,6 +149,12 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 		$this->assertSame( $default_prefix, $wpdb->prefix );
 	}
 
+	/**
+	 * Tests that posts and log entries are stored in, and read from, the
+	 * tables that are active when the custom tables setting changes.
+	 *
+	 * @return void
+	 */
 	public function test_db_table_inserts() {
 
 		global $wpdb;
