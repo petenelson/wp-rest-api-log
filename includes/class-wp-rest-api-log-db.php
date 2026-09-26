@@ -27,8 +27,26 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		const POST_META_MILLISECONDS         = '_milliseconds';
 		const POST_META_REQUEST_BODY         = '_request_body';
 
+		/**
+		 * The table prefix to restore when switching back from the custom
+		 * tables, or the custom prefix while they are in use.
+		 *
+		 * @var string
+		 */
 		public static $table_prefix;
+
+		/**
+		 * Whether $wpdb is currently switched to the custom log tables.
+		 *
+		 * @var bool
+		 */
 		public static $using_custom_tables;
+
+		/**
+		 * CREATE TABLE statements for the custom tables, keyed by table name.
+		 *
+		 * @var array
+		 */
 		public static $schema = array();
 
 		/**
@@ -166,7 +184,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- self::plugin_name() is the "wp-rest-api-log-entries" prefix.
 			$new_post = apply_filters( self::plugin_name() . '-pre-insert-new-post', $new_post, $args );
 
-			// Switch table names if-needed,
+			// Switch table names if needed.
 			self::switch_to_custom_tables();
 
 			$post_id = wp_insert_post( $new_post );
@@ -688,24 +706,30 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 * Creates a custom table if it does not exist.
 		 *
 		 * @param  string $table_name The table name.
-		 * @return bool
+		 * @return bool True if the table already existed or was created.
 		 */
 		public static function create_custom_table( $table_name ) {
 			global $wpdb;
 
-			$sql = $wpdb->prepare( "SHOW TABLES LIKE '%s';", $table_name );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- No API exists to check for a table, and the result must not be cached.
+			$results = $wpdb->get_row( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table_name ) ) );
 
-			$results = $wpdb->get_row( $sql );
-
-			if ( ! is_wp_error( $results ) && empty( $results ) ) {
-
-				if ( empty( self::$schema ) ) {
-					self::build_db_schema();
-				}
-
-				// Create the table.
-				$wpdb->query( self::$schema[ $table_name ] );
+			if ( ! empty( $results ) ) {
+				return true;
 			}
+
+			if ( empty( self::$schema ) ) {
+				self::build_db_schema();
+			}
+
+			if ( empty( self::$schema[ $table_name ] ) ) {
+				return false;
+			}
+
+			// Create the table. The statement comes from core's wp_get_db_schema(),
+			// and table names can't be passed as prepare() placeholders.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+			return false !== $wpdb->query( self::$schema[ $table_name ] );
 		}
 
 		/**
