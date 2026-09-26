@@ -631,7 +631,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 *
 		 * @return string
 		 */
-		static public function get_custom_table_prefix() {
+		public static function get_custom_table_prefix() {
 			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-custom-table-prefix', 'rest_api_log_' );
 		}
 
@@ -641,8 +641,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 *
 		 * @return bool
 		 */
-		static public function use_custom_tables() {
-			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-setting-is-enabled',
+		public static function use_custom_tables() {
+			return apply_filters(
+				WP_REST_API_Log_Common::PLUGIN_NAME . '-setting-is-enabled',
 				true,
 				'advanced',
 				'use-custom-tables'
@@ -654,11 +655,11 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 *
 		 * @return void
 		 */
-		static public function switch_to_custom_tables() {
+		public static function switch_to_custom_tables() {
 			global $wpdb;
 
 			if ( self::use_custom_tables() && ! self::$using_custom_tables ) {
-				self::$table_prefix = $wpdb->set_prefix( $wpdb->prefix . self::get_custom_table_prefix() );
+				self::$table_prefix        = $wpdb->set_prefix( $wpdb->prefix . self::get_custom_table_prefix() );
 				self::$using_custom_tables = true;
 
 				$tables = self::get_custom_table_names();
@@ -674,11 +675,11 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 *
 		 * @return void
 		 */
-		static public function switch_to_default_tables() {
+		public static function switch_to_default_tables() {
 			global $wpdb;
 
 			if ( self::use_custom_tables() && self::$using_custom_tables ) {
-				self::$table_prefix = $wpdb->set_prefix( self::$table_prefix );
+				self::$table_prefix        = $wpdb->set_prefix( self::$table_prefix );
 				self::$using_custom_tables = false;
 			}
 		}
@@ -689,7 +690,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 * @param  string $table_name The table name.
 		 * @return bool
 		 */
-		static public function create_custom_table( $table_name ) {
+		public static function create_custom_table( $table_name ) {
 			global $wpdb;
 
 			$sql = $wpdb->prepare( "SHOW TABLES LIKE '%s';", $table_name );
@@ -703,7 +704,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				}
 
 				// Create the table.
-				$wpdb->query( self::$schema[ $table_name] );
+				$wpdb->query( self::$schema[ $table_name ] );
 			}
 		}
 
@@ -712,18 +713,21 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 *
 		 * @return array
 		 */
-		static public function get_custom_table_names() {
+		public static function get_custom_table_names() {
 
 			global $wpdb;
 
-			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-custom-table-names', array(
-				$wpdb->posts,
-				$wpdb->postmeta,
-				$wpdb->terms,
-				$wpdb->termmeta,
-				$wpdb->term_taxonomy,
-				$wpdb->term_relationships,
-			) );
+			return apply_filters(
+				WP_REST_API_Log_Common::PLUGIN_NAME . '-custom-table-names',
+				array(
+					$wpdb->posts,
+					$wpdb->postmeta,
+					$wpdb->terms,
+					$wpdb->termmeta,
+					$wpdb->term_taxonomy,
+					$wpdb->term_relationships,
+				)
+			);
 		}
 
 		/**
@@ -731,11 +735,11 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 *
 		 * @return void
 		 */
-		static public function build_db_schema() {
+		public static function build_db_schema() {
 
 			require_once ABSPATH . 'wp-admin/includes/schema.php';
 
-			$schema = wp_get_db_schema();
+			$schema       = wp_get_db_schema();
 			self::$schema = array();
 
 			foreach ( self::get_custom_table_names() as $table ) {
@@ -747,6 +751,5 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				}
 			}
 		}
-
 	} // end class
 }

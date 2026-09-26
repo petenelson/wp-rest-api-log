@@ -29,9 +29,12 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 			$entries = array();
 			foreach ( $posts as $post ) {
-				$entries[] = new WP_REST_API_Log_Entry( $post, array(
-					'auto_switch_tables' => false,
-				) );
+				$entries[] = new WP_REST_API_Log_Entry(
+					$post,
+					array(
+						'auto_switch_tables' => false,
+					)
+				);
 			}
 
 			WP_REST_API_Log_DB::switch_to_default_tables();

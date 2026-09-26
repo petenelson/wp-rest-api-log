@@ -2,7 +2,7 @@
 /**
  * Class WP_REST_API_Log_Test_Custom_Tables
  *
- * @package 
+ * @package
  */
 
 /**
@@ -13,15 +13,21 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 	private $_registered = false;
 
 	public function enable_custom_tables() {
-		update_option( 'wp-rest-api-log-settings-advanced', [
-			'use-custom-tables' => '1',
-		] );
+		update_option(
+			'wp-rest-api-log-settings-advanced',
+			array(
+				'use-custom-tables' => '1',
+			)
+		);
 	}
 
 	public function disable_custom_tables() {
-		update_option( 'wp-rest-api-log-settings-advanced', [
-			'use-custom-tables' => '0',
-		] );
+		update_option(
+			'wp-rest-api-log-settings-advanced',
+			array(
+				'use-custom-tables' => '0',
+			)
+		);
 	}
 
 	public function register_settings() {
@@ -62,7 +68,7 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 		global $wpdb;
 
 		$default_prefix = $wpdb->prefix;
-		$custom_prefix = $default_prefix . WP_REST_API_Log_DB::get_custom_table_prefix();
+		$custom_prefix  = $default_prefix . WP_REST_API_Log_DB::get_custom_table_prefix();
 
 		// Make sure custom tables are turned off.
 		$this->disable_custom_tables();
@@ -101,15 +107,20 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 		global $wpdb;
 
 		$default_prefix = $wpdb->prefix;
-		$custom_prefix = $default_prefix . WP_REST_API_Log_DB::get_custom_table_prefix();
+		$custom_prefix  = $default_prefix . WP_REST_API_Log_DB::get_custom_table_prefix();
 
 		// Make sure we're on the default tables. Note: when enabling/disabling,
 		// be sure it's done on the default tables.
 		WP_REST_API_Log_DB::switch_to_default_tables();
 		$this->disable_custom_tables();
 
-		$default_title = 'Post in Default Tables ' . wp_generate_password( 6, false );
-		$default_post_id = wp_insert_post( [ 'post_title' => $default_title, 'post_status' => 'publish' ] );
+		$default_title   = 'Post in Default Tables ' . wp_generate_password( 6, false );
+		$default_post_id = wp_insert_post(
+			array(
+				'post_title'  => $default_title,
+				'post_status' => 'publish',
+			)
+		);
 
 		$this->assertGreaterThan( 0, $default_post_id );
 
@@ -117,17 +128,22 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 		$this->enable_custom_tables();
 		WP_REST_API_Log_DB::switch_to_custom_tables();
 
-		$custom_title = 'Post in Custom Tables ' . wp_generate_password( 6, false );
-		$custom_post_id = wp_insert_post( [ 'post_title' => $custom_title, 'post_status' => 'publish' ] );
+		$custom_title   = 'Post in Custom Tables ' . wp_generate_password( 6, false );
+		$custom_post_id = wp_insert_post(
+			array(
+				'post_title'  => $custom_title,
+				'post_status' => 'publish',
+			)
+		);
 
 		$this->assertGreaterThan( 0, $custom_post_id );
 
 		// Since we're on custom tables, we should not be able to find
 		// the default post.
-		$query_args = [
+		$query_args = array(
 			'post_type' => 'post',
-			'title' => $default_title,
-		];
+			'title'     => $default_title,
+		);
 
 		$query = new \WP_Query( $query_args );
 
@@ -169,21 +185,21 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 		$post_type = WP_REST_API_Log_DB::POST_TYPE;
 
 		$default_route_name = 'default/route-' . wp_generate_password( 10, false );
-		$args = [
-			'route' => $default_route_name,
+		$args               = array(
+			'route'      => $default_route_name,
 			'ip_address' => '192.168.1.1',
-		];
+		);
 
-		$db = new \WP_REST_API_Log_DB();
+		$db      = new \WP_REST_API_Log_DB();
 		$post_id = $db->insert( $args );
 
 		$this->assertGreaterThan( 0, $post_id );
 
 		// Run a query to verify the inserted log record.
-		$query_args = [
+		$query_args = array(
 			'post_type' => $post_type,
-			'title' => $default_route_name,
-		];
+			'title'     => $default_route_name,
+		);
 
 		$query = new \WP_Query( $query_args );
 
@@ -202,13 +218,13 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 		$this->enable_custom_tables();
 
 		$custom_route_name = 'custom/route-' . wp_generate_password( 10, false );
-		$args = [
-			'route' => $custom_route_name,
+		$args              = array(
+			'route'      => $custom_route_name,
 			'ip_address' => '192.168.100.50',
-			'method' => 'POST',
-		];
+			'method'     => 'POST',
+		);
 
-		$db = new \WP_REST_API_Log_DB();
+		$db             = new \WP_REST_API_Log_DB();
 		$custom_post_id = $db->insert( $args );
 
 		$this->assertGreaterThan( 0, $custom_post_id );
@@ -217,10 +233,10 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 		WP_REST_API_Log_DB::switch_to_custom_tables();
 
 		// Run a query to verify the inserted log record.
-		$query_args = [
+		$query_args = array(
 			'post_type' => $post_type,
-			'title' => $custom_route_name,
-		];
+			'title'     => $custom_route_name,
+		);
 
 		$query = new \WP_Query( $query_args );
 
@@ -243,10 +259,10 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 
 		// Run a query to verify the inserted log record is not available
 		// in the default tables.
-		$query_args = [
+		$query_args = array(
 			'post_type' => $post_type,
-			'title' => $custom_route_name,
-		];
+			'title'     => $custom_route_name,
+		);
 
 		$query = new \WP_Query( $query_args );
 
