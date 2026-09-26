@@ -45,13 +45,13 @@ if ( ! class_exists( 'WP_REST_API_Log_ElasticPress' ) ) {
 		/**
 		 * Logs an ElasticPress search and results to the database
 		 *
-		 * @param  object $query The ElasticPress query.
+		 * @param  array $query The ElasticPress query.
 		 *
 		 * @return void
 		 */
 		public static function log_query( $query ) {
 
-			if ( empty( $query ) || ! is_array( $query ) ) {
+			if ( empty( $query ) ) {
 				return;
 			}
 

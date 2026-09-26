@@ -41,7 +41,7 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			add_action( 'current_screen', array( __CLASS__, 'maybe_enqueue_scripts' ) );
 
 			// Custom actions for out plugin.
-			add_action( 'wp-rest-api-log-entry-property-links', array( __CLASS__, 'display_entry_property_links' ), 10, 3 );
+			add_action( 'wp-rest-api-log-entry-property-links', array( __CLASS__, 'display_entry_property_links' ) );
 		}
 
 		/**
@@ -105,9 +105,9 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 			wp_register_style( 'wp-rest-api-log-admin-highlight-js', 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/' . $highlight_version . '/styles/' . $highlight_style . '.min.css' );
 			wp_register_script( 'wp-rest-api-log-admin-clipboard-js', 'https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/' . $clipboard_version . '/clipboard.min.js' );
 
-			wp_register_script( 'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'dist/js/admin.js', 'jquery', WP_REST_API_Log_Common::VERSION );
+			wp_register_script( 'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'dist/js/admin.js', array( 'jquery' ), WP_REST_API_Log_Common::VERSION );
 			// phpcs:enable WordPress.WP.EnqueuedResourceParameters.MissingVersion, WordPress.WP.EnqueuedResourceParameters.NotInFooter
-			wp_register_style( 'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'dist/css/admin.css', '', WP_REST_API_Log_Common::VERSION );
+			wp_register_style( 'wp-rest-api-log-admin', WP_REST_API_LOG_URL . 'dist/css/admin.css', array(), WP_REST_API_Log_Common::VERSION );
 		}
 
 		/**
@@ -171,22 +171,12 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin' ) ) {
 				$permalink = add_query_arg(
 					array(
 						'page' => WP_REST_API_Log_Common::PLUGIN_NAME . '-view-entry',
-						'id'   => rawurlencode( $post->ID ),
+						'id'   => $post->ID,
 					),
 					admin_url( 'tools.php' )
 				);
 			}
 			return $permalink;
-		}
-
-
-		/**
-		 * Returns the plugin slug used for menu and page names.
-		 *
-		 * @return string
-		 */
-		private function plugin_name() {
-			return WP_REST_API_Log_Common::PLUGIN_NAME . '-admin';
 		}
 
 

@@ -34,7 +34,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			add_action( 'admin_init', array( __CLASS__, 'create_purge_cron' ) );
 
 			// Handler for cron job.
-			add_action( 'wp-rest-api-log-purge-old-records', array( __CLASS__, 'purge_old_records' ) );
+			add_action( 'wp-rest-api-log-purge-old-records', array( __CLASS__, 'purge_old_records_from_cron' ) );
 
 			/*
 			Kept for local development reference: overrides the current user
@@ -173,18 +173,24 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		/**
 		 * Gets old REST API Log record IDs.
 		 *
-		 * @param  int $days_old How many days back to go.
+		 * Passing 0 selects every entry up to the current time. Pass null to
+		 * fall back to the configured retention window instead.
+		 *
+		 * @param  int|null $days_old How many days back to go, or null to use the setting.
 		 * @return array
 		 */
-		public static function get_old_log_ids( $days_old ) {
+		public static function get_old_log_ids( $days_old = null ) {
 
-			if ( empty( $days_old ) && 0 !== $days_old ) {
+			if ( null === $days_old ) {
 				$days_old = WP_REST_API_Log_Settings_General::setting_get( 'general', 'purge-days' );
+
+				// A blank retention setting means all entries are kept.
+				if ( empty( $days_old ) ) {
+					return array();
+				}
 			}
 
-			if ( empty( $days_old ) && 0 !== $days_old ) {
-				return array();
-			}
+			$days_old = absint( $days_old );
 
 			$db   = new WP_REST_API_Log_DB();
 			$args = array(
@@ -202,13 +208,23 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		}
 
 		/**
+		 * Purges old log entries from the scheduled cron event, which has no
+		 * use for the returned count.
+		 *
+		 * @return void
+		 */
+		public static function purge_old_records_from_cron() {
+			self::purge_old_records();
+		}
+
+		/**
 		 * Purges old REST API Log records.
 		 *
-		 * @param  int     $days_old How many days back to go.
-		 * @param  boolean $dry_run  Whether this is a dry run.
-		 * @return int|void Number of entries deleted, or nothing when no age is configured.
+		 * @param  int|null $days_old How many days back to go, or null to use the setting.
+		 * @param  boolean  $dry_run  Whether this is a dry run.
+		 * @return int Number of entries deleted, or 0 when no age is configured.
 		 */
-		public static function purge_old_records( $days_old = false, $dry_run = false ) {
+		public static function purge_old_records( $days_old = null, $dry_run = false ) {
 
 			if ( empty( $days_old ) ) {
 				$days_old = WP_REST_API_Log_Settings_General::setting_get( 'general', 'purge-days' );
@@ -216,7 +232,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 			$days_old = absint( $days_old );
 			if ( empty( $days_old ) ) {
-				return;
+				return 0;
 			}
 
 			$ids = self::get_old_log_ids( $days_old );
@@ -226,7 +242,7 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 			// Turn off term counting.
 			wp_defer_term_counting( true );
 
-			if ( ! empty( $ids ) && is_array( $ids ) ) {
+			if ( ! empty( $ids ) ) {
 				foreach ( $ids as $id ) {
 					if ( ! $dry_run ) {
 						wp_delete_post( $id, true );

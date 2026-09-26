@@ -32,6 +32,26 @@ jobs:
         if: ${{ failure() }}
         run: cs2pr ./phpcs-report.xml
 
+  phpstan:
+    name: PHPStan
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      # Level, paths and stubs all come from phpstan.neon.dist. The github
+      # error format annotates each error on the pull request.
+      - name: Run PHPStan
+        run: ./vendor/bin/phpstan analyse --no-progress --memory-limit=1G --error-format=github
+
   phpunit:
     name: PHP ${{ matrix.php }} / WP ${{ matrix.wp }} / Multisite ${{ matrix.multisite }}
     runs-on: ubuntu-latest
