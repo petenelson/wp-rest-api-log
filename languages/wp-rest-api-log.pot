@@ -2,14 +2,14 @@
 # This file is distributed under the GPL2+.
 msgid ""
 msgstr ""
-"Project-Id-Version: REST API Log 1.7.3\n"
+"Project-Id-Version: REST API Log 1.7.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-rest-api-log\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-25T16:29:51+00:00\n"
+"POT-Creation-Date: 2026-09-26T21:24:02+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wp-rest-api-log\n"
@@ -100,11 +100,11 @@ msgstr ""
 msgid "GitHub"
 msgstr ""
 
-#: admin/partials/entry-property-links.php:17
+#: admin/partials/entry-property-links.php:23
 msgid "Download"
 msgstr ""
 
-#: admin/partials/entry-property-links.php:18
+#: admin/partials/entry-property-links.php:24
 msgid "Copy"
 msgstr ""
 
@@ -166,13 +166,13 @@ msgid "Response Body"
 msgstr ""
 
 #. translators: %d: the requested log entry ID.
-#: includes/class-wp-rest-api-log-controller.php:309
+#: includes/class-wp-rest-api-log-controller.php:293
 #, php-format
 msgid "Invalid REST API Log ID %d."
 msgstr ""
 
 #. translators: %s: formatted number of log entries still to be migrated.
-#: includes/class-wp-rest-api-log-controller.php:482
+#: includes/class-wp-rest-api-log-controller.php:450
 #, php-format
 msgid "%s entries remaining..."
 msgstr ""
