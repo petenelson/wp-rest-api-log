@@ -36,6 +36,13 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 		$this->register_settings();
 	}
 
+	public function tear_down() {
+		// Always return to the default tables, even when a test fails
+		// part way through, so later tests don't run on the custom tables.
+		WP_REST_API_Log_DB::switch_to_default_tables();
+		parent::tear_down();
+	}
+
 	public function test_get_custom_table_prefix() {
 		$this->assertSame( 'rest_api_log_', WP_REST_API_Log_DB::get_custom_table_prefix() );
 	}
@@ -69,18 +76,17 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 		$this->enable_custom_tables();
 		$this->assertTrue( WP_REST_API_Log_DB::use_custom_tables() );
 
-		// Switch to custom tables.		WP_REST_API_Log_DB::switch_to_custom_tables();
+		// Switch to custom tables.
+		WP_REST_API_Log_DB::switch_to_custom_tables();
 
 		// Verify wpdb is using the custom prefix.
 		$this->assertSame( $custom_prefix, $wpdb->prefix );
 
-		// Verify the tables were created.
+		// Verify the tables were created. The test suite creates them as
+		// temporary tables, which SHOW TABLES doesn't list, so select from
+		// each one instead: get_var() returns null for a missing table.
 		foreach ( WP_REST_API_Log_DB::get_custom_table_names() as $table_name ) {
-			$sql = $wpdb->prepare( "SHOW TABLES LIKE '%s';", $table_name );
-			$results = $wpdb->get_row( $sql );
-
-			$this->assertTrue( ! is_wp_error( $results ) );
-			$this->assertNotEmpty( $results );
+			$this->assertNotNull( $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" ), $table_name );
 		}
 
 		// Switch back to default tables.
@@ -242,7 +248,7 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 			'title' => $custom_route_name,
 		];
 
-		$query = new \WP_Query( $query );
+		$query = new \WP_Query( $query_args );
 
 		$this->assertEmpty( $query->posts );
 
