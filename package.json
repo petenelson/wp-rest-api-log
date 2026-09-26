@@ -1,32 +1,23 @@
 {
-  "name": "wp-rest-api-log",
-  "version": "1.1.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/petenelson/wp-rest-api-log.git"
-  },
-  "license": "GPL2+",
-  "homepage": "https://github.com/petenelson/wp-rest-api-log",
-  "dependencies": {},
-  "devDependencies": {
-    "autoprefixer": "^6.0.0",
-    "glob": "~5.0.15",
-    "grunt": "^0.4.5",
-    "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-compress": "^0.13.0",
-    "grunt-contrib-concat": "^0.5.1",
-    "grunt-contrib-copy": "^0.8.0",
-    "grunt-contrib-cssmin": "^0.12.3",
-    "grunt-contrib-jshint": "^0.11.2",
-    "grunt-contrib-uglify": "^0.9.1",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-phpunit": "^0.3.6",
-    "grunt-postcss": "^0.6.0",
-    "grunt-sass": "^1.0.0",
-    "grunt-wp-i18n": "^0.5.4",
-    "load-grunt-tasks": "^3.5.0",
-    "grunt-insert": "^0.1.0",
-    "grunt-wp-readme-to-markdown": "~0.9.0",
-    "phplint": "^1.7.1"    
-  }
+	"name": "wp-rest-api-log",
+	"version": "1.7.4",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/petenelson/wp-rest-api-log.git"
+	},
+	"license": "GPL-2.0-or-later",
+	"homepage": "https://github.com/petenelson/wp-rest-api-log",
+	"scripts": {
+		"clean": "rm -rf release && mkdir release",
+		"build": "npm run clean && npm run readme-to-md && npm run copy",
+		"copy": "npm run copy:php && npm run copy:txt && npm run copy:dist",
+		"readme-to-md": "wp-readme-to-md --screenshot-url=https://raw.githubusercontent.com/petenelson/wp-rest-api-log/master/.wordpress-org/{screenshot}.png",
+		"copy:php": "cp *.php release && cp -R admin release && cp -R includes release",
+		"copy:txt": "cp *.txt release",
+		"copy:dist": "cp -R dist release"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"wp-readme-to-markdown": "^1.0.1"
+	}
 }

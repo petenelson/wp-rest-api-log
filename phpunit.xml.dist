@@ -7,8 +7,20 @@
 	convertWarningsToExceptions="true"
 	>
 	<testsuites>
-		<testsuite>
+		<testsuite name="WP REST API Log Tests">
 			<directory prefix="test-" suffix=".php">./tests/</directory>
 		</testsuite>
 	</testsuites>
+	<coverage>
+		<include>
+			<directory suffix=".php">./admin</directory>
+			<directory suffix=".php">./includes</directory>
+			<file>./uninstall.php</file>
+			<file>./wp-rest-api-log.php</file>
+		</include>
+		<exclude>
+			<file>./admin/index.php</file>
+			<file>./includes/index.php</file>
+		</exclude>
+	</coverage>
 </phpunit>

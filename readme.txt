@@ -1,10 +1,10 @@
 === REST API Log ===
 Contributors: gungeekatx
-Tags: wp rest api, rest api, wp api, api, json, json api, log, logging, elasticpress, elasticsearch
+Tags: rest api, json, logging, elasticpress, elasticsearch
 Donate link: https://github.com/petenelson/wp-rest-api-log
-Requires at least: 4.4
-Tested up to: 4.9
-Stable tag: 1.6.5
+Requires at least: 4.7
+Tested up to: 7.1.2
+Stable tag: 1.7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,56 @@ Roadmap
 
 
 == Changelog ==
+
+= v1.7.4 TBD =
+* Fixed `wp rest-api-log purge` without a days argument deleting every log entry instead of using the configured retention period
+* Fixed a fatal error when requesting a log entry with an ID of 0
+* Removed the `DELETE /wp-rest-api-log/entry` REST endpoint, which could only cause a fatal error
+* Fixed the admin script not declaring its jQuery dependency
+* Added PHPStan static analysis and expanded PHPUnit test coverage to about 88%
+
+= v1.7.3 September 25, 2026 =
+* Added a Headers settings tab that redacts the values of sensitive request and response headers, such as Authorization, Cookie and Set-Cookie, before a log entry is saved
+* Added logging for OPTIONS requests (props thejamescollins)
+* Prevent single log entries from being returned by the core REST endpoint
+* Added `wp rest-api-log generate` WP-CLI command for creating sample log entries in non-production environments
+* Deferred term counting during `wp rest-api-log purge` and `generate` for faster bulk deletes and inserts
+
+= v1.7.2 July 23, 2026 =
+* Changed "show_in_rest" to false for the wp-rest-api-log custom post type
+* Fixed array_walk_recursive callback signature for PHP 8.0 compatibility (props the-csaba)
+* Fixed PHP deprecation notice caused by a null page title when viewing a log entry
+
+= v1.7.1 July 20, 2026 =
+* Added additional security check to REST download endpoint (props alisalive)
+* Fixed PHP 8 deprecation notice for submenu page (props BrianHenryIE)
+* Fixed echo bug when viewing an invalid log entry ID (props DAnn2012)
+
+= v1.7.0 May 8, 2023 =
+* Fixed bugs related to Method and Status filtering.
+* Removed deprecated FILTER_SANITIZE_STRING calls.
+* Updated highlight.js version
+* Updated clipboard.js version
+
+= v1.6.9 September 9, 2022 =
+* Updated highlight.js version
+* Updated clipboard.js version
+
+= v1.6.8 October 30, 2020 =
+* Updated the Purge All Entries functionality in the admin to purge batches of 25 at a time.
+* Updated CLI purge command with a progress bar.
+* Fixed ClipboardJS error (props itowhid06)
+
+= v1.6.7 March 31, 2019 =
+* Added admin notice about running the plugin on a production server
+* Set the default purge days to 7
+* Updated clipboard.js version
+
+= v1.6.6 November 9, 2018 =
+* Moved taxonomy registration to a separate file, made taxonomies not public to prevent them from automatically showing in Yoast SEO sitemaps
+* Updated highlight.js version
+* Updated minimum WP version to 4.7
+* Updated unit test framework
 
 = v1.6.5 July 26, 2017 =
 * Fixed some escaping issues in admin and new-line characters when saving to database (props davidanderson)
@@ -110,8 +160,8 @@ Roadmap
 
 == Upgrade Notice ==
 
-= v1.6.4 May 26, 2017 =
-* Fixed an issue with the URL in the settings tabs (props davidanderson)
+= v1.7.4 TBD =
+* The unused `DELETE /wp-rest-api-log/entry` REST endpoint has been removed. `wp rest-api-log purge` without a days argument now uses the retention period from the plugin settings instead of deleting every entry.
 
 == Frequently Asked Questions ==
 

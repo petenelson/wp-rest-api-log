@@ -1,0 +1,22 @@
+# Directories
+/.claude
+/.git
+/.github
+/.wordpress-org
+/bin
+/node_modules
+/release
+/tests
+/tmp
+/vendor
+
+# Files
+.*
+CLAUDE.md
+composer.json
+composer.lock
+package.json
+package-lock.json
+phpcs.xml.dist
+phpunit.xml.dist
+readme.md
