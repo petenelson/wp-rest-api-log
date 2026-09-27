@@ -64,6 +64,7 @@ class WP_REST_API_Log_Test_DB_Migration extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function tear_down() {
+		WP_REST_API_Log_DB::switch_to_default_tables( true );
 		parent::tear_down();
 
 		global $wpdb;
@@ -161,6 +162,40 @@ class WP_REST_API_Log_Test_DB_Migration extends WP_UnitTestCase {
 		$this->assertSame( 'application/json', $entry->request->headers['content_type'] );
 		$this->assertSame( 'edit', $entry->request->query_params['context'] );
 		$this->assertSame( 'yes', $entry->response->headers['X-Legacy'] );
+	}
+
+	/**
+	 * Tests that a migrated entry's legacy ID and dates are written to the
+	 * custom tables, alongside the entry, when custom tables are turned on.
+	 *
+	 * @return void
+	 */
+	public function test_migrate_db_record_to_custom_tables() {
+		global $wpdb;
+
+		$log_id = $this->insert_legacy_log( array( 'method' => 'PUT' ) );
+
+		update_option( 'wp-rest-api-log-settings-advanced', array( 'use-custom-tables' => '1' ) );
+
+		$db      = new WP_REST_API_Log_DB();
+		$post_id = $db->migrate_db_record( $log_id );
+
+		$this->assertGreaterThan( 0, $post_id );
+		$this->assertFalse( WP_REST_API_Log_DB::$using_custom_tables );
+
+		$entry = new WP_REST_API_Log_Entry( $post_id );
+		$this->assertSame( 'PUT', $entry->method );
+		$this->assertSame( '2016-05-01 10:20:30', $entry->time );
+
+		WP_REST_API_Log_DB::switch_to_custom_tables();
+		$migrated_id = get_post_meta( $post_id, '_wp_rest_api_log_migrated_id', true );
+		WP_REST_API_Log_DB::switch_to_default_tables();
+		$this->assertSame( (string) $log_id, $migrated_id );
+
+		// Nothing was written to the site's own postmeta table.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Checks the site's own table directly.
+		$site_meta = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s", '_wp_rest_api_log_migrated_id', $log_id ) );
+		$this->assertSame( '0', $site_meta );
 	}
 
 	/**

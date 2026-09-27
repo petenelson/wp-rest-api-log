@@ -44,11 +44,20 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		private static $default_object_cache = null;
 
 		/**
-		 * Custom tables already checked for, or created, during this request.
+		 * Custom tables already checked for, or created, on the current database
+		 * connection.
 		 *
 		 * @var array
 		 */
 		private static $checked_tables = array();
+
+		/**
+		 * The database connection $checked_tables applies to. A new connection,
+		 * such as after wpdb reconnects, gets its tables checked again.
+		 *
+		 * @var mixed
+		 */
+		private static $checked_connection = null;
 
 		/**
 		 * Whether $wpdb is currently switched to the custom log tables.
@@ -56,6 +65,14 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 * @var bool
 		 */
 		public static $using_custom_tables = false;
+
+		/**
+		 * How many switch_to_custom_tables() calls are open, so nested switches
+		 * only restore the site's tables when the outermost one ends.
+		 *
+		 * @var int
+		 */
+		private static $switch_depth = 0;
 
 		/**
 		 * The site the custom tables were switched on, used to re-apply them
@@ -613,25 +630,36 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				}
 			}
 
-			$post_id = $this->insert( $args );
+			// Keep the follow-up writes below on the same tables as the insert.
+			self::switch_to_custom_tables();
 
-			// Save the legacy ID so we don't migrate it again.
-			add_post_meta( $post_id, '_wp_rest_api_log_migrated_id', $id );
+			try {
+				$post_id = $this->insert( $args );
 
-			// Manually update the post dates.
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- wp_update_post() would overwrite the migrated dates.
-			$wpdb->update(
-				$wpdb->posts,
-				array(
-					'post_date'         => $log->time,
-					'post_date_gmt'     => $log->time,
-					'post_modified'     => $log->time,
-					'post_modified_gmt' => $log->time,
-				),
-				array(
-					'ID' => $post_id, // Where clause.
-				)
-			);
+				if ( ! empty( $post_id ) ) {
+					// Save the legacy ID so we don't migrate it again.
+					add_post_meta( $post_id, '_wp_rest_api_log_migrated_id', $id );
+
+					// Manually update the post dates.
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- wp_update_post() would overwrite the migrated dates.
+					$wpdb->update(
+						$wpdb->posts,
+						array(
+							'post_date'         => $log->time,
+							'post_date_gmt'     => $log->time,
+							'post_modified'     => $log->time,
+							'post_modified_gmt' => $log->time,
+						),
+						array(
+							'ID' => $post_id, // Where clause.
+						)
+					);
+
+					clean_post_cache( $post_id );
+				}
+			} finally {
+				self::switch_to_default_tables();
+			}
 
 			return $post_id;
 		}
@@ -710,6 +738,10 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 * If a custom table is missing and can't be created, the switch is
 		 * undone so nothing is read from, or written to, a missing table.
 		 *
+		 * Switches can be nested: code that needs to make further writes to a
+		 * log entry after insert() can switch around both, and the tables stay
+		 * switched until the outermost switch_to_default_tables() call.
+		 *
 		 * @return bool True if $wpdb is now on the custom tables, false if
 		 *              custom tables are turned off or couldn't be created.
 		 */
@@ -717,6 +749,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			global $wpdb, $wp_object_cache;
 
 			if ( self::$using_custom_tables ) {
+				++self::$switch_depth;
 				return true;
 			}
 
@@ -734,12 +767,18 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			self::$default_object_cache = is_object( $wp_object_cache ) ? $wp_object_cache : null;
 			self::$switched_blog_id     = get_current_blog_id();
 			self::$using_custom_tables  = true;
+			self::$switch_depth         = 1;
 
 			self::apply_custom_tables();
 
 			// switch_to_blog() resets every blog table on $wpdb, so re-apply the
 			// custom tables when code running during the switch returns here.
 			add_action( 'switch_blog', array( __CLASS__, 'handle_switch_blog' ), 10, 1 );
+
+			if ( self::$checked_connection !== $wpdb->dbh ) {
+				self::$checked_tables     = array();
+				self::$checked_connection = $wpdb->dbh;
+			}
 
 			foreach ( $tables as $table ) {
 				if ( ! empty( self::$checked_tables[ $table ] ) ) {
@@ -759,14 +798,22 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		}
 
 		/**
-		 * Switches $wpdb and the object cache back to the site's own tables.
+		 * Switches $wpdb and the object cache back to the site's own tables,
+		 * once every nested switch_to_custom_tables() call has been closed.
 		 *
+		 * @param  bool $all Optional. Close every nested switch at once, such as
+		 *                   after an error. Default false.
 		 * @return void
 		 */
-		public static function switch_to_default_tables() {
-			global $wpdb, $wp_object_cache;
+		public static function switch_to_default_tables( $all = false ) {
+			global $wpdb;
 
 			if ( ! self::$using_custom_tables ) {
+				return;
+			}
+
+			self::$switch_depth = $all ? 0 : max( 0, self::$switch_depth - 1 );
+			if ( self::$switch_depth > 0 ) {
 				return;
 			}
 

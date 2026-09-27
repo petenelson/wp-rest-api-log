@@ -250,29 +250,36 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 				'milliseconds'         => wp_rand( 5, 1500 ),
 			);
 
-			$post_id = $db->insert( $args );
+			// Keep the backdating below on the same tables as the insert.
+			WP_REST_API_Log_DB::switch_to_custom_tables();
 
-			if ( ! empty( $post_id ) ) {
+			try {
+				$post_id = $db->insert( $args );
 
-				global $wpdb;
+				if ( ! empty( $post_id ) ) {
 
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- wp_insert_post() always sets post_modified to the current time, so backdating needs a direct update; the post cache is cleared below.
-				$wpdb->update(
-					$wpdb->posts,
-					array(
-						'post_date'         => $time,
-						'post_date_gmt'     => get_gmt_from_date( $time ),
-						'post_modified'     => $time,
-						'post_modified_gmt' => get_gmt_from_date( $time ),
-					),
-					array(
-						'ID' => $post_id, // Where clause.
-					)
-				);
+					global $wpdb;
 
-				// The direct update bypasses the object cache, which still holds the insert-time dates.
-				clean_post_cache( $post_id );
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- wp_insert_post() always sets post_modified to the current time, so backdating needs a direct update; the post cache is cleared below.
+					$wpdb->update(
+						$wpdb->posts,
+						array(
+							'post_date'         => $time,
+							'post_date_gmt'     => get_gmt_from_date( $time ),
+							'post_modified'     => $time,
+							'post_modified_gmt' => get_gmt_from_date( $time ),
+						),
+						array(
+							'ID' => $post_id, // Where clause.
+						)
+					);
 
+					// The direct update bypasses the object cache, which still holds the insert-time dates.
+					clean_post_cache( $post_id );
+
+				}
+			} finally {
+				WP_REST_API_Log_DB::switch_to_default_tables();
 			}
 
 			$progress->tick();

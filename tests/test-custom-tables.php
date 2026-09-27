@@ -75,7 +75,7 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 	public function tear_down() {
 		// Always return to the default tables, even when a test fails
 		// part way through, so later tests don't run on the custom tables.
-		WP_REST_API_Log_DB::switch_to_default_tables();
+		WP_REST_API_Log_DB::switch_to_default_tables( true );
 		parent::tear_down();
 	}
 
@@ -618,6 +618,50 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 		remove_filter( 'wp-rest-api-log-custom-table-names', $missing_table );
 		$this->assertTrue( WP_REST_API_Log_DB::switch_to_custom_tables() );
 		WP_REST_API_Log_DB::switch_to_default_tables();
+	}
+
+	/**
+	 * Tests that nested switches keep the custom tables until the outermost
+	 * one ends, so follow-up writes after insert() stay on the custom tables.
+	 *
+	 * @return void
+	 */
+	public function test_nested_switches() {
+		global $wpdb;
+
+		$site_posts = $wpdb->posts;
+		$tables     = WP_REST_API_Log_DB::get_custom_table_names();
+
+		$this->enable_custom_tables();
+
+		$this->assertTrue( WP_REST_API_Log_DB::switch_to_custom_tables() );
+
+		// insert() switches and switches back inside the outer switch.
+		$db      = new WP_REST_API_Log_DB();
+		$post_id = $db->insert( array( 'route' => '/custom/nested' ) );
+		$this->assertSame( $tables['posts'], $wpdb->posts );
+
+		// A follow-up write lands on the log entry in the custom tables.
+		add_post_meta( $post_id, 'follow-up', 'yes' );
+
+		$this->assertTrue( WP_REST_API_Log_DB::switch_to_custom_tables() );
+		WP_REST_API_Log_DB::switch_to_default_tables();
+		$this->assertSame( $tables['posts'], $wpdb->posts );
+
+		WP_REST_API_Log_DB::switch_to_default_tables();
+		$this->assertSame( $site_posts, $wpdb->posts );
+		$this->assertFalse( WP_REST_API_Log_DB::$using_custom_tables );
+
+		// The meta isn't on the site's post with the same ID.
+		$this->assertSame( '', get_post_meta( $post_id, 'follow-up', true ) );
+
+		WP_REST_API_Log_DB::switch_to_custom_tables();
+		$this->assertSame( 'yes', get_post_meta( $post_id, 'follow-up', true ) );
+
+		// Closing every level at once.
+		WP_REST_API_Log_DB::switch_to_custom_tables();
+		WP_REST_API_Log_DB::switch_to_default_tables( true );
+		$this->assertSame( $site_posts, $wpdb->posts );
 	}
 
 	/**
