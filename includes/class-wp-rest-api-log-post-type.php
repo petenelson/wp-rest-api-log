@@ -93,6 +93,11 @@ if ( ! class_exists( 'WP_REST_API_Log_Post_Type' ) ) {
 				'query_var'           => false,
 				'can_export'          => true,
 				'rewrite'             => false,
+
+				// Include the post type in trash, restore and delete links, so
+				// post.php can switch to the custom log tables before loading
+				// the entry by ID.
+				'_edit_link'          => 'post.php?post=%d&post_type=' . WP_REST_API_Log_DB::POST_TYPE,
 				'map_meta_cap'        => false,
 				'capabilities'        => array(
 					'read_post'    => 'read_' . WP_REST_API_Log_DB::POST_TYPE,

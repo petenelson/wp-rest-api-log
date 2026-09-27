@@ -142,28 +142,36 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 
 		WP_CLI::Line( 'Getting old REST API log entries...' );
 
-		$ids = WP_REST_API_Log::get_old_log_ids( $days_old );
+		// Find, delete and recount terms on the tables the entries are in.
+		$number_deleted = WP_REST_API_Log_DB::with_custom_tables(
+			static function () use ( $days_old, $dry_run ) {
+				$ids = WP_REST_API_Log::get_old_log_ids( $days_old );
 
-		$count          = count( $ids );
-		$number_deleted = 0;
+				$count          = count( $ids );
+				$number_deleted = 0;
 
-		$progress = \WP_CLI\Utils\make_progress_bar( sprintf( 'Deleting %d old log entries', $count ), $count );
+				$progress = \WP_CLI\Utils\make_progress_bar( sprintf( 'Deleting %d old log entries', $count ), $count );
 
-		// Turn off term counting.
-		wp_defer_term_counting( true );
+				// Turn off term counting.
+				wp_defer_term_counting( true );
 
-		foreach ( $ids as $id ) {
-			if ( ! $dry_run ) {
-				wp_delete_post( $id, true );
-				++$number_deleted;
-			}
+				foreach ( $ids as $id ) {
+					if ( ! $dry_run ) {
+						wp_delete_post( $id, true );
+						++$number_deleted;
+					}
 
-			$progress->tick();
-		}
+					$progress->tick();
+				}
 
-		$progress->finish();
+				$progress->finish();
 
-		wp_defer_term_counting( false );
+				wp_defer_term_counting( false );
+
+				return $number_deleted;
+			},
+			0
+		);
 
 		WP_CLI::Success( sprintf( '%d entries purged', $number_deleted ) );
 	}

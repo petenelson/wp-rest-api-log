@@ -366,13 +366,18 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		 */
 		public static function get_entry( $id ) {
 
-			$post = get_post( $id );
+			return WP_REST_API_Log_DB::with_custom_tables(
+				static function () use ( $id ) {
+					$post = get_post( $id );
 
-			if ( ! empty( $post ) && WP_REST_API_Log_DB::POST_TYPE === $post->post_type ) {
-				return new WP_REST_API_Log_Entry( $post );
-			} else {
-				return false;
-			}
+					if ( ! empty( $post ) && WP_REST_API_Log_DB::POST_TYPE === $post->post_type ) {
+						return new WP_REST_API_Log_Entry( $post );
+					}
+
+					return false;
+				},
+				false
+			);
 		}
 
 		/**
@@ -382,15 +387,20 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 		 */
 		public static function get_routes() {
 
-			global $wpdb;
+			$routes = WP_REST_API_Log_DB::with_custom_tables(
+				static function () {
+					global $wpdb;
 
-			$query = $wpdb->prepare(
-				"select distinct post_title from {$wpdb->posts} where post_type = %s and post_title is not null order by post_type",
-				WP_REST_API_Log_DB::POST_TYPE
+					$query = $wpdb->prepare(
+						"select distinct post_title from {$wpdb->posts} where post_type = %s and post_title is not null order by post_type",
+						WP_REST_API_Log_DB::POST_TYPE
+					);
+
+					// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- $query is built with $wpdb->prepare() directly above.
+					return $wpdb->get_col( $query );
+				},
+				array()
 			);
-
-			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- $query is built with $wpdb->prepare() directly above.
-			$routes = $wpdb->get_col( $query );
 
 			return rest_ensure_response( $routes );
 		}
@@ -428,26 +438,34 @@ if ( ! class_exists( 'WP_REST_API_Log_Controller' ) ) {
 
 			$query_args = apply_filters( 'wp-rest-api-log-batch-purge-query-args', $query_args );
 
-			$query = new WP_Query( $query_args );
+			// Find, delete and recount terms on the tables the entries are in.
+			$entries_left = WP_REST_API_Log_DB::with_custom_tables(
+				static function () use ( $query_args ) {
+					$query = new WP_Query( $query_args );
 
-			// Turn off term counting.
-			wp_defer_term_counting( true );
+					// Turn off term counting.
+					wp_defer_term_counting( true );
 
-			// Delete this batch of log entries.
-			foreach ( $query->posts as $post_id ) {
-				wp_delete_post( $post_id, true );
-			}
+					// Delete this batch of log entries.
+					foreach ( $query->posts as $post_id ) {
+						wp_delete_post( $post_id, true );
+					}
 
-			wp_defer_term_counting( false );
+					wp_defer_term_counting( false );
 
-			// Run this again to get the total count of items left.
-			$query_args['posts_per_page'] = 1;
-			$query                        = new WP_Query( $query_args );
+					// Run this again to get the total count of items left.
+					$query_args['posts_per_page'] = 1;
+					$query                        = new WP_Query( $query_args );
+
+					return $query->found_posts;
+				},
+				0
+			);
 
 			$response = array(
-				'entries_left'           => $query->found_posts,
+				'entries_left'           => $entries_left,
 				// translators: %s: formatted number of log entries still to be migrated.
-				'entries_left_formatted' => sprintf( __( '%s entries remaining...', 'wp-rest-api-log' ), number_format( $query->found_posts ) ),
+				'entries_left_formatted' => sprintf( __( '%s entries remaining...', 'wp-rest-api-log' ), number_format( $entries_left ) ),
 			);
 
 			return rest_ensure_response( $response );

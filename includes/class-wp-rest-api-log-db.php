@@ -461,14 +461,13 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				);
 			}
 
-			$posts = array();
-			$query = new WP_Query( $query_args );
-
-			if ( $query->have_posts() ) {
-				$posts = $query->posts;
-			}
-
-			return $posts;
+			return self::with_custom_tables(
+				static function () use ( $query_args ) {
+					$query = new WP_Query( $query_args );
+					return $query->have_posts() ? $query->posts : array();
+				},
+				array()
+			);
 		}
 
 		/**
@@ -672,19 +671,24 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 */
 		public static function get_all_log_ids() {
 
-			$query = new WP_Query(
-				array(
-					'update_post_term_cache' => false,
-					'update_post_meta_cache' => false,
-					'no_found_rows'          => true,
-					'post_type'              => self::POST_TYPE,
-					'fields'                 => 'ids',
-					'posts_per_page'         => -1,
-				)
-			);
+			return self::with_custom_tables(
+				static function () {
+					$query = new WP_Query(
+						array(
+							'update_post_term_cache' => false,
+							'update_post_meta_cache' => false,
+							'no_found_rows'          => true,
+							'post_type'              => self::POST_TYPE,
+							'fields'                 => 'ids',
+							'posts_per_page'         => -1,
+						)
+					);
 
-			// The 'ids' field returns IDs, but cast them so the type is guaranteed.
-			return array_map( 'absint', $query->posts );
+					// The 'ids' field returns IDs, but cast them so the type is guaranteed.
+					return array_map( 'absint', $query->posts );
+				},
+				array()
+			);
 		}
 
 		/**
@@ -694,11 +698,13 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 */
 		public static function purge_all_log_entries() {
 
-			$post_ids = self::get_all_log_ids();
-
-			foreach ( $post_ids as $post_id ) {
-				wp_delete_post( $post_id, true );
-			}
+			self::with_custom_tables(
+				static function () {
+					foreach ( self::get_all_log_ids() as $post_id ) {
+						wp_delete_post( $post_id, true );
+					}
+				}
+			);
 		}
 
 		/**
@@ -723,6 +729,31 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				'advanced',
 				'use-custom-tables'
 			);
+		}
+
+		/**
+		 * Runs a callback with $wpdb switched to the custom log tables, when
+		 * they're turned on, and switches back afterward.
+		 *
+		 * Use this around anything that reads, changes or deletes log entries,
+		 * so it sees the same tables the entries were written to.
+		 *
+		 * @param  callable $callback    Code to run.
+		 * @param  mixed    $unavailable Optional. Returned instead of running the
+		 *                               callback when custom tables are turned on
+		 *                               but couldn't be used. Default null.
+		 * @return mixed The callback's return value.
+		 */
+		public static function with_custom_tables( $callback, $unavailable = null ) {
+			if ( ! self::switch_to_custom_tables() && self::use_custom_tables() ) {
+				return $unavailable;
+			}
+
+			try {
+				return call_user_func( $callback );
+			} finally {
+				self::switch_to_default_tables();
+			}
 		}
 
 		/**
