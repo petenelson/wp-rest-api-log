@@ -448,6 +448,39 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tests that an entry built from a post object loaded from the site's
+	 * tables is reloaded from the custom tables by its ID.
+	 *
+	 * @return void
+	 */
+	public function test_entry_reloads_post_objects_from_custom_tables() {
+
+		$site_post_id = self::factory()->post->create( array( 'post_title' => 'Site post' ) );
+
+		$this->enable_custom_tables();
+
+		$same_id = static function ( $new_post ) use ( $site_post_id ) {
+			$new_post['import_id'] = $site_post_id;
+			return $new_post;
+		};
+		add_filter( 'wp-rest-api-log-entries-pre-insert-new-post', $same_id );
+
+		$db     = new WP_REST_API_Log_DB();
+		$log_id = $db->insert( array( 'route' => '/custom/reloaded' ) );
+
+		remove_filter( 'wp-rest-api-log-entries-pre-insert-new-post', $same_id );
+		$this->assertSame( $site_post_id, $log_id );
+
+		// Loaded outside the switch, this is the site's post.
+		$site_post = get_post( $log_id );
+		$this->assertSame( 'Site post', $site_post->post_title );
+
+		$entry = new WP_REST_API_Log_Entry( $site_post );
+		$this->assertSame( '/custom/reloaded', $entry->route );
+		$this->assertSame( $log_id, $entry->ID );
+	}
+
+	/**
 	 * Tests that the site's object cache is wrapped only while switched.
 	 *
 	 * @return void

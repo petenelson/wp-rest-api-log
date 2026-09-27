@@ -185,6 +185,13 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 				}
 
 				try {
+					// Reload post objects by ID now that the tables are switched,
+					// since an object loaded earlier may have come from the site's
+					// own tables.
+					if ( $post instanceof WP_Post ) {
+						$post = $post->ID;
+					}
+
 					$post = get_post( $post );
 					if ( is_a( $post, '\WP_Post' ) ) {
 						$this->current_post = $post;
