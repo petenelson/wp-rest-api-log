@@ -58,6 +58,14 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		public static $using_custom_tables = false;
 
 		/**
+		 * The site the custom tables were switched on, used to re-apply them
+		 * if code running during the switch calls switch_to_blog().
+		 *
+		 * @var int
+		 */
+		private static $switched_blog_id = 0;
+
+		/**
 		 * CREATE TABLE statements for the custom tables, keyed by table name.
 		 *
 		 * @var array
@@ -709,16 +717,17 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			self::$default_tables = array();
 			foreach ( $tables as $property => $table ) {
 				self::$default_tables[ $property ] = $wpdb->$property;
-				$wpdb->$property                   = $table;
 			}
 
-			if ( is_object( $wp_object_cache ) ) {
-				self::$default_object_cache = $wp_object_cache;
-				// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Swapped for the length of the switch and restored in switch_to_default_tables().
-				$wp_object_cache = WP_REST_API_Log_Object_Cache::instance()->wrap( $wp_object_cache );
-			}
+			self::$default_object_cache = is_object( $wp_object_cache ) ? $wp_object_cache : null;
+			self::$switched_blog_id     = get_current_blog_id();
+			self::$using_custom_tables  = true;
 
-			self::$using_custom_tables = true;
+			self::apply_custom_tables();
+
+			// switch_to_blog() resets every blog table on $wpdb, so re-apply the
+			// custom tables when code running during the switch returns here.
+			add_action( 'switch_blog', array( __CLASS__, 'handle_switch_blog' ), 10, 1 );
 
 			foreach ( $tables as $table ) {
 				if ( empty( self::$checked_tables[ $table ] ) ) {
@@ -739,18 +748,74 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				return;
 			}
 
+			remove_action( 'switch_blog', array( __CLASS__, 'handle_switch_blog' ), 10 );
+
 			foreach ( self::$default_tables as $property => $table ) {
 				$wpdb->$property = $table;
 			}
 
-			if ( null !== self::$default_object_cache ) {
-				// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Restores the site's object cache saved in switch_to_custom_tables().
-				$wp_object_cache            = self::$default_object_cache;
-				self::$default_object_cache = null;
+			self::restore_default_object_cache();
+
+			self::$default_tables       = array();
+			self::$default_object_cache = null;
+			self::$switched_blog_id     = 0;
+			self::$using_custom_tables  = false;
+		}
+
+		/**
+		 * Points $wpdb at the custom tables and wraps the object cache.
+		 *
+		 * @return void
+		 */
+		private static function apply_custom_tables() {
+			global $wpdb, $wp_object_cache;
+
+			foreach ( self::get_custom_table_names() as $property => $table ) {
+				$wpdb->$property = $table;
 			}
 
-			self::$default_tables      = array();
-			self::$using_custom_tables = false;
+			if ( null !== self::$default_object_cache && ! ( $wp_object_cache instanceof WP_REST_API_Log_Object_Cache ) ) {
+				// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Swapped for the length of the switch and restored in switch_to_default_tables().
+				$wp_object_cache = WP_REST_API_Log_Object_Cache::instance()->wrap( self::$default_object_cache );
+			}
+		}
+
+		/**
+		 * Puts the site's own object cache back in place.
+		 *
+		 * @return void
+		 */
+		private static function restore_default_object_cache() {
+			global $wp_object_cache;
+
+			if ( null !== self::$default_object_cache ) {
+				// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Restores the site's object cache saved in switch_to_custom_tables().
+				$wp_object_cache = self::$default_object_cache;
+			}
+		}
+
+		/**
+		 * Keeps the custom tables tied to the site they were switched on when
+		 * code running during the switch calls switch_to_blog().
+		 *
+		 * Another site gets its real tables and object cache, since that code
+		 * expects the other site's content. Back on the original site, the
+		 * custom tables and wrapped cache are re-applied, because
+		 * switch_to_blog() and restore_current_blog() reset $wpdb's tables.
+		 *
+		 * @param  int $new_blog_id The site being switched to.
+		 * @return void
+		 */
+		public static function handle_switch_blog( $new_blog_id ) {
+			if ( ! self::$using_custom_tables ) {
+				return;
+			}
+
+			if ( (int) $new_blog_id === self::$switched_blog_id ) {
+				self::apply_custom_tables();
+			} else {
+				self::restore_default_object_cache();
+			}
 		}
 
 		/**

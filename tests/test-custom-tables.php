@@ -476,6 +476,67 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tests that a switch_to_blog() call made by other code during an insert
+	 * doesn't send the rest of the insert to the site's own tables.
+	 *
+	 * @return void
+	 */
+	public function test_switch_to_blog_during_insert() {
+		global $wpdb, $wp_object_cache;
+
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'Requires multisite.' );
+		}
+
+		$site_cache    = $wp_object_cache;
+		$other_blog_id = self::factory()->blog->create();
+		$seen          = array();
+
+		$this->enable_custom_tables();
+
+		// Simulate another plugin that switches sites when a post is saved.
+		$switch = static function () use ( $other_blog_id, &$seen ) {
+			global $wpdb, $wp_object_cache;
+
+			switch_to_blog( $other_blog_id );
+			$seen['other_posts'] = $wpdb->posts;
+			$seen['other_cache'] = $wp_object_cache;
+			restore_current_blog();
+		};
+		add_action( 'save_post_' . WP_REST_API_Log_DB::POST_TYPE, $switch );
+
+		$db     = new WP_REST_API_Log_DB();
+		$log_id = $db->insert(
+			array(
+				'route'      => '/custom/switch-blog',
+				'method'     => 'PUT',
+				'ip_address' => '10.0.0.1',
+			)
+		);
+
+		remove_action( 'save_post_' . WP_REST_API_Log_DB::POST_TYPE, $switch );
+
+		// The other site saw its own tables and the site's real cache.
+		switch_to_blog( $other_blog_id );
+		$this->assertSame( $wpdb->posts, $seen['other_posts'] );
+		restore_current_blog();
+		$this->assertSame( $site_cache, $seen['other_cache'] );
+
+		// The terms and meta written after the switch are in the custom tables.
+		$entry = new WP_REST_API_Log_Entry( $log_id );
+		$this->assertSame( '/custom/switch-blog', $entry->route );
+		$this->assertSame( 'PUT', $entry->method );
+		$this->assertSame( '10.0.0.1', $entry->ip_address );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Checks the site's own table directly.
+		$site_meta = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = %s", $log_id, WP_REST_API_Log_DB::POST_META_IP_ADDRESS ) );
+		$this->assertSame( '0', $site_meta );
+
+		$this->assertFalse( WP_REST_API_Log_DB::$using_custom_tables );
+		$this->assertSame( $site_cache, $wp_object_cache );
+	}
+
+	/**
 	 * Tests that an exception during an insert still switches back to the
 	 * site's tables and object cache.
 	 *
