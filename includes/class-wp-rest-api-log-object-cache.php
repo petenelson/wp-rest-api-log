@@ -49,27 +49,45 @@ if ( ! class_exists( 'WP_REST_API_Log_Object_Cache' ) ) {
 		 * Position of the group argument for each cache method, used when a
 		 * method is forwarded through __call().
 		 *
-		 * Covers core's WP_Object_Cache and common persistent cache drop-ins.
-		 * Any other method is forwarded unchanged.
+		 * Covers core's WP_Object_Cache, the Memcached drop-in that ships with
+		 * wordpress-develop's test suite (its camelCase methods), and drop-ins
+		 * that follow either naming. Any other method is forwarded unchanged.
 		 *
 		 * @var array
 		 */
 		private static $group_arguments = array(
 			'add'             => 2,
+			'addByKey'        => 3,
+			'addMultiple'     => 1,
 			'add_multiple'    => 1,
 			'append'          => 2,
+			'appendByKey'     => 3,
 			'cas'             => 3,
+			'casByKey'        => 4,
 			'decr'            => 2,
 			'decrement'       => 2,
 			'delete'          => 1,
+			'deleteByKey'     => 2,
+			'deleteMultiple'  => 1,
 			'delete_multiple' => 1,
 			'flush_group'     => 0,
+			'getDelayed'      => 1,
+			'getDelayedByKey' => 2,
+			'getMulti'        => 1,
+			'getMultiByKey'   => 2,
+			'getMultiple'     => 1,
 			'get_multiple'    => 1,
 			'incr'            => 2,
 			'increment'       => 2,
 			'prepend'         => 2,
+			'prependByKey'    => 3,
 			'replace'         => 2,
+			'replaceByKey'    => 3,
 			'set'             => 2,
+			'setByKey'        => 3,
+			'setMulti'        => 1,
+			'setMultiByKey'   => 2,
+			'setMultiple'     => 1,
 			'set_multiple'    => 1,
 		);
 
@@ -80,17 +98,24 @@ if ( ! class_exists( 'WP_REST_API_Log_Object_Cache' ) ) {
 		 * @var array
 		 */
 		private static $key_arguments = array(
-			'add'       => 0,
-			'append'    => 0,
-			'cas'       => 1,
-			'decr'      => 0,
-			'decrement' => 0,
-			'delete'    => 0,
-			'incr'      => 0,
-			'increment' => 0,
-			'prepend'   => 0,
-			'replace'   => 0,
-			'set'       => 0,
+			'add'          => 0,
+			'addByKey'     => 1,
+			'append'       => 0,
+			'appendByKey'  => 1,
+			'cas'          => 1,
+			'casByKey'     => 2,
+			'decr'         => 0,
+			'decrement'    => 0,
+			'delete'       => 0,
+			'deleteByKey'  => 1,
+			'incr'         => 0,
+			'increment'    => 0,
+			'prepend'      => 0,
+			'prependByKey' => 1,
+			'replace'      => 0,
+			'replaceByKey' => 1,
+			'setByKey'     => 1,
+			'set'          => 0,
 		);
 
 		/**
@@ -169,11 +194,18 @@ if ( ! class_exists( 'WP_REST_API_Log_Object_Cache' ) ) {
 		 * isolated, so logging doesn't invalidate the site's cached post and
 		 * term queries, while other entries, such as "users", stay shared.
 		 *
-		 * @param  mixed $group Cache group name.
+		 * Some drop-in methods, such as getMulti(), accept a list of groups;
+		 * each one is mapped.
+		 *
+		 * @param  mixed $group Cache group name, or a list of them.
 		 * @param  mixed $key   Optional. Cache key, when the call has one.
 		 * @return mixed
 		 */
 		public static function map_group( $group, $key = null ) {
+			if ( is_array( $group ) ) {
+				return array_map( array( __CLASS__, 'map_group' ), $group );
+			}
+
 			if ( ! is_string( $group ) || '' === $group ) {
 				return $group;
 			}
@@ -201,6 +233,24 @@ if ( ! class_exists( 'WP_REST_API_Log_Object_Cache' ) ) {
 		 */
 		public function get( $key, $group = '', $force = false, &$found = null, ...$args ) {
 			return $this->cache->get( $key, self::map_group( $group, $key ), $force, $found, ...$args );
+		}
+
+		/**
+		 * Gets a value from the cache on a specific server, as supported by
+		 * the Memcached drop-in in wordpress-develop's test suite.
+		 *
+		 * Defined explicitly because $found is passed by reference.
+		 *
+		 * @param  string     $server_key Server key.
+		 * @param  int|string $key        Cache key.
+		 * @param  string     $group      Optional. Cache group.
+		 * @param  bool       $force      Optional. Whether to skip the local cache.
+		 * @param  bool|null  $found      Optional. Set to whether the key was found.
+		 * @param  mixed      ...$args    Further arguments for the wrapped cache.
+		 * @return mixed
+		 */
+		public function getByKey( $server_key, $key, $group = 'default', $force = false, &$found = null, ...$args ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Matches the drop-in's method name.
+			return $this->cache->getByKey( $server_key, $key, self::map_group( $group, $key ), $force, $found, ...$args );
 		}
 
 		/**

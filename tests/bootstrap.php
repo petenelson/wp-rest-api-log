@@ -49,6 +49,7 @@ class WP_REST_API_Log_Tests_Bootstrap {
 
 		// Shared test helpers.
 		require_once __DIR__ . '/includes/trait-wp-rest-api-log-test-hooks.php';
+		require_once __DIR__ . '/includes/class-wp-rest-api-log-test-recording-cache.php';
 
 		// Give access to tests_add_filter() function.
 		require_once $wp_develop_dir . '/tests/phpunit/includes/functions.php';

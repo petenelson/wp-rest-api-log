@@ -56,48 +56,123 @@ class WP_REST_API_Log_Test_Object_Cache extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests that cache calls are forwarded with renamed groups.
+	 * Tests that the wp_cache_*() functions reach the site's cache with
+	 * renamed groups while the wrapper is installed. Runs against whichever
+	 * object cache is active, so CI covers the Memcached drop-in too.
 	 *
 	 * @return void
 	 */
 	public function test_forwards_to_wrapped_cache() {
 		global $wp_object_cache;
 
-		$prefix  = WP_REST_API_Log_Object_Cache::GROUP_PREFIX;
-		$wrapper = WP_REST_API_Log_Object_Cache::instance()->wrap( $wp_object_cache );
+		$prefix     = WP_REST_API_Log_Object_Cache::GROUP_PREFIX;
+		$site_cache = $wp_object_cache;
 
-		$this->assertTrue( $wrapper->set( 'key', 'log', 'posts' ) );
-		$this->assertTrue( $wrapper->set( 'key', 'shared', 'options' ) );
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Installs the wrapper the way switch_to_custom_tables() does.
+		$wp_object_cache = WP_REST_API_Log_Object_Cache::instance()->wrap( $site_cache );
 
-		// Stored under the renamed group in the real cache.
+		try {
+			$this->assertTrue( wp_cache_set( 'key', 'log', 'posts' ) );
+			$this->assertTrue( wp_cache_set( 'key', 'shared', 'options' ) );
+
+			// get() reports whether the key was found.
+			$found = null;
+			$this->assertSame( 'log', wp_cache_get( 'key', 'posts', false, $found ) );
+			$this->assertTrue( $found );
+			$this->assertFalse( wp_cache_get( 'missing', 'posts', false, $found ) );
+			$this->assertFalse( $found );
+
+			// Multiple-key and counter functions are renamed too.
+			$this->assertSame( array( 'a' => true ), wp_cache_set_multiple( array( 'a' => 1 ), 'terms' ) );
+			$this->assertSame( array( 'b' => true ), wp_cache_add_multiple( array( 'b' => 2 ), 'terms' ) );
+			$this->assertSame(
+				array(
+					'a' => 1,
+					'b' => 2,
+				),
+				wp_cache_get_multiple( array( 'a', 'b' ), 'terms' )
+			);
+			$this->assertSame( 2, wp_cache_incr( 'a', 1, 'terms' ) );
+
+			// Only the posts entry of last_changed is renamed.
+			wp_cache_set( 'posts', 'log-time', 'last_changed' );
+			wp_cache_set( 'users', 'user-time', 'last_changed' );
+		} finally {
+			// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Restores the site's cache.
+			$wp_object_cache = $site_cache;
+		}
+
+		// Stored under the renamed groups in the site's cache.
 		$this->assertSame( 'log', wp_cache_get( 'key', $prefix . 'posts' ) );
 		$this->assertFalse( wp_cache_get( 'key', 'posts' ) );
 		$this->assertSame( 'shared', wp_cache_get( 'key', 'options' ) );
-
-		// get() reports whether the key was found.
-		$found = null;
-		$this->assertSame( 'log', $wrapper->get( 'key', 'posts', false, $found ) );
-		$this->assertTrue( $found );
-		$this->assertFalse( $wrapper->get( 'missing', 'posts', false, $found ) );
-		$this->assertFalse( $found );
-
-		// Multiple-key and counter methods are renamed too.
-		$wrapper->set_multiple( array( 'a' => 1 ), 'terms' );
-		$this->assertSame( array( 'a' => 1 ), wp_cache_get_multiple( array( 'a' ), $prefix . 'terms' ) );
-		$wrapper->incr( 'a', 1, 'terms' );
 		$this->assertSame( 2, wp_cache_get( 'a', $prefix . 'terms' ) );
-
-		$this->assertTrue( $wrapper->delete( 'key', 'posts' ) );
-		$this->assertFalse( wp_cache_get( 'key', $prefix . 'posts' ) );
-
-		// Only the posts entry of last_changed is renamed.
-		$wrapper->set( 'posts', 'log-time', 'last_changed' );
-		$wrapper->set( 'users', 'user-time', 'last_changed' );
+		$this->assertFalse( wp_cache_get( 'a', 'terms' ) );
+		$this->assertFalse( wp_cache_get( 'b', 'terms' ) );
 		$this->assertSame( 'log-time', wp_cache_get( 'posts', $prefix . 'last_changed' ) );
 		$this->assertSame( 'user-time', wp_cache_get( 'users', 'last_changed' ) );
+	}
 
-		// Properties and unknown methods reach the wrapped cache.
-		$this->assertSame( $wp_object_cache, $wrapper->unwrap() );
-		$this->assertTrue( isset( $wrapper->global_groups ) || ! isset( $wp_object_cache->global_groups ) );
+	/**
+	 * Tests the group mapping for drop-in methods that core's cache doesn't
+	 * have, such as the camelCase methods in wordpress-develop's Memcached
+	 * drop-in, using a stand-in cache that records each call.
+	 *
+	 * @return void
+	 */
+	public function test_forwards_drop_in_methods() {
+		$prefix  = WP_REST_API_Log_Object_Cache::GROUP_PREFIX;
+		$cache   = new WP_REST_API_Log_Test_Recording_Cache();
+		$wrapper = WP_REST_API_Log_Object_Cache::instance()->wrap( $cache );
+
+		$wrapper->addMultiple( array( 'a' => 1 ), 'posts' );
+		$wrapper->getMultiple( array( 'a' ), 'post_meta', false );
+		$wrapper->setMultiple( array( 'a' => 1 ), 'options' );
+		$wrapper->deleteMultiple( array( 'a' ), 'terms' );
+		$wrapper->getMulti( array( 'a', 'b' ), array( 'posts', 'options' ) );
+		$wrapper->setByKey( 'server', 'a', 1, 'term_meta' );
+		$wrapper->setByKey( 'server', 'posts', 1, 'last_changed' );
+		$wrapper->casByKey( 'token', 'server', 'a', 1, 'category_relationships' );
+		$wrapper->someUnknownMethod( 'a', 'posts' );
+
+		$found = null;
+		$this->assertSame( 'value', $wrapper->getByKey( 'server', 'a', 'posts', false, $found ) );
+		$this->assertTrue( $found );
+
+		$this->assertSame(
+			array(
+				array( 'addMultiple', array( array( 'a' => 1 ), $prefix . 'posts' ) ),
+				array( 'getMultiple', array( array( 'a' ), $prefix . 'post_meta', false ) ),
+				array( 'setMultiple', array( array( 'a' => 1 ), 'options' ) ),
+				array( 'deleteMultiple', array( array( 'a' ), $prefix . 'terms' ) ),
+				array( 'getMulti', array( array( 'a', 'b' ), array( $prefix . 'posts', 'options' ) ) ),
+				array( 'setByKey', array( 'server', 'a', 1, $prefix . 'term_meta' ) ),
+				array( 'setByKey', array( 'server', 'posts', 1, $prefix . 'last_changed' ) ),
+				array( 'casByKey', array( 'token', 'server', 'a', 1, $prefix . 'category_relationships' ) ),
+				array( 'someUnknownMethod', array( 'a', 'posts' ) ),
+				array( 'getByKey', array( 'server', 'a', $prefix . 'posts', false ) ),
+			),
+			$cache->calls
+		);
+	}
+
+	/**
+	 * Tests that properties are read from the wrapped cache.
+	 *
+	 * @return void
+	 */
+	public function test_forwards_properties() {
+		$cache   = new WP_REST_API_Log_Test_Recording_Cache();
+		$wrapper = WP_REST_API_Log_Object_Cache::instance()->wrap( $cache );
+
+		$this->assertSame( $cache, $wrapper->unwrap() );
+		$this->assertTrue( isset( $wrapper->calls ) );
+		$this->assertSame( array(), $wrapper->calls );
+
+		$wrapper->custom = 'value';
+		$this->assertSame( 'value', $cache->custom );
+
+		unset( $wrapper->custom );
+		$this->assertFalse( isset( $cache->custom ) );
 	}
 }
