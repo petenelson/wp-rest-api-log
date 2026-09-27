@@ -207,8 +207,12 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- self::plugin_name() is the "wp-rest-api-log-entries" prefix.
 			$new_post = apply_filters( self::plugin_name() . '-pre-insert-new-post', $new_post, $args );
 
-			// Switch table names if needed.
-			self::switch_to_custom_tables();
+			// Switch table names if needed. When custom tables are turned on but
+			// couldn't be used, skip the entry instead of writing it to the site's
+			// own tables.
+			if ( ! self::switch_to_custom_tables() && self::use_custom_tables() ) {
+				return 0;
+			}
 
 			try {
 				$post_id = wp_insert_post( $new_post );
@@ -703,13 +707,21 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 * switch_to_default_tables(), in a finally block where an exception
 		 * could be thrown in between.
 		 *
-		 * @return void
+		 * If a custom table is missing and can't be created, the switch is
+		 * undone so nothing is read from, or written to, a missing table.
+		 *
+		 * @return bool True if $wpdb is now on the custom tables, false if
+		 *              custom tables are turned off or couldn't be created.
 		 */
 		public static function switch_to_custom_tables() {
 			global $wpdb, $wp_object_cache;
 
-			if ( self::$using_custom_tables || ! self::use_custom_tables() ) {
-				return;
+			if ( self::$using_custom_tables ) {
+				return true;
+			}
+
+			if ( ! self::use_custom_tables() ) {
+				return false;
 			}
 
 			$tables = self::get_custom_table_names();
@@ -730,10 +742,20 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			add_action( 'switch_blog', array( __CLASS__, 'handle_switch_blog' ), 10, 1 );
 
 			foreach ( $tables as $table ) {
-				if ( empty( self::$checked_tables[ $table ] ) ) {
-					self::$checked_tables[ $table ] = self::create_custom_table( $table );
+				if ( ! empty( self::$checked_tables[ $table ] ) ) {
+					continue;
 				}
+
+				if ( ! self::create_custom_table( $table ) ) {
+					// Retry on a later switch rather than using a missing table.
+					self::switch_to_default_tables();
+					return false;
+				}
+
+				self::$checked_tables[ $table ] = true;
 			}
+
+			return true;
 		}
 
 		/**
@@ -845,9 +867,12 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			}
 
 			// Create the table. The statement comes from core's wp_get_db_schema(),
-			// and table names can't be passed as prepare() placeholders.
+			// and table names can't be passed as prepare() placeholders. IF NOT
+			// EXISTS covers another request creating the table in the meantime.
+			$sql = preg_replace( '/^CREATE TABLE /', 'CREATE TABLE IF NOT EXISTS ', self::$schema[ $table_name ] );
+
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
-			return false !== $wpdb->query( self::$schema[ $table_name ] );
+			return false !== $wpdb->query( $sql );
 		}
 
 		/**

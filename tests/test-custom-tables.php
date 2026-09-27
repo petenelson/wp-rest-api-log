@@ -575,6 +575,52 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tests that a custom table that can't be created undoes the switch, and
+	 * that log entries aren't written to, or read from, the site's tables.
+	 *
+	 * @return void
+	 */
+	public function test_failed_table_creation_undoes_switch() {
+		global $wpdb, $wp_object_cache;
+
+		$site_posts = $wpdb->posts;
+		$site_cache = $wp_object_cache;
+		$site_post  = self::factory()->post->create( array( 'post_title' => 'Site post' ) );
+
+		$this->enable_custom_tables();
+
+		// A table name longer than MySQL's 64 character limit, so creating the
+		// table fails.
+		$missing_table = static function ( $tables ) {
+			$tables['termmeta'] = $tables['termmeta'] . str_repeat( '_x', 40 );
+			return $tables;
+		};
+		add_filter( 'wp-rest-api-log-custom-table-names', $missing_table );
+
+		$this->assertFalse( WP_REST_API_Log_DB::switch_to_custom_tables() );
+		$this->assertFalse( WP_REST_API_Log_DB::$using_custom_tables );
+		$this->assertSame( $site_posts, $wpdb->posts );
+		$this->assertSame( $site_cache, $wp_object_cache );
+
+		// Inserts are skipped rather than written to the site's tables.
+		$log_count = (int) wp_count_posts( WP_REST_API_Log_DB::POST_TYPE )->publish;
+		$db        = new WP_REST_API_Log_DB();
+		$this->assertSame( 0, $db->insert( array( 'route' => '/custom/no-tables' ) ) );
+		wp_cache_delete( _count_posts_cache_key( WP_REST_API_Log_DB::POST_TYPE ), 'counts' );
+		$this->assertSame( $log_count, (int) wp_count_posts( WP_REST_API_Log_DB::POST_TYPE )->publish );
+
+		// Entries aren't loaded from the site's tables either.
+		$entry = new WP_REST_API_Log_Entry( $site_post );
+		$this->assertEmpty( $entry->route );
+		$this->assertSame( array(), WP_REST_API_Log_Entry::from_posts( array( get_post( $site_post ) ) ) );
+
+		// The failure isn't remembered, so a later switch tries again.
+		remove_filter( 'wp-rest-api-log-custom-table-names', $missing_table );
+		$this->assertTrue( WP_REST_API_Log_DB::switch_to_custom_tables() );
+		WP_REST_API_Log_DB::switch_to_default_tables();
+	}
+
+	/**
 	 * Tests that an exception during an insert still switches back to the
 	 * site's tables and object cache.
 	 *

@@ -25,7 +25,11 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 */
 		public static function from_posts( array $posts ) {
 
-			WP_REST_API_Log_DB::switch_to_custom_tables();
+			// Don't load entries from the site's tables when custom tables are
+			// turned on but couldn't be used.
+			if ( ! WP_REST_API_Log_DB::switch_to_custom_tables() && WP_REST_API_Log_DB::use_custom_tables() ) {
+				return array();
+			}
 
 			$entries = array();
 			try {
@@ -174,8 +178,10 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 
 			if ( ! empty( $post ) ) {
 
-				if ( true === $args['auto_switch_tables'] ) {
-					WP_REST_API_Log_DB::switch_to_custom_tables();
+				// Don't load the entry from the site's tables when custom tables are
+				// turned on but couldn't be used.
+				if ( true === $args['auto_switch_tables'] && ! WP_REST_API_Log_DB::switch_to_custom_tables() && WP_REST_API_Log_DB::use_custom_tables() ) {
+					return;
 				}
 
 				try {
