@@ -537,6 +537,44 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tests that each site on a multisite network gets its own custom tables,
+	 * including a second site switched to later in the same request.
+	 *
+	 * @return void
+	 */
+	public function test_custom_tables_per_site() {
+		global $wpdb;
+
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'Requires multisite.' );
+		}
+
+		$other_blog_id = self::factory()->blog->create();
+		$db            = new WP_REST_API_Log_DB();
+
+		$this->enable_custom_tables();
+		$main_id = $db->insert( array( 'route' => '/custom/main-site' ) );
+		$this->assertGreaterThan( 0, $main_id );
+
+		switch_to_blog( $other_blog_id );
+
+		$this->enable_custom_tables();
+		$other_tables = WP_REST_API_Log_DB::get_custom_table_names();
+		$other_id     = $db->insert( array( 'route' => '/custom/other-site' ) );
+		$other_entry  = new WP_REST_API_Log_Entry( $other_id );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Checks the table's structure; there is no API for this.
+		$columns = $wpdb->get_col( $wpdb->prepare( 'DESCRIBE %i', $other_tables['posts'] ) );
+
+		restore_current_blog();
+
+		$this->assertSame( $wpdb->get_blog_prefix( $other_blog_id ) . 'rest_api_log_posts', $other_tables['posts'] );
+		$this->assertContains( 'post_title', $columns );
+		$this->assertGreaterThan( 0, $other_id );
+		$this->assertSame( '/custom/other-site', $other_entry->route );
+	}
+
+	/**
 	 * Tests that an exception during an insert still switches back to the
 	 * site's tables and object cache.
 	 *

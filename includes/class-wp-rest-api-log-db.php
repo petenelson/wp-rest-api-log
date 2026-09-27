@@ -834,7 +834,9 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				return true;
 			}
 
-			if ( empty( self::$schema ) ) {
+			// The schema is cached by table name, so rebuild it for tables it
+			// doesn't have yet, such as another site's tables on multisite.
+			if ( empty( self::$schema[ $table_name ] ) ) {
 				self::build_db_schema();
 			}
 
@@ -869,11 +871,12 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		}
 
 		/**
-		 * Builds the CREATE TABLE statement for each custom table from core's
-		 * schema.
+		 * Adds the CREATE TABLE statement for each of the current site's custom
+		 * tables to the schema cache, from core's schema.
 		 *
 		 * Must run while $wpdb is switched to the custom tables, since core's
-		 * schema is written with the current $wpdb table names.
+		 * schema is written with the current $wpdb table names. Entries for
+		 * other sites' tables are kept.
 		 *
 		 * @return void
 		 */
@@ -881,8 +884,7 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			require_once ABSPATH . 'wp-admin/includes/schema.php';
 
-			$schema       = wp_get_db_schema( 'blog' );
-			self::$schema = array();
+			$schema = wp_get_db_schema( 'blog' );
 
 			foreach ( self::get_custom_table_names() as $table ) {
 
