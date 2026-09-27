@@ -28,19 +28,34 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		const POST_META_REQUEST_BODY         = '_request_body';
 
 		/**
-		 * The table prefix to restore when switching back from the custom
-		 * tables, or the custom prefix while they are in use.
+		 * The site's table names, keyed by $wpdb property, saved while $wpdb is
+		 * switched to the custom log tables.
 		 *
-		 * @var string
+		 * @var array
 		 */
-		public static $table_prefix;
+		private static $default_tables = array();
+
+		/**
+		 * The site's object cache, saved while it is wrapped for the custom
+		 * log tables.
+		 *
+		 * @var object|null
+		 */
+		private static $default_object_cache = null;
+
+		/**
+		 * Custom tables already checked for, or created, during this request.
+		 *
+		 * @var array
+		 */
+		private static $checked_tables = array();
 
 		/**
 		 * Whether $wpdb is currently switched to the custom log tables.
 		 *
 		 * @var bool
 		 */
-		public static $using_custom_tables;
+		public static $using_custom_tables = false;
 
 		/**
 		 * CREATE TABLE statements for the custom tables, keyed by table name.
@@ -187,22 +202,24 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			// Switch table names if needed.
 			self::switch_to_custom_tables();
 
-			$post_id = wp_insert_post( $new_post );
+			try {
+				$post_id = wp_insert_post( $new_post );
 
-			if ( ! empty( $post_id ) ) {
-				$this->insert_post_terms( $post_id, $args );
-				$this->insert_post_meta( $post_id, $args );
+				if ( ! empty( $post_id ) ) {
+					$this->insert_post_terms( $post_id, $args );
+					$this->insert_post_meta( $post_id, $args );
 
-				$this->insert_request_meta( $post_id, $args );
-				$this->insert_response_meta( $post_id, $args );
+					$this->insert_request_meta( $post_id, $args );
+					$this->insert_response_meta( $post_id, $args );
 
-				global $wp_rest_api_log_new_entry_id;
-				$wp_rest_api_log_new_entry_id = $post_id;
+					global $wp_rest_api_log_new_entry_id;
+					$wp_rest_api_log_new_entry_id = $post_id;
 
+				}
+			} finally {
+				// Always switch back to the default tables.
+				self::switch_to_default_tables();
 			}
-
-			// Switch back to custom tables.
-			self::switch_to_default_tables();
 
 			return $post_id;
 		}
@@ -669,37 +686,71 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		}
 
 		/**
-		 * Switches wpdb to the custom tables for logging.
+		 * Switches $wpdb to the custom log tables.
+		 *
+		 * Only the post, term and meta tables are switched; options, users and
+		 * every other table stay on the site's own tables. The post and term
+		 * cache groups are isolated at the same time, since IDs in the custom
+		 * tables overlap the site's IDs. Pair every call with
+		 * switch_to_default_tables(), in a finally block where an exception
+		 * could be thrown in between.
 		 *
 		 * @return void
 		 */
 		public static function switch_to_custom_tables() {
-			global $wpdb;
+			global $wpdb, $wp_object_cache;
 
-			if ( self::use_custom_tables() && ! self::$using_custom_tables ) {
-				self::$table_prefix        = $wpdb->set_prefix( $wpdb->prefix . self::get_custom_table_prefix() );
-				self::$using_custom_tables = true;
+			if ( self::$using_custom_tables || ! self::use_custom_tables() ) {
+				return;
+			}
 
-				$tables = self::get_custom_table_names();
+			$tables = self::get_custom_table_names();
 
-				foreach ( $tables as $table ) {
-					self::create_custom_table( $table );
+			self::$default_tables = array();
+			foreach ( $tables as $property => $table ) {
+				self::$default_tables[ $property ] = $wpdb->$property;
+				$wpdb->$property                   = $table;
+			}
+
+			if ( is_object( $wp_object_cache ) ) {
+				self::$default_object_cache = $wp_object_cache;
+				// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Swapped for the length of the switch and restored in switch_to_default_tables().
+				$wp_object_cache = WP_REST_API_Log_Object_Cache::instance()->wrap( $wp_object_cache );
+			}
+
+			self::$using_custom_tables = true;
+
+			foreach ( $tables as $table ) {
+				if ( empty( self::$checked_tables[ $table ] ) ) {
+					self::$checked_tables[ $table ] = self::create_custom_table( $table );
 				}
 			}
 		}
 
 		/**
-		 * Switches global wpdb back to default tables.
+		 * Switches $wpdb and the object cache back to the site's own tables.
 		 *
 		 * @return void
 		 */
 		public static function switch_to_default_tables() {
-			global $wpdb;
+			global $wpdb, $wp_object_cache;
 
-			if ( self::use_custom_tables() && self::$using_custom_tables ) {
-				self::$table_prefix        = $wpdb->set_prefix( self::$table_prefix );
-				self::$using_custom_tables = false;
+			if ( ! self::$using_custom_tables ) {
+				return;
 			}
+
+			foreach ( self::$default_tables as $property => $table ) {
+				$wpdb->$property = $table;
+			}
+
+			if ( null !== self::$default_object_cache ) {
+				// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Restores the site's object cache saved in switch_to_custom_tables().
+				$wp_object_cache            = self::$default_object_cache;
+				self::$default_object_cache = null;
+			}
+
+			self::$default_tables      = array();
+			self::$using_custom_tables = false;
 		}
 
 		/**
@@ -733,29 +784,31 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		}
 
 		/**
-		 * Gets a list of custom table names.
+		 * Gets the custom log table names, keyed by the $wpdb property each
+		 * one replaces.
+		 *
+		 * Uses $wpdb->prefix, so on multisite each site gets its own set of
+		 * custom tables.
 		 *
 		 * @return array
 		 */
 		public static function get_custom_table_names() {
-
 			global $wpdb;
 
-			return apply_filters(
-				WP_REST_API_Log_Common::PLUGIN_NAME . '-custom-table-names',
-				array(
-					$wpdb->posts,
-					$wpdb->postmeta,
-					$wpdb->terms,
-					$wpdb->termmeta,
-					$wpdb->term_taxonomy,
-					$wpdb->term_relationships,
-				)
-			);
+			$tables = array();
+			foreach ( array( 'posts', 'postmeta', 'terms', 'termmeta', 'term_taxonomy', 'term_relationships' ) as $property ) {
+				$tables[ $property ] = $wpdb->prefix . self::get_custom_table_prefix() . $property;
+			}
+
+			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-custom-table-names', $tables );
 		}
 
 		/**
-		 * Builds schema DB commands into an array on the static class.
+		 * Builds the CREATE TABLE statement for each custom table from core's
+		 * schema.
+		 *
+		 * Must run while $wpdb is switched to the custom tables, since core's
+		 * schema is written with the current $wpdb table names.
 		 *
 		 * @return void
 		 */
@@ -763,12 +816,13 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 
 			require_once ABSPATH . 'wp-admin/includes/schema.php';
 
-			$schema       = wp_get_db_schema();
+			$schema       = wp_get_db_schema( 'blog' );
 			self::$schema = array();
 
 			foreach ( self::get_custom_table_names() as $table ) {
 
-				$re = '/(CREATE TABLE ' . $table . '.*?;)/ms';
+				// Match the exact table name, so "posts" doesn't match "postmeta".
+				$re = '/CREATE TABLE ' . preg_quote( $table, '/' ) . ' \(.*?;/ms';
 
 				if ( 1 === preg_match( $re, $schema, $matches ) ) {
 					self::$schema[ $table ] = $matches[0];

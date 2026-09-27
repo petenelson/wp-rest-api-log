@@ -113,8 +113,15 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 	public function test_switch_custom_tables() {
 		global $wpdb;
 
-		$default_prefix = $wpdb->prefix;
-		$custom_prefix  = $default_prefix . WP_REST_API_Log_DB::get_custom_table_prefix();
+		$default_tables = array(
+			'posts'   => $wpdb->posts,
+			'options' => $wpdb->options,
+			'users'   => $wpdb->users,
+		);
+		$custom_tables  = WP_REST_API_Log_DB::get_custom_table_names();
+
+		$this->assertSame( $wpdb->prefix . 'rest_api_log_posts', $custom_tables['posts'] );
+		$this->assertSame( $wpdb->prefix . 'rest_api_log_term_relationships', $custom_tables['term_relationships'] );
 
 		// Make sure custom tables are turned off.
 		$this->disable_custom_tables();
@@ -122,7 +129,8 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 		// Try switching to custom tables, it should not switch.
 		WP_REST_API_Log_DB::switch_to_custom_tables();
 
-		$this->assertSame( $default_prefix, $wpdb->prefix );
+		$this->assertFalse( WP_REST_API_Log_DB::$using_custom_tables );
+		$this->assertSame( $default_tables['posts'], $wpdb->posts );
 
 		// Turn on custom tables.
 		$this->enable_custom_tables();
@@ -131,22 +139,37 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 		// Switch to custom tables.
 		WP_REST_API_Log_DB::switch_to_custom_tables();
 
-		// Verify wpdb is using the custom prefix.
-		$this->assertSame( $custom_prefix, $wpdb->prefix );
+		// Only the post, term and meta tables are switched.
+		$this->assertTrue( WP_REST_API_Log_DB::$using_custom_tables );
+		foreach ( $custom_tables as $property => $table_name ) {
+			$this->assertSame( $table_name, $wpdb->$property, $property );
+		}
+		$this->assertSame( $default_tables['options'], $wpdb->options );
+		$this->assertSame( $default_tables['users'], $wpdb->users );
 
-		// Verify the tables were created. The test suite creates them as
-		// temporary tables, which SHOW TABLES doesn't list, so select from
-		// each one instead: get_var() returns null for a missing table.
-		foreach ( WP_REST_API_Log_DB::get_custom_table_names() as $table_name ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Checks the table exists; there is no API for this.
-			$this->assertNotNull( $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table_name ) ), $table_name );
+		// Verify the tables were created with the right structure. The test
+		// suite creates them as temporary tables, which SHOW TABLES doesn't
+		// list, but DESCRIBE works on them.
+		$expected_columns = array(
+			'posts'              => 'post_title',
+			'postmeta'           => 'meta_key',
+			'terms'              => 'slug',
+			'termmeta'           => 'meta_key',
+			'term_taxonomy'      => 'taxonomy',
+			'term_relationships' => 'term_taxonomy_id',
+		);
+		foreach ( $custom_tables as $property => $table_name ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Checks the table's structure; there is no API for this.
+			$columns = $wpdb->get_col( $wpdb->prepare( 'DESCRIBE %i', $table_name ) );
+			$this->assertContains( $expected_columns[ $property ], $columns, $table_name );
 		}
 
 		// Switch back to default tables.
 		WP_REST_API_Log_DB::switch_to_default_tables();
 
-		// Verify wpdb is using the default prefix.
-		$this->assertSame( $default_prefix, $wpdb->prefix );
+		$this->assertFalse( WP_REST_API_Log_DB::$using_custom_tables );
+		$this->assertSame( $default_tables['posts'], $wpdb->posts );
+		$this->assertSame( $default_tables['options'], $wpdb->options );
 	}
 
 	/**

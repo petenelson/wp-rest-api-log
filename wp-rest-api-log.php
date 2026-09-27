@@ -46,6 +46,7 @@ $wp_rest_api_log_class_file = 'wp-rest-api-log';
 
 $wp_rest_api_log_includes = array(
 	'includes/class-' . $wp_rest_api_log_class_file . '-common.php',
+	'includes/class-' . $wp_rest_api_log_class_file . '-object-cache.php',
 	'includes/class-' . $wp_rest_api_log_class_file . '-db.php',
 	'includes/class-' . $wp_rest_api_log_class_file . '-post-type.php',
 	'includes/class-' . $wp_rest_api_log_class_file . '-taxonomies.php',
