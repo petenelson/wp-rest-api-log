@@ -235,25 +235,31 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 				return 0;
 			}
 
-			$ids = self::get_old_log_ids( $days_old );
+			// Find, delete and recount terms on the tables the entries are in.
+			return WP_REST_API_Log_DB::with_custom_tables(
+				static function () use ( $days_old, $dry_run ) {
+					$ids = self::get_old_log_ids( $days_old );
 
-			$number_deleted = 0;
+					$number_deleted = 0;
 
-			// Turn off term counting.
-			wp_defer_term_counting( true );
+					// Turn off term counting.
+					wp_defer_term_counting( true );
 
-			if ( ! empty( $ids ) ) {
-				foreach ( $ids as $id ) {
-					if ( ! $dry_run ) {
-						wp_delete_post( $id, true );
+					if ( ! empty( $ids ) ) {
+						foreach ( $ids as $id ) {
+							if ( ! $dry_run ) {
+								wp_delete_post( $id, true );
+							}
+							++$number_deleted;
+						}
 					}
-					++$number_deleted;
-				}
-			}
 
-			wp_defer_term_counting( false );
+					wp_defer_term_counting( false );
 
-			return $number_deleted;
+					return $number_deleted;
+				},
+				0
+			);
 		}
 
 		/**

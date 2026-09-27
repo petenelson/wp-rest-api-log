@@ -49,6 +49,7 @@ class WP_REST_API_Log_Test_Uninstall extends WP_UnitTestCase {
 			'wp-rest-api-log-settings-routes',
 			'wp-rest-api-log-settings-headers',
 			'wp-rest-api-log-settings-elasticpress',
+			'wp-rest-api-log-settings-advanced',
 			'wp-rest-api-log-plugin-activated',
 			'wp-rest-api-log-db-notice-dismissed',
 		);
@@ -83,6 +84,59 @@ class WP_REST_API_Log_Test_Uninstall extends WP_UnitTestCase {
 
 		$this->assertNull( $result );
 		$this->assertStringContainsString( "doesn't exist", $wpdb->last_error );
+	}
+
+	/**
+	 * Tests that the custom log tables are dropped, for every site on a
+	 * multisite network.
+	 *
+	 * @return void
+	 */
+	public function test_uninstall_drops_custom_tables() {
+		global $wpdb;
+
+		$db       = new WP_REST_API_Log_DB();
+		$site_ids = array( get_current_blog_id() );
+
+		if ( is_multisite() ) {
+			$site_ids[] = self::factory()->blog->create();
+		}
+
+		// Create each site's custom tables by logging an entry to them.
+		$tables = array();
+		foreach ( $site_ids as $site_id ) {
+			if ( is_multisite() ) {
+				switch_to_blog( $site_id );
+			}
+
+			update_option( 'wp-rest-api-log-settings-advanced', array( 'use-custom-tables' => '1' ) );
+			$this->assertGreaterThan( 0, $db->insert( array( 'route' => '/custom/uninstall' ) ) );
+			$tables = array_merge( $tables, array_values( WP_REST_API_Log_DB::get_custom_table_names() ) );
+
+			if ( is_multisite() ) {
+				restore_current_blog();
+			}
+		}
+
+		$this->assertCount( 6 * count( $site_ids ), $tables );
+
+		add_filter( 'query', array( $this, 'drop_temporary_tables' ) );
+
+		if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+			define( 'WP_UNINSTALL_PLUGIN', WP_REST_API_LOG_BASENAME );
+		}
+
+		include WP_REST_API_LOG_PATH . 'uninstall.php';
+
+		remove_filter( 'query', array( $this, 'drop_temporary_tables' ) );
+
+		// Selecting from each dropped table fails.
+		$suppress = $wpdb->suppress_errors( true );
+		foreach ( $tables as $table ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Checks the table was dropped.
+			$this->assertNull( $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table ) ), $table );
+		}
+		$wpdb->suppress_errors( $suppress );
 	}
 
 	/**

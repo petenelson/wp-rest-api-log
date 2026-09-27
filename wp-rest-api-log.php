@@ -46,6 +46,7 @@ $wp_rest_api_log_class_file = 'wp-rest-api-log';
 
 $wp_rest_api_log_includes = array(
 	'includes/class-' . $wp_rest_api_log_class_file . '-common.php',
+	'includes/class-' . $wp_rest_api_log_class_file . '-object-cache.php',
 	'includes/class-' . $wp_rest_api_log_class_file . '-db.php',
 	'includes/class-' . $wp_rest_api_log_class_file . '-post-type.php',
 	'includes/class-' . $wp_rest_api_log_class_file . '-taxonomies.php',
@@ -66,6 +67,7 @@ $wp_rest_api_log_includes = array(
 	'includes/settings/class-' . $wp_rest_api_log_class_file . '-settings-routes.php',
 	'includes/settings/class-' . $wp_rest_api_log_class_file . '-settings-headers.php',
 	'includes/settings/class-' . $wp_rest_api_log_class_file . '-settings-elasticpress.php',
+	'includes/settings/class-' . $wp_rest_api_log_class_file . '-settings-advanced.php',
 	'includes/settings/class-' . $wp_rest_api_log_class_file . '-settings-help.php',
 	'includes/settings/class-' . $wp_rest_api_log_class_file . '-settings.php',
 	'admin/class-' . $wp_rest_api_log_class_file . '-admin.php',
@@ -129,6 +131,7 @@ WP_REST_API_Log_Settings_General::plugins_loaded();
 WP_REST_API_Log_Settings_Routes::plugins_loaded();
 WP_REST_API_Log_Settings_Headers::plugins_loaded();
 WP_REST_API_Log_Settings_ElasticPress::plugins_loaded();
+WP_REST_API_Log_Settings_Advanced::plugins_loaded();
 WP_REST_API_Log_Settings_Help::plugins_loaded();
 WP_REST_API_Log_Post_Type::plugins_loaded();
 WP_REST_API_Log_Taxonomies::plugins_loaded();

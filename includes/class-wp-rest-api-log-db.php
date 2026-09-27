@@ -27,6 +27,67 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		const POST_META_MILLISECONDS         = '_milliseconds';
 		const POST_META_REQUEST_BODY         = '_request_body';
 
+		/**
+		 * The site's table names, keyed by $wpdb property, saved while $wpdb is
+		 * switched to the custom log tables.
+		 *
+		 * @var array
+		 */
+		private static $default_tables = array();
+
+		/**
+		 * The site's object cache, saved while it is wrapped for the custom
+		 * log tables.
+		 *
+		 * @var object|null
+		 */
+		private static $default_object_cache = null;
+
+		/**
+		 * Custom tables already checked for, or created, on the current database
+		 * connection.
+		 *
+		 * @var array
+		 */
+		private static $checked_tables = array();
+
+		/**
+		 * The database connection $checked_tables applies to. A new connection,
+		 * such as after wpdb reconnects, gets its tables checked again.
+		 *
+		 * @var mixed
+		 */
+		private static $checked_connection = null;
+
+		/**
+		 * Whether $wpdb is currently switched to the custom log tables.
+		 *
+		 * @var bool
+		 */
+		public static $using_custom_tables = false;
+
+		/**
+		 * How many switch_to_custom_tables() calls are open, so nested switches
+		 * only restore the site's tables when the outermost one ends.
+		 *
+		 * @var int
+		 */
+		private static $switch_depth = 0;
+
+		/**
+		 * The site the custom tables were switched on, used to re-apply them
+		 * if code running during the switch calls switch_to_blog().
+		 *
+		 * @var int
+		 */
+		private static $switched_blog_id = 0;
+
+		/**
+		 * CREATE TABLE statements for the custom tables, keyed by table name.
+		 *
+		 * @var array
+		 */
+		public static $schema = array();
 
 		/**
 		 * Hooks up the insert action and the search WHERE filters.
@@ -163,18 +224,30 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- self::plugin_name() is the "wp-rest-api-log-entries" prefix.
 			$new_post = apply_filters( self::plugin_name() . '-pre-insert-new-post', $new_post, $args );
 
-			$post_id = wp_insert_post( $new_post );
+			// Switch table names if needed. When custom tables are turned on but
+			// couldn't be used, skip the entry instead of writing it to the site's
+			// own tables.
+			if ( ! self::switch_to_custom_tables() && self::use_custom_tables() ) {
+				return 0;
+			}
 
-			if ( ! empty( $post_id ) ) {
-				$this->insert_post_terms( $post_id, $args );
-				$this->insert_post_meta( $post_id, $args );
+			try {
+				$post_id = wp_insert_post( $new_post );
 
-				$this->insert_request_meta( $post_id, $args );
-				$this->insert_response_meta( $post_id, $args );
+				if ( ! empty( $post_id ) ) {
+					$this->insert_post_terms( $post_id, $args );
+					$this->insert_post_meta( $post_id, $args );
 
-				global $wp_rest_api_log_new_entry_id;
-				$wp_rest_api_log_new_entry_id = $post_id;
+					$this->insert_request_meta( $post_id, $args );
+					$this->insert_response_meta( $post_id, $args );
 
+					global $wp_rest_api_log_new_entry_id;
+					$wp_rest_api_log_new_entry_id = $post_id;
+
+				}
+			} finally {
+				// Always switch back to the default tables.
+				self::switch_to_default_tables();
 			}
 
 			return $post_id;
@@ -388,14 +461,13 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				);
 			}
 
-			$posts = array();
-			$query = new WP_Query( $query_args );
-
-			if ( $query->have_posts() ) {
-				$posts = $query->posts;
-			}
-
-			return $posts;
+			return self::with_custom_tables(
+				static function () use ( $query_args ) {
+					$query = new WP_Query( $query_args );
+					return $query->have_posts() ? $query->posts : array();
+				},
+				array()
+			);
 		}
 
 		/**
@@ -557,25 +629,36 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 				}
 			}
 
-			$post_id = $this->insert( $args );
+			// Keep the follow-up writes below on the same tables as the insert.
+			self::switch_to_custom_tables();
 
-			// Save the legacy ID so we don't migrate it again.
-			add_post_meta( $post_id, '_wp_rest_api_log_migrated_id', $id );
+			try {
+				$post_id = $this->insert( $args );
 
-			// Manually update the post dates.
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- wp_update_post() would overwrite the migrated dates.
-			$wpdb->update(
-				$wpdb->posts,
-				array(
-					'post_date'         => $log->time,
-					'post_date_gmt'     => $log->time,
-					'post_modified'     => $log->time,
-					'post_modified_gmt' => $log->time,
-				),
-				array(
-					'ID' => $post_id, // Where clause.
-				)
-			);
+				if ( ! empty( $post_id ) ) {
+					// Save the legacy ID so we don't migrate it again.
+					add_post_meta( $post_id, '_wp_rest_api_log_migrated_id', $id );
+
+					// Manually update the post dates.
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- wp_update_post() would overwrite the migrated dates.
+					$wpdb->update(
+						$wpdb->posts,
+						array(
+							'post_date'         => $log->time,
+							'post_date_gmt'     => $log->time,
+							'post_modified'     => $log->time,
+							'post_modified_gmt' => $log->time,
+						),
+						array(
+							'ID' => $post_id, // Where clause.
+						)
+					);
+
+					clean_post_cache( $post_id );
+				}
+			} finally {
+				self::switch_to_default_tables();
+			}
 
 			return $post_id;
 		}
@@ -588,19 +671,24 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 */
 		public static function get_all_log_ids() {
 
-			$query = new WP_Query(
-				array(
-					'update_post_term_cache' => false,
-					'update_post_meta_cache' => false,
-					'no_found_rows'          => true,
-					'post_type'              => self::POST_TYPE,
-					'fields'                 => 'ids',
-					'posts_per_page'         => -1,
-				)
-			);
+			return self::with_custom_tables(
+				static function () {
+					$query = new WP_Query(
+						array(
+							'update_post_term_cache' => false,
+							'update_post_meta_cache' => false,
+							'no_found_rows'          => true,
+							'post_type'              => self::POST_TYPE,
+							'fields'                 => 'ids',
+							'posts_per_page'         => -1,
+						)
+					);
 
-			// The 'ids' field returns IDs, but cast them so the type is guaranteed.
-			return array_map( 'absint', $query->posts );
+					// The 'ids' field returns IDs, but cast them so the type is guaranteed.
+					return array_map( 'absint', $query->posts );
+				},
+				array()
+			);
 		}
 
 		/**
@@ -610,12 +698,306 @@ if ( ! class_exists( 'WP_REST_API_Log_DB' ) ) {
 		 */
 		public static function purge_all_log_entries() {
 
-			$post_ids = self::get_all_log_ids();
+			self::with_custom_tables(
+				static function () {
+					foreach ( self::get_all_log_ids() as $post_id ) {
+						wp_delete_post( $post_id, true );
+					}
+				}
+			);
+		}
 
-			foreach ( $post_ids as $post_id ) {
-				wp_delete_post( $post_id, true );
+		/**
+		 * Gets the prefix for custom tables.
+		 *
+		 * @return string
+		 */
+		public static function get_custom_table_prefix() {
+			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-custom-table-prefix', 'rest_api_log_' );
+		}
+
+		/**
+		 * Determines if we should use custom tables for storing log
+		 * entries.
+		 *
+		 * @return bool
+		 */
+		public static function use_custom_tables() {
+			return apply_filters(
+				WP_REST_API_Log_Common::PLUGIN_NAME . '-setting-is-enabled',
+				true,
+				'advanced',
+				'use-custom-tables'
+			);
+		}
+
+		/**
+		 * Runs a callback with $wpdb switched to the custom log tables, when
+		 * they're turned on, and switches back afterward.
+		 *
+		 * Use this around anything that reads, changes or deletes log entries,
+		 * so it sees the same tables the entries were written to.
+		 *
+		 * @param  callable $callback    Code to run.
+		 * @param  mixed    $unavailable Optional. Returned instead of running the
+		 *                               callback when custom tables are turned on
+		 *                               but couldn't be used. Default null.
+		 * @return mixed The callback's return value.
+		 */
+		public static function with_custom_tables( $callback, $unavailable = null ) {
+			if ( ! self::switch_to_custom_tables() && self::use_custom_tables() ) {
+				return $unavailable;
+			}
+
+			try {
+				return call_user_func( $callback );
+			} finally {
+				self::switch_to_default_tables();
+			}
+		}
+
+		/**
+		 * Switches $wpdb to the custom log tables.
+		 *
+		 * Only the post, term and meta tables are switched; options, users and
+		 * every other table stay on the site's own tables. The post and term
+		 * cache groups are isolated at the same time, since IDs in the custom
+		 * tables overlap the site's IDs. Pair every call with
+		 * switch_to_default_tables(), in a finally block where an exception
+		 * could be thrown in between.
+		 *
+		 * If a custom table is missing and can't be created, the switch is
+		 * undone so nothing is read from, or written to, a missing table.
+		 *
+		 * Switches can be nested: code that needs to make further writes to a
+		 * log entry after insert() can switch around both, and the tables stay
+		 * switched until the outermost switch_to_default_tables() call.
+		 *
+		 * @return bool True if $wpdb is now on the custom tables, false if
+		 *              custom tables are turned off or couldn't be created.
+		 */
+		public static function switch_to_custom_tables() {
+			global $wpdb, $wp_object_cache;
+
+			if ( self::$using_custom_tables ) {
+				++self::$switch_depth;
+				return true;
+			}
+
+			if ( ! self::use_custom_tables() ) {
+				return false;
+			}
+
+			$tables = self::get_custom_table_names();
+
+			self::$default_tables = array();
+			foreach ( $tables as $property => $table ) {
+				self::$default_tables[ $property ] = $wpdb->$property;
+			}
+
+			self::$default_object_cache = is_object( $wp_object_cache ) ? $wp_object_cache : null;
+			self::$switched_blog_id     = get_current_blog_id();
+			self::$using_custom_tables  = true;
+			self::$switch_depth         = 1;
+
+			self::apply_custom_tables();
+
+			// switch_to_blog() resets every blog table on $wpdb, so re-apply the
+			// custom tables when code running during the switch returns here.
+			add_action( 'switch_blog', array( __CLASS__, 'handle_switch_blog' ), 10, 1 );
+
+			if ( self::$checked_connection !== $wpdb->dbh ) {
+				self::$checked_tables     = array();
+				self::$checked_connection = $wpdb->dbh;
+			}
+
+			foreach ( $tables as $table ) {
+				if ( ! empty( self::$checked_tables[ $table ] ) ) {
+					continue;
+				}
+
+				if ( ! self::create_custom_table( $table ) ) {
+					// Retry on a later switch rather than using a missing table.
+					self::switch_to_default_tables();
+					return false;
+				}
+
+				self::$checked_tables[ $table ] = true;
+			}
+
+			return true;
+		}
+
+		/**
+		 * Switches $wpdb and the object cache back to the site's own tables,
+		 * once every nested switch_to_custom_tables() call has been closed.
+		 *
+		 * @param  bool $all Optional. Close every nested switch at once, such as
+		 *                   after an error. Default false.
+		 * @return void
+		 */
+		public static function switch_to_default_tables( $all = false ) {
+			global $wpdb;
+
+			if ( ! self::$using_custom_tables ) {
+				return;
+			}
+
+			self::$switch_depth = $all ? 0 : max( 0, self::$switch_depth - 1 );
+			if ( self::$switch_depth > 0 ) {
+				return;
+			}
+
+			remove_action( 'switch_blog', array( __CLASS__, 'handle_switch_blog' ), 10 );
+
+			foreach ( self::$default_tables as $property => $table ) {
+				$wpdb->$property = $table;
+			}
+
+			self::restore_default_object_cache();
+
+			self::$default_tables       = array();
+			self::$default_object_cache = null;
+			self::$switched_blog_id     = 0;
+			self::$using_custom_tables  = false;
+		}
+
+		/**
+		 * Points $wpdb at the custom tables and wraps the object cache.
+		 *
+		 * @return void
+		 */
+		private static function apply_custom_tables() {
+			global $wpdb, $wp_object_cache;
+
+			foreach ( self::get_custom_table_names() as $property => $table ) {
+				$wpdb->$property = $table;
+			}
+
+			if ( null !== self::$default_object_cache && ! ( $wp_object_cache instanceof WP_REST_API_Log_Object_Cache ) ) {
+				// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Swapped for the length of the switch and restored in switch_to_default_tables().
+				$wp_object_cache = WP_REST_API_Log_Object_Cache::instance()->wrap( self::$default_object_cache );
+			}
+		}
+
+		/**
+		 * Puts the site's own object cache back in place.
+		 *
+		 * @return void
+		 */
+		private static function restore_default_object_cache() {
+			global $wp_object_cache;
+
+			if ( null !== self::$default_object_cache ) {
+				// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Restores the site's object cache saved in switch_to_custom_tables().
+				$wp_object_cache = self::$default_object_cache;
+			}
+		}
+
+		/**
+		 * Keeps the custom tables tied to the site they were switched on when
+		 * code running during the switch calls switch_to_blog().
+		 *
+		 * Another site gets its real tables and object cache, since that code
+		 * expects the other site's content. Back on the original site, the
+		 * custom tables and wrapped cache are re-applied, because
+		 * switch_to_blog() and restore_current_blog() reset $wpdb's tables.
+		 *
+		 * @param  int $new_blog_id The site being switched to.
+		 * @return void
+		 */
+		public static function handle_switch_blog( $new_blog_id ) {
+			if ( ! self::$using_custom_tables ) {
+				return;
+			}
+
+			if ( (int) $new_blog_id === self::$switched_blog_id ) {
+				self::apply_custom_tables();
+			} else {
+				self::restore_default_object_cache();
+			}
+		}
+
+		/**
+		 * Creates a custom table if it does not exist.
+		 *
+		 * @param  string $table_name The table name.
+		 * @return bool True if the table already existed or was created.
+		 */
+		public static function create_custom_table( $table_name ) {
+			global $wpdb;
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- No API exists to check for a table, and the result must not be cached.
+			$results = $wpdb->get_row( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table_name ) ) );
+
+			if ( ! empty( $results ) ) {
+				return true;
+			}
+
+			// The schema is cached by table name, so rebuild it for tables it
+			// doesn't have yet, such as another site's tables on multisite.
+			if ( empty( self::$schema[ $table_name ] ) ) {
+				self::build_db_schema();
+			}
+
+			if ( empty( self::$schema[ $table_name ] ) ) {
+				return false;
+			}
+
+			// Create the table. The statement comes from core's wp_get_db_schema(),
+			// and table names can't be passed as prepare() placeholders. IF NOT
+			// EXISTS covers another request creating the table in the meantime.
+			$sql = preg_replace( '/^CREATE TABLE /', 'CREATE TABLE IF NOT EXISTS ', self::$schema[ $table_name ] );
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+			return false !== $wpdb->query( $sql );
+		}
+
+		/**
+		 * Gets the custom log table names, keyed by the $wpdb property each
+		 * one replaces.
+		 *
+		 * Uses $wpdb->prefix, so on multisite each site gets its own set of
+		 * custom tables.
+		 *
+		 * @return array
+		 */
+		public static function get_custom_table_names() {
+			global $wpdb;
+
+			$tables = array();
+			foreach ( array( 'posts', 'postmeta', 'terms', 'termmeta', 'term_taxonomy', 'term_relationships' ) as $property ) {
+				$tables[ $property ] = $wpdb->prefix . self::get_custom_table_prefix() . $property;
+			}
+
+			return apply_filters( WP_REST_API_Log_Common::PLUGIN_NAME . '-custom-table-names', $tables );
+		}
+
+		/**
+		 * Adds the CREATE TABLE statement for each of the current site's custom
+		 * tables to the schema cache, from core's schema.
+		 *
+		 * Must run while $wpdb is switched to the custom tables, since core's
+		 * schema is written with the current $wpdb table names. Entries for
+		 * other sites' tables are kept.
+		 *
+		 * @return void
+		 */
+		public static function build_db_schema() {
+
+			require_once ABSPATH . 'wp-admin/includes/schema.php';
+
+			$schema = wp_get_db_schema( 'blog' );
+
+			foreach ( self::get_custom_table_names() as $table ) {
+
+				// Match the exact table name, so "posts" doesn't match "postmeta".
+				$re = '/CREATE TABLE ' . preg_quote( $table, '/' ) . ' \(.*?;/ms';
+
+				if ( 1 === preg_match( $re, $schema, $matches ) ) {
+					self::$schema[ $table ] = $matches[0];
+				}
 			}
 		}
 	} // end class
-
 }

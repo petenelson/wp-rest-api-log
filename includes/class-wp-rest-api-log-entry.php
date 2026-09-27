@@ -24,13 +24,29 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 * @return array List of WP_REST_API_Log_Entry objects.
 		 */
 		public static function from_posts( array $posts ) {
-			$entries = array();
-			foreach ( $posts as $post ) {
-				$entries[] = new WP_REST_API_Log_Entry( $post );
+
+			// Don't load entries from the site's tables when custom tables are
+			// turned on but couldn't be used.
+			if ( ! WP_REST_API_Log_DB::switch_to_custom_tables() && WP_REST_API_Log_DB::use_custom_tables() ) {
+				return array();
 			}
+
+			$entries = array();
+			try {
+				foreach ( $posts as $post ) {
+					$entries[] = new WP_REST_API_Log_Entry(
+						$post,
+						array(
+							'auto_switch_tables' => false,
+						)
+					);
+				}
+			} finally {
+				WP_REST_API_Log_DB::switch_to_default_tables();
+			}
+
 			return $entries;
 		}
-
 
 		/**
 		 * ID of the log entry (post ID)
@@ -140,24 +156,54 @@ if ( ! class_exists( 'WP_REST_API_Log' ) ) {
 		 */
 		private $current_post;
 
-
 		/**
 		 * Loads a log entry from a post.
 		 *
 		 * @param WP_Post|int|null $post Log entry post object or ID.
+		 * @param array            $args {
+		 *     Optional. Loading arguments.
+		 *
+		 *     @type bool $auto_switch_tables Whether to switch to the custom log
+		 *                                    tables while loading. Default true.
+		 * }
 		 */
-		public function __construct( $post = null ) {
+		public function __construct( $post = null, $args = array() ) {
 
-			if ( is_int( $post ) ) {
-				$post = get_post( $post );
-			}
+			$args = wp_parse_args(
+				$args,
+				array(
+					'auto_switch_tables' => true,
+				)
+			);
 
-			if ( is_object( $post ) ) {
-				$this->current_post = $post;
-				$this->load();
+			if ( ! empty( $post ) ) {
+
+				// Don't load the entry from the site's tables when custom tables are
+				// turned on but couldn't be used.
+				if ( true === $args['auto_switch_tables'] && ! WP_REST_API_Log_DB::switch_to_custom_tables() && WP_REST_API_Log_DB::use_custom_tables() ) {
+					return;
+				}
+
+				try {
+					// Reload post objects by ID now that the tables are switched,
+					// since an object loaded earlier may have come from the site's
+					// own tables.
+					if ( $post instanceof WP_Post ) {
+						$post = $post->ID;
+					}
+
+					$post = get_post( $post );
+					if ( is_a( $post, '\WP_Post' ) ) {
+						$this->current_post = $post;
+						$this->load();
+					}
+				} finally {
+					if ( true === $args['auto_switch_tables'] ) {
+						WP_REST_API_Log_DB::switch_to_default_tables();
+					}
+				}
 			}
 		}
-
 
 		/**
 		 * Hydrates the entry from its post, post meta and taxonomy terms.

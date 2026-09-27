@@ -49,6 +49,7 @@ class WP_REST_API_Log_Tests_Bootstrap {
 
 		// Shared test helpers.
 		require_once __DIR__ . '/includes/trait-wp-rest-api-log-test-hooks.php';
+		require_once __DIR__ . '/includes/class-wp-rest-api-log-test-recording-cache.php';
 
 		// Give access to tests_add_filter() function.
 		require_once $wp_develop_dir . '/tests/phpunit/includes/functions.php';
@@ -62,6 +63,15 @@ class WP_REST_API_Log_Tests_Bootstrap {
 		// ones in the clone, so SCRIPT_DEBUG is left on there.
 		if ( ! defined( 'SCRIPT_DEBUG' ) && version_compare( $this->core_version( $wp_develop_dir ), '7.0-alpha', '<' ) ) {
 			define( 'SCRIPT_DEBUG', false );
+		}
+
+		// Point wordpress-develop's Memcached object cache drop-in, when it is
+		// installed, at the server in WP_TESTS_MEMCACHED_SERVER ("host:port").
+		// The drop-in reads the $memcached_servers global.
+		$memcached_server = getenv( 'WP_TESTS_MEMCACHED_SERVER' );
+		if ( ! empty( $memcached_server ) ) {
+			list( $host, $port )          = array_pad( explode( ':', $memcached_server, 2 ), 2, 11211 );
+			$GLOBALS['memcached_servers'] = array( array( $host, (int) $port ) ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- The drop-in's own global.
 		}
 
 		// Start up the WP testing environment.

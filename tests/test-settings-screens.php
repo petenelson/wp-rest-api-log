@@ -88,6 +88,7 @@ class WP_REST_API_Log_Test_Settings_Screens extends WP_UnitTestCase {
 			'WP_REST_API_Log_Settings_Routes'       => 'register_routes_settings',
 			'WP_REST_API_Log_Settings_Headers'      => 'register_headers_settings',
 			'WP_REST_API_Log_Settings_ElasticPress' => 'register_elasticpress_settings',
+			'WP_REST_API_Log_Settings_Advanced'     => 'register_advanced_settings',
 			'WP_REST_API_Log_Settings_Help'         => 'register_help_settings',
 		);
 
@@ -117,6 +118,7 @@ class WP_REST_API_Log_Test_Settings_Screens extends WP_UnitTestCase {
 				'wp-rest-api-log-settings-routes'       => 'Routes',
 				'wp-rest-api-log-settings-headers'      => 'Headers',
 				'wp-rest-api-log-settings-elasticpress' => 'ElasticPress',
+				'wp-rest-api-log-settings-advanced'     => 'Advanced',
 				'wp-rest-api-log-settings-help'         => 'Help',
 			),
 			$tabs
@@ -136,6 +138,7 @@ class WP_REST_API_Log_Test_Settings_Screens extends WP_UnitTestCase {
 		WP_REST_API_Log_Settings_Routes::register_routes_settings();
 		WP_REST_API_Log_Settings_Headers::register_headers_settings();
 		WP_REST_API_Log_Settings_ElasticPress::register_elasticpress_settings();
+		WP_REST_API_Log_Settings_Advanced::register_advanced_settings();
 		WP_REST_API_Log_Settings_Help::register_help_settings();
 
 		$expected_fields = array(
@@ -143,6 +146,7 @@ class WP_REST_API_Log_Test_Settings_Screens extends WP_UnitTestCase {
 			'wp-rest-api-log-settings-routes'       => array( 'routes', array( 'ignore-core-oembed', 'route-log-matching-mode', 'route-filters' ) ),
 			'wp-rest-api-log-settings-headers'      => array( 'headers', array( 'redacted-request-headers', 'redacted-response-headers' ) ),
 			'wp-rest-api-log-settings-elasticpress' => array( 'elasticpress', array( 'logging-enabled' ) ),
+			'wp-rest-api-log-settings-advanced'     => array( 'advanced', array( 'use-custom-tables' ) ),
 		);
 
 		foreach ( $expected_fields as $key => $expected ) {
@@ -152,6 +156,12 @@ class WP_REST_API_Log_Test_Settings_Screens extends WP_UnitTestCase {
 			$this->assertArrayHasKey( $section, $wp_settings_sections[ $key ], $key );
 			$this->assertSame( $fields, array_keys( $wp_settings_fields[ $key ][ $section ] ), $key );
 		}
+
+		// The custom tables field shows the prefix its tables will use.
+		$this->assertStringContainsString(
+			$GLOBALS['wpdb']->prefix . 'rest_api_log_',
+			$wp_settings_fields['wp-rest-api-log-settings-advanced']['advanced']['use-custom-tables']['args']['after']
+		);
 
 		// The Help tab only has a section.
 		$this->assertArrayHasKey( 'help', $wp_settings_sections['wp-rest-api-log-settings-help'] );
@@ -219,6 +229,17 @@ class WP_REST_API_Log_Test_Settings_Screens extends WP_UnitTestCase {
 		$this->assertSame( '', $settings['redacted-response-headers'] );
 
 		$this->assertSame( array( 'other' => 'x' ), WP_REST_API_Log_Settings_Headers::sanitize_settings( array( 'other' => 'x' ) ) );
+	}
+
+	/**
+	 * Tests the Advanced tab's defaults and sanitizing.
+	 *
+	 * @return void
+	 */
+	public function test_advanced_settings() {
+
+		$this->assertSame( array( 'use-custom-tables' => '0' ), WP_REST_API_Log_Settings_Advanced::get_default_settings() );
+		$this->assertSame( array( 'use-custom-tables' => '1' ), WP_REST_API_Log_Settings_Advanced::sanitize_settings( array( 'use-custom-tables' => '1' ) ) );
 	}
 
 	/**

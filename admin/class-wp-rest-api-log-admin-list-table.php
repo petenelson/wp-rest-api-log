@@ -59,6 +59,36 @@ if ( ! class_exists( 'WP_REST_API_Log_Admin_List_Table' ) ) {
 			// Add Dropdowns.
 			add_action( 'restrict_manage_posts', array( $this, 'add_dropdowns' ) );
 			add_action( 'pre_get_posts', array( $this, 'add_tax_queries' ) );
+
+			// Run the log list screen, and the trash, restore and delete actions
+			// on post.php, on the tables the log entries are in.
+			add_action( 'load-edit.php', array( $this, 'switch_tables_for_log_screen' ) );
+			add_action( 'load-post.php', array( $this, 'switch_tables_for_log_screen' ) );
+		}
+
+		/**
+		 * Switches to the custom log tables, when they're turned on, for the rest
+		 * of a request to the log list screen or a post.php log entry action.
+		 *
+		 * Core's list table, view counts and trash, restore and delete actions
+		 * all load posts by ID, so the whole request has to use the same tables
+		 * as the log entries. The post type is taken from the request, not from
+		 * a post, since a post loaded before switching could be the site's own
+		 * post with the same ID. Log entry links include it through the post
+		 * type's _edit_link.
+		 *
+		 * @return void
+		 */
+		public function switch_tables_for_log_screen() {
+			global $typenow;
+
+			if ( WP_REST_API_Log_DB::POST_TYPE !== $typenow ) {
+				return;
+			}
+
+			if ( WP_REST_API_Log_DB::switch_to_custom_tables() ) {
+				add_action( 'shutdown', array( 'WP_REST_API_Log_DB', 'switch_to_default_tables' ), 0 );
+			}
 		}
 
 		/**

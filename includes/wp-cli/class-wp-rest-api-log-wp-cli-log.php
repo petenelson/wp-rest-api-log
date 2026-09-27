@@ -142,28 +142,36 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 
 		WP_CLI::Line( 'Getting old REST API log entries...' );
 
-		$ids = WP_REST_API_Log::get_old_log_ids( $days_old );
+		// Find, delete and recount terms on the tables the entries are in.
+		$number_deleted = WP_REST_API_Log_DB::with_custom_tables(
+			static function () use ( $days_old, $dry_run ) {
+				$ids = WP_REST_API_Log::get_old_log_ids( $days_old );
 
-		$count          = count( $ids );
-		$number_deleted = 0;
+				$count          = count( $ids );
+				$number_deleted = 0;
 
-		$progress = \WP_CLI\Utils\make_progress_bar( sprintf( 'Deleting %d old log entries', $count ), $count );
+				$progress = \WP_CLI\Utils\make_progress_bar( sprintf( 'Deleting %d old log entries', $count ), $count );
 
-		// Turn off term counting.
-		wp_defer_term_counting( true );
+				// Turn off term counting.
+				wp_defer_term_counting( true );
 
-		foreach ( $ids as $id ) {
-			if ( ! $dry_run ) {
-				wp_delete_post( $id, true );
-				++$number_deleted;
-			}
+				foreach ( $ids as $id ) {
+					if ( ! $dry_run ) {
+						wp_delete_post( $id, true );
+						++$number_deleted;
+					}
 
-			$progress->tick();
-		}
+					$progress->tick();
+				}
 
-		$progress->finish();
+				$progress->finish();
 
-		wp_defer_term_counting( false );
+				wp_defer_term_counting( false );
+
+				return $number_deleted;
+			},
+			0
+		);
 
 		WP_CLI::Success( sprintf( '%d entries purged', $number_deleted ) );
 	}
@@ -250,29 +258,36 @@ class WP_REST_API_Log_WP_CLI_Log extends WP_CLI_Command {
 				'milliseconds'         => wp_rand( 5, 1500 ),
 			);
 
-			$post_id = $db->insert( $args );
+			// Keep the backdating below on the same tables as the insert.
+			WP_REST_API_Log_DB::switch_to_custom_tables();
 
-			if ( ! empty( $post_id ) ) {
+			try {
+				$post_id = $db->insert( $args );
 
-				global $wpdb;
+				if ( ! empty( $post_id ) ) {
 
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- wp_insert_post() always sets post_modified to the current time, so backdating needs a direct update; the post cache is cleared below.
-				$wpdb->update(
-					$wpdb->posts,
-					array(
-						'post_date'         => $time,
-						'post_date_gmt'     => get_gmt_from_date( $time ),
-						'post_modified'     => $time,
-						'post_modified_gmt' => get_gmt_from_date( $time ),
-					),
-					array(
-						'ID' => $post_id, // Where clause.
-					)
-				);
+					global $wpdb;
 
-				// The direct update bypasses the object cache, which still holds the insert-time dates.
-				clean_post_cache( $post_id );
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- wp_insert_post() always sets post_modified to the current time, so backdating needs a direct update; the post cache is cleared below.
+					$wpdb->update(
+						$wpdb->posts,
+						array(
+							'post_date'         => $time,
+							'post_date_gmt'     => get_gmt_from_date( $time ),
+							'post_modified'     => $time,
+							'post_modified_gmt' => get_gmt_from_date( $time ),
+						),
+						array(
+							'ID' => $post_id, // Where clause.
+						)
+					);
 
+					// The direct update bypasses the object cache, which still holds the insert-time dates.
+					clean_post_cache( $post_id );
+
+				}
+			} finally {
+				WP_REST_API_Log_DB::switch_to_default_tables();
 			}
 
 			$progress->tick();

@@ -45,6 +45,17 @@ class WP_REST_API_Log_Test_WP_CLI extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Switches back to the site's tables after each test, in case a custom
+	 * tables test fails part way through.
+	 *
+	 * @return void
+	 */
+	public function tear_down() {
+		WP_REST_API_Log_DB::switch_to_default_tables( true );
+		parent::tear_down();
+	}
+
+	/**
 	 * Inserts a log entry with the given post date.
 	 *
 	 * @param  string $date Post date.
@@ -257,6 +268,48 @@ class WP_REST_API_Log_Test_WP_CLI extends WP_UnitTestCase {
 		$this->expectExceptionMessage( 'count greater than zero' );
 
 		$this->command->generate( array( '0' ) );
+	}
+
+	/**
+	 * Tests that generated entries, and their backdated dates, are written to
+	 * the custom tables when custom tables are turned on.
+	 *
+	 * @return void
+	 */
+	public function test_generate_to_custom_tables() {
+
+		add_filter( 'wp_rest_api_log_generate_allowed', '__return_true' );
+		update_option( 'wp-rest-api-log-settings-advanced', array( 'use-custom-tables' => '1' ) );
+
+		$this->command->generate( array( '20' ), array( 'days' => '10' ) );
+
+		$this->assertSame( array( 'success', '20 sample log entries generated' ), $this->last_message() );
+		$this->assertFalse( WP_REST_API_Log_DB::$using_custom_tables );
+
+		// The backdated dates were written to the entries in the custom tables.
+		WP_REST_API_Log_DB::switch_to_custom_tables();
+		$ids   = WP_REST_API_Log_DB::get_all_log_ids();
+		$dates = array();
+		foreach ( $ids as $id ) {
+			$dates[ $id ] = get_post( $id )->post_modified;
+		}
+		WP_REST_API_Log_DB::switch_to_default_tables();
+
+		$this->assertCount( 20, $ids );
+
+		$backdated = 0;
+		foreach ( $ids as $id ) {
+			$entry = new WP_REST_API_Log_Entry( $id );
+			$this->assertSame( $entry->time, $dates[ $id ] );
+
+			if ( $entry->time < $this->days_ago( 1 ) ) {
+				++$backdated;
+			}
+		}
+
+		// Spread over 10 days, all 20 landing in the last day is vanishingly
+		// unlikely, so this fails if the backdating missed the custom tables.
+		$this->assertGreaterThan( 0, $backdated );
 	}
 
 	/**
