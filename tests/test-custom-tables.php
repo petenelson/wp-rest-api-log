@@ -349,4 +349,163 @@ class WP_REST_API_Log_Test_Custom_Tables extends WP_UnitTestCase {
 
 		$this->assertNotSame( $custom_route_name, $custom_entry->route, $custom_route_name . '|' . $custom_entry->route );
 	}
+
+	/**
+	 * Tests that log entries whose IDs overlap the site's posts and terms
+	 * don't overwrite, or read from, the site's cached posts and terms.
+	 *
+	 * @return void
+	 */
+	public function test_overlapping_ids_do_not_share_cache() {
+		global $wpdb;
+
+		// A site post, loaded into the cache.
+		$post_id = self::factory()->post->create( array( 'post_title' => 'Site post' ) );
+		update_post_meta( $post_id, 'color', 'blue' );
+		get_post( $post_id );
+		get_post_meta( $post_id );
+
+		$this->enable_custom_tables();
+
+		// Give the log entry the same ID as the site post.
+		$same_id = static function ( $new_post ) use ( $post_id ) {
+			$new_post['import_id'] = $post_id;
+			return $new_post;
+		};
+		add_filter( 'wp-rest-api-log-entries-pre-insert-new-post', $same_id );
+
+		$db     = new WP_REST_API_Log_DB();
+		$log_id = $db->insert(
+			array(
+				'route'  => '/custom/overlap',
+				'method' => 'POST',
+				'status' => 201,
+			)
+		);
+
+		remove_filter( 'wp-rest-api-log-entries-pre-insert-new-post', $same_id );
+		$this->assertSame( $post_id, $log_id );
+
+		// Find the log's POST method term, then make sure a site term has the
+		// same ID and is loaded into the cache.
+		WP_REST_API_Log_DB::switch_to_custom_tables();
+		$method_terms = wp_get_object_terms( $log_id, WP_REST_API_Log_DB::TAXONOMY_METHOD );
+		WP_REST_API_Log_DB::switch_to_default_tables();
+
+		$this->assertSame( 'POST', $method_terms[0]->name );
+		$term_id = $method_terms[0]->term_id;
+
+		if ( null === get_term( $term_id ) ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Creates a site term with a specific ID, which wp_insert_term() can't do.
+			$wpdb->insert(
+				$wpdb->terms,
+				array(
+					'term_id' => $term_id,
+					'name'    => 'Site term',
+					'slug'    => 'site-term-' . $term_id,
+				)
+			);
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Pairs with the term row above.
+			$wpdb->insert(
+				$wpdb->term_taxonomy,
+				array(
+					'term_id'  => $term_id,
+					'taxonomy' => 'category',
+				)
+			);
+			clean_term_cache( $term_id, 'category' );
+		}
+
+		$site_term = get_term( $term_id );
+		$this->assertInstanceOf( 'WP_Term', $site_term );
+		$this->assertNotSame( WP_REST_API_Log_DB::TAXONOMY_METHOD, $site_term->taxonomy );
+
+		// The site's post and meta are unchanged by the log insert.
+		$post = get_post( $post_id );
+		$this->assertSame( 'Site post', $post->post_title );
+		$this->assertSame( 'post', $post->post_type );
+		$this->assertSame( 'blue', get_post_meta( $post_id, 'color', true ) );
+
+		// The log entry with the same ID has its own route and terms, not the
+		// site's cached post and term.
+		$entry = new WP_REST_API_Log_Entry( $log_id );
+		$this->assertSame( '/custom/overlap', $entry->route );
+		$this->assertSame( 'POST', $entry->method );
+		$this->assertSame( '201', $entry->status );
+
+		// Read directly while switched: the same IDs return log data.
+		WP_REST_API_Log_DB::switch_to_custom_tables();
+		$log_post = get_post( $post_id );
+		$log_term = get_term( $term_id );
+		WP_REST_API_Log_DB::switch_to_default_tables();
+
+		$this->assertSame( WP_REST_API_Log_DB::POST_TYPE, $log_post->post_type );
+		$this->assertSame( WP_REST_API_Log_DB::TAXONOMY_METHOD, $log_term->taxonomy );
+
+		// And the site's post and term are still correct afterward.
+		$this->assertSame( 'Site post', get_post( $post_id )->post_title );
+		$this->assertSame( $site_term->name, get_term( $term_id )->name );
+	}
+
+	/**
+	 * Tests that the site's object cache is wrapped only while switched.
+	 *
+	 * @return void
+	 */
+	public function test_object_cache_is_wrapped_while_switched() {
+		global $wp_object_cache;
+
+		$site_cache = $wp_object_cache;
+
+		$this->enable_custom_tables();
+		WP_REST_API_Log_DB::switch_to_custom_tables();
+
+		$this->assertInstanceOf( 'WP_REST_API_Log_Object_Cache', $wp_object_cache );
+		$this->assertSame( $site_cache, $wp_object_cache->unwrap() );
+
+		// Post data set while switched stays with the log tables, while
+		// other groups, such as options, are shared with the site.
+		wp_cache_set( 'shared-key', 'log post', 'posts' );
+		wp_cache_set( 'shared-key', 'shared option', 'options' );
+
+		WP_REST_API_Log_DB::switch_to_default_tables();
+
+		$this->assertSame( $site_cache, $wp_object_cache );
+		$this->assertFalse( wp_cache_get( 'shared-key', 'posts' ) );
+		$this->assertSame( 'shared option', wp_cache_get( 'shared-key', 'options' ) );
+	}
+
+	/**
+	 * Tests that an exception during an insert still switches back to the
+	 * site's tables and object cache.
+	 *
+	 * @return void
+	 */
+	public function test_switches_back_after_exception() {
+		global $wpdb, $wp_object_cache;
+
+		$site_posts = $wpdb->posts;
+		$site_cache = $wp_object_cache;
+
+		$this->enable_custom_tables();
+
+		$throw = static function () {
+			throw new RuntimeException( 'Insert failed.' );
+		};
+		add_filter( 'wp_insert_post_data', $throw );
+
+		$db = new WP_REST_API_Log_DB();
+		try {
+			$db->insert( array( 'route' => '/custom/exception' ) );
+			$this->fail( 'Expected the insert to throw.' );
+		} catch ( RuntimeException $e ) {
+			$this->assertSame( 'Insert failed.', $e->getMessage() );
+		}
+
+		remove_filter( 'wp_insert_post_data', $throw );
+
+		$this->assertFalse( WP_REST_API_Log_DB::$using_custom_tables );
+		$this->assertSame( $site_posts, $wpdb->posts );
+		$this->assertSame( $site_cache, $wp_object_cache );
+	}
 }
