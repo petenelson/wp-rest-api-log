@@ -69,6 +69,10 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
+      memcached:
+        image: memcached:1.6
+        ports:
+          - 11211:11211
 
     strategy:
       fail-fast: false
@@ -83,7 +87,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: mysqli
+          extensions: mysqli, memcached
           coverage: none
 
       - name: Install Composer dependencies
@@ -94,8 +98,14 @@ jobs:
           WP_VERSION: ${{ matrix.wp }}
         run: bash bin/install-wp-core.sh
 
+      # Run the suite against a persistent object cache, using the Memcached
+      # drop-in that ships with wordpress-develop's test suite.
+      - name: Install the Memcached object cache drop-in
+        run: cp tmp/wordpress/tests/phpunit/includes/object-cache.php tmp/wordpress/src/wp-content/object-cache.php
+
       - name: Run PHPUnit
         env:
           WP_DEVELOP_DIR: ./tmp/wordpress/
           WP_MULTISITE: ${{ matrix.multisite }}
+          WP_TESTS_MEMCACHED_SERVER: 127.0.0.1:11211
         run: ./vendor/bin/phpunit

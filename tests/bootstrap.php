@@ -64,6 +64,15 @@ class WP_REST_API_Log_Tests_Bootstrap {
 			define( 'SCRIPT_DEBUG', false );
 		}
 
+		// Point wordpress-develop's Memcached object cache drop-in, when it is
+		// installed, at the server in WP_TESTS_MEMCACHED_SERVER ("host:port").
+		// The drop-in reads the $memcached_servers global.
+		$memcached_server = getenv( 'WP_TESTS_MEMCACHED_SERVER' );
+		if ( ! empty( $memcached_server ) ) {
+			list( $host, $port )          = array_pad( explode( ':', $memcached_server, 2 ), 2, 11211 );
+			$GLOBALS['memcached_servers'] = array( array( $host, (int) $port ) ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- The drop-in's own global.
+		}
+
 		// Start up the WP testing environment.
 		require $wp_develop_dir . '/tests/phpunit/includes/bootstrap.php';
 	}
